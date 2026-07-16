@@ -37,6 +37,14 @@ Planned feature endpoints:
 | GET | `/recommendations` | Get recommendations |
 | GET | `/report/pdf` | Generate PDF report |
 
+Machine learning endpoints:
+
+| Method | Endpoint | Purpose |
+| --- | --- | --- |
+| POST | `/ml/train` | Train and compare ML models |
+| GET | `/ml/models/current` | Get current best trained model metadata |
+| GET | `/ml/training-history` | Get recent training runs |
+
 Implemented:
 
 | Method | Endpoint | Purpose |
@@ -54,3 +62,6 @@ Implemented:
 | PATCH | `/battery/:id` | Update one battery record |
 | DELETE | `/battery/:id` | Delete one battery record |
 | POST | `/battery/upload-csv` | Upload battery dataset CSV |
+| POST | `/ml/train` | Train and compare ML models |
+| GET | `/ml/models/current` | Get current best trained model metadata |
+| GET | `/ml/training-history` | Get recent training runs |

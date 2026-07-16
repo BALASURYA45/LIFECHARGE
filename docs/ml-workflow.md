@@ -2,18 +2,38 @@
 
 The ML module will use historical battery datasets only. No IoT integration is required.
 
-## Planned Pipeline
+## Implemented Pipeline
 
 1. Validate dataset columns.
 2. Clean invalid, duplicate, and missing values.
-3. Engineer battery degradation features.
-4. Split training and validation data.
-5. Train Random Forest, XGBoost, and LightGBM models.
-6. Evaluate models using MAE, RMSE, R2, and cross-validation.
-7. Select the best model automatically.
-8. Save the model and preprocessing pipeline with Joblib.
-9. Generate SHAP explanations for global and local interpretability.
-10. Serve predictions through the Flask API.
+3. Split training and validation data.
+4. Train Random Forest, XGBoost, and LightGBM models.
+5. Evaluate models using MAE, RMSE, R2, and cross-validation.
+6. Select the best model automatically.
+7. Save the model and preprocessing pipeline with Joblib.
+8. Store model metadata and recent training history.
+
+## Sample Dataset
+
+Module 4 includes a temporary sample supervised dataset:
+
+```text
+ml-service/app/data/sample/battery_training_sample.csv
+```
+
+This file contains the required input features plus target columns:
+
+- `SOH`
+- `RUL`
+
+Replace this sample file or pass another dataset path once real historical data is available.
+
+## Pending For Later Modules
+
+- Prediction endpoint using the saved model
+- SHAP explainability
+- What-if analysis integration
+- Recommendation engine integration
 
 ## Target Outputs
 

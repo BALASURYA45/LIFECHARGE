@@ -6,6 +6,7 @@ import DashboardPage from '../pages/DashboardPage.jsx';
 import ForgotPasswordPage from '../pages/ForgotPasswordPage.jsx';
 import HomePage from '../pages/HomePage.jsx';
 import LoginPage from '../pages/LoginPage.jsx';
+import MachineLearningPage from '../pages/MachineLearningPage.jsx';
 import ProfilePage from '../pages/ProfilePage.jsx';
 import RegisterPage from '../pages/RegisterPage.jsx';
 import ResetPasswordPage from '../pages/ResetPasswordPage.jsx';
@@ -65,6 +66,14 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <BatteryDataFormPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'ml-training',
+        element: (
+          <ProtectedRoute>
+            <MachineLearningPage />
           </ProtectedRoute>
         ),
       },
