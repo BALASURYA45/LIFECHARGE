@@ -30,6 +30,9 @@ export default function MainLayout({ children }) {
                 <NavLink className="hover:text-white" to="/dashboard">
                   Dashboard
                 </NavLink>
+                <NavLink className="hover:text-white" to="/battery">
+                  Battery Data
+                </NavLink>
                 <NavLink className="hover:text-white" to="/profile">
                   {user?.name ?? 'Profile'}
                 </NavLink>

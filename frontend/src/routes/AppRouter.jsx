@@ -1,5 +1,7 @@
 import { createBrowserRouter } from 'react-router-dom';
 import App from '../App.jsx';
+import BatteryDataFormPage from '../pages/BatteryDataFormPage.jsx';
+import BatteryDataPage from '../pages/BatteryDataPage.jsx';
 import DashboardPage from '../pages/DashboardPage.jsx';
 import ForgotPasswordPage from '../pages/ForgotPasswordPage.jsx';
 import HomePage from '../pages/HomePage.jsx';
@@ -39,6 +41,30 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <DashboardPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'battery',
+        element: (
+          <ProtectedRoute>
+            <BatteryDataPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'battery/new',
+        element: (
+          <ProtectedRoute>
+            <BatteryDataFormPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'battery/:id/edit',
+        element: (
+          <ProtectedRoute>
+            <BatteryDataFormPage />
           </ProtectedRoute>
         ),
       },

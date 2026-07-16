@@ -17,12 +17,21 @@ Authentication endpoints:
 | GET | `/auth/profile` | Get authenticated user profile |
 | PATCH | `/auth/profile` | Update authenticated user profile |
 
-Planned feature endpoints:
+Battery dataset endpoints:
 
 | Method | Endpoint | Purpose |
 | --- | --- | --- |
 | POST | `/battery/add` | Add battery dataset record |
 | GET | `/battery/history` | List user battery records |
+| GET | `/battery/:id` | Get one battery record |
+| PATCH | `/battery/:id` | Update one battery record |
+| DELETE | `/battery/:id` | Delete one battery record |
+| POST | `/battery/upload-csv` | Upload battery dataset CSV |
+
+Planned feature endpoints:
+
+| Method | Endpoint | Purpose |
+| --- | --- | --- |
 | POST | `/predict` | Generate SOH and RUL prediction |
 | GET | `/predictions` | List prediction history |
 | GET | `/recommendations` | Get recommendations |
@@ -39,3 +48,9 @@ Implemented:
 | POST | `/auth/reset-password/:token` | Complete password reset |
 | GET | `/auth/profile` | Get authenticated user profile |
 | PATCH | `/auth/profile` | Update authenticated user profile |
+| POST | `/battery/add` | Add battery dataset record |
+| GET | `/battery/history` | List user battery records |
+| GET | `/battery/:id` | Get one battery record |
+| PATCH | `/battery/:id` | Update one battery record |
+| DELETE | `/battery/:id` | Delete one battery record |
+| POST | `/battery/upload-csv` | Upload battery dataset CSV |

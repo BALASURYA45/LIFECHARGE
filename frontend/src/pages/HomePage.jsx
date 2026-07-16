@@ -1,9 +1,9 @@
 const setupItems = [
-  'JWT authentication gateway',
-  'Secure register and login flow',
-  'Forgot and reset password workflow',
-  'Protected dashboard and profile',
-  'MongoDB User collection ready',
+  'Manual battery data entry',
+  'CSV dataset upload',
+  'Record validation',
+  'Edit and delete history',
+  'User-owned BatteryData collection',
 ];
 
 export default function HomePage() {
@@ -17,13 +17,13 @@ export default function HomePage() {
           Production-ready foundation for SOH, RUL, XAI, and predictive maintenance.
         </h1>
         <p className="mt-5 max-w-2xl text-base leading-7 text-slate-300">
-          The application now includes a secure authentication foundation before battery
-          datasets, ML training, predictions, recommendations, dashboards, and reports are added.
+          The application now supports secure historical battery dataset management before ML
+          training, predictions, recommendations, dashboards, and reports are added.
         </p>
       </div>
 
       <div className="rounded border border-slate-800 bg-slate-900 p-5">
-        <h2 className="text-lg font-semibold text-white">Module 2 Completed Scope</h2>
+        <h2 className="text-lg font-semibold text-white">Module 3 Completed Scope</h2>
         <ul className="mt-4 space-y-3">
           {setupItems.map((item) => (
             <li key={item} className="flex items-center gap-3 text-sm text-slate-300">

@@ -21,6 +21,25 @@ Fields implemented in Module 2:
 
 Stores historical battery inputs such as age, charging cycles, charging frequency, fast charging usage, average temperature, charging duration, daily distance, SOC history, capacity, voltage, and current.
 
+Fields implemented in Module 3:
+
+- `user`
+- `batteryAge`
+- `chargingCycles`
+- `chargingFrequency`
+- `fastChargingUsage`
+- `averageTemperature`
+- `chargingDuration`
+- `dailyDistance`
+- `socHistory`
+- `batteryCapacity`
+- `voltage`
+- `current`
+- `source`
+- `notes`
+- `createdAt`
+- `updatedAt`
+
 ## Predictions
 
 Stores prediction outputs including SOH, RUL, status, confidence score, degradation trend, feature importance snapshot, and recommendation references.

@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import { env } from './config/env.js';
 import authRoutes from './routes/auth.routes.js';
+import batteryRoutes from './routes/battery.routes.js';
 import healthRoutes from './routes/health.routes.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { notFoundHandler } from './middleware/notFoundHandler.js';
@@ -20,6 +21,7 @@ if (env.nodeEnv !== 'test') {
 }
 
 app.use('/api/auth', authRoutes);
+app.use('/api/battery', batteryRoutes);
 app.use('/api/health', healthRoutes);
 
 app.use(notFoundHandler);

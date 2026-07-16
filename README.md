@@ -84,5 +84,6 @@ python run.py
 
 Module 1: Project Setup is complete.
 Module 2: Authentication is complete.
+Module 3: Battery Dataset Management is complete.
 
-Next module: Battery Dataset Management.
+Next module: Machine Learning.
