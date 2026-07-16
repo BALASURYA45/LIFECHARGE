@@ -82,4 +82,7 @@ python run.py
 
 ## Current Status
 
-Module 1: Project Setup is complete. Next module: Authentication.
+Module 1: Project Setup is complete.
+Module 2: Authentication is complete.
+
+Next module: Battery Dataset Management.

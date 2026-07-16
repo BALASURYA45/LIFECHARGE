@@ -6,14 +6,21 @@ Base backend URL:
 http://localhost:5000/api
 ```
 
-Planned endpoints:
+Authentication endpoints:
 
 | Method | Endpoint | Purpose |
 | --- | --- | --- |
 | POST | `/auth/register` | Register a user |
 | POST | `/auth/login` | Authenticate a user |
 | POST | `/auth/forgot-password` | Start password reset |
-| POST | `/auth/reset-password` | Complete password reset |
+| POST | `/auth/reset-password/:token` | Complete password reset |
+| GET | `/auth/profile` | Get authenticated user profile |
+| PATCH | `/auth/profile` | Update authenticated user profile |
+
+Planned feature endpoints:
+
+| Method | Endpoint | Purpose |
+| --- | --- | --- |
 | POST | `/battery/add` | Add battery dataset record |
 | GET | `/battery/history` | List user battery records |
 | POST | `/predict` | Generate SOH and RUL prediction |
@@ -21,8 +28,14 @@ Planned endpoints:
 | GET | `/recommendations` | Get recommendations |
 | GET | `/report/pdf` | Generate PDF report |
 
-Implemented in Module 1:
+Implemented:
 
 | Method | Endpoint | Purpose |
 | --- | --- | --- |
 | GET | `/health` | Backend health check |
+| POST | `/auth/register` | Register a user |
+| POST | `/auth/login` | Authenticate a user |
+| POST | `/auth/forgot-password` | Start password reset |
+| POST | `/auth/reset-password/:token` | Complete password reset |
+| GET | `/auth/profile` | Get authenticated user profile |
+| PATCH | `/auth/profile` | Update authenticated user profile |

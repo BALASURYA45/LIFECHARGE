@@ -20,6 +20,7 @@ export default [
       sourceType: 'module',
       globals: {
         document: 'readonly',
+        localStorage: 'readonly',
         window: 'readonly',
       },
       parserOptions: {
