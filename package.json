@@ -1,0 +1,23 @@
+{
+  "name": "lifecharge",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AI-Based Battery Health Prediction and Predictive Maintenance System for Electric Vehicles",
+  "scripts": {
+    "dev:frontend": "npm run dev --prefix frontend",
+    "dev:backend": "npm run dev --prefix backend",
+    "dev:ml": "cd ml-service && python run.py",
+    "build:frontend": "npm run build --prefix frontend",
+    "lint:frontend": "npm run lint --prefix frontend",
+    "lint:backend": "npm run lint --prefix backend"
+  },
+  "keywords": [
+    "ev",
+    "battery-health",
+    "machine-learning",
+    "predictive-maintenance",
+    "explainable-ai"
+  ],
+  "author": "BALASURYA45",
+  "license": "MIT"
+}

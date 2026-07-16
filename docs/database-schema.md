@@ -1,0 +1,19 @@
+# Database Schema
+
+MongoDB collections planned for LIFECHARGE:
+
+## Users
+
+Stores registered user accounts, hashed passwords, reset tokens, profile metadata, and timestamps.
+
+## BatteryData
+
+Stores historical battery inputs such as age, charging cycles, charging frequency, fast charging usage, average temperature, charging duration, daily distance, SOC history, capacity, voltage, and current.
+
+## Predictions
+
+Stores prediction outputs including SOH, RUL, status, confidence score, degradation trend, feature importance snapshot, and recommendation references.
+
+## Reports
+
+Stores report metadata such as user, report type, date range, generated file location, and export status.
