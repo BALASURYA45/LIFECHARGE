@@ -56,6 +56,7 @@ Fields implemented in Module 5:
 - `modelName`
 - `modelTrainingId`
 - `explanation`
+- `recommendations`
 - `createdAt`
 - `updatedAt`
 
@@ -67,6 +68,19 @@ The `explanation` object stores:
 - `topPositiveFactors`
 - `plainEnglishExplanation`
 - `generatedAt`
+
+The `recommendations` object stores:
+
+- `items`
+- `summary`
+- `generatedAt`
+
+Each recommendation item stores:
+
+- `title`
+- `description`
+- `priority`
+- `category`
 
 ## Reports
 

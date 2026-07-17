@@ -9,6 +9,7 @@ import explanationRoutes from './routes/explanation.routes.js';
 import healthRoutes from './routes/health.routes.js';
 import mlRoutes from './routes/ml.routes.js';
 import predictionRoutes from './routes/prediction.routes.js';
+import recommendationRoutes from './routes/recommendation.routes.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { notFoundHandler } from './middleware/notFoundHandler.js';
 
@@ -29,6 +30,7 @@ app.use('/api', explanationRoutes);
 app.use('/api/health', healthRoutes);
 app.use('/api/ml', mlRoutes);
 app.use('/api', predictionRoutes);
+app.use('/api', recommendationRoutes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

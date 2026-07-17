@@ -57,6 +57,22 @@ Explanation output includes:
 - top positive factors
 - plain-English explanation
 
+## Recommendation Engine
+
+Module 7 generates rule-based recommendations from prediction results and input features.
+
+Recommendation signals include:
+
+- low SOH
+- low RUL
+- high fast charging usage
+- high average temperature
+- SOC outside the 20-80 percent range
+- high charging frequency
+- long charging duration
+- high daily distance
+- high charging cycle count
+
 ## Target Outputs
 
 - State of Health

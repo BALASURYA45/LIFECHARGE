@@ -3,8 +3,10 @@ import { Link } from 'react-router-dom';
 import BatteryDataForm from '../components/BatteryDataForm.jsx';
 import ExplanationPanel from '../components/ExplanationPanel.jsx';
 import PredictionResult from '../components/PredictionResult.jsx';
+import RecommendationPanel from '../components/RecommendationPanel.jsx';
 import { generateExplanation } from '../services/explanationService.js';
 import { createPrediction, getPredictionHistory } from '../services/predictionService.js';
+import { generateRecommendations } from '../services/recommendationService.js';
 import { getErrorMessage } from '../utils/getErrorMessage.js';
 
 function formatDate(value) {
@@ -17,10 +19,12 @@ function formatDate(value) {
 export default function PredictionPage() {
   const [latestPrediction, setLatestPrediction] = useState(null);
   const [explanation, setExplanation] = useState(null);
+  const [recommendations, setRecommendations] = useState(null);
   const [history, setHistory] = useState([]);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
   const [isExplaining, setIsExplaining] = useState(false);
+  const [isGeneratingRecommendations, setIsGeneratingRecommendations] = useState(false);
   const [isLoadingHistory, setIsLoadingHistory] = useState(true);
 
   async function loadHistory() {
@@ -48,6 +52,7 @@ export default function PredictionPage() {
       const data = await createPrediction(values);
       setLatestPrediction(data.prediction);
       setExplanation(data.prediction.explanation ?? null);
+      setRecommendations(data.prediction.recommendations ?? null);
       setMessage('Prediction generated and saved to history.');
       await loadHistory();
     } catch (predictionError) {
@@ -76,9 +81,31 @@ export default function PredictionPage() {
     }
   }
 
+  async function handleGenerateRecommendations() {
+    if (!latestPrediction?._id) {
+      setError('Generate a prediction before requesting recommendations.');
+      return;
+    }
+
+    setError('');
+    setIsGeneratingRecommendations(true);
+
+    try {
+      const data = await generateRecommendations(latestPrediction._id);
+      setRecommendations(data.recommendations);
+      setLatestPrediction((current) => ({ ...current, recommendations: data.recommendations }));
+      await loadHistory();
+    } catch (recommendationError) {
+      setError(getErrorMessage(recommendationError));
+    } finally {
+      setIsGeneratingRecommendations(false);
+    }
+  }
+
   function selectHistoryPrediction(prediction) {
     setLatestPrediction(prediction);
     setExplanation(prediction.explanation ?? null);
+    setRecommendations(prediction.recommendations ?? null);
     setMessage('');
     setError('');
   }
@@ -111,6 +138,13 @@ export default function PredictionPage() {
           <PredictionResult prediction={latestPrediction} />
           {latestPrediction ? (
             <ExplanationPanel explanation={explanation} isLoading={isExplaining} onGenerate={handleExplain} />
+          ) : null}
+          {latestPrediction ? (
+            <RecommendationPanel
+              recommendations={recommendations}
+              isLoading={isGeneratingRecommendations}
+              onGenerate={handleGenerateRecommendations}
+            />
           ) : null}
 
           <section className="rounded border border-slate-800 bg-slate-900">

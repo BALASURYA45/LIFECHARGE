@@ -50,6 +50,14 @@ Explainable AI endpoints:
 | POST | `/explain/:predictionId` | Generate and store explanation for a prediction |
 | GET | `/explain/:predictionId` | Get stored explanation for a prediction |
 
+Recommendation endpoints:
+
+| Method | Endpoint | Purpose |
+| --- | --- | --- |
+| GET | `/recommendations` | Get latest prediction recommendations |
+| POST | `/recommendations/:predictionId` | Generate recommendations for a prediction |
+| GET | `/recommendations/:predictionId` | Get stored recommendations for a prediction |
+
 Machine learning endpoints:
 
 | Method | Endpoint | Purpose |
@@ -62,6 +70,9 @@ Machine learning endpoints:
 | GET | `/predictions/:id` | Get one prediction |
 | POST | `/explain/:predictionId` | Generate and store explanation for a prediction |
 | GET | `/explain/:predictionId` | Get stored explanation for a prediction |
+| GET | `/recommendations` | Get latest prediction recommendations |
+| POST | `/recommendations/:predictionId` | Generate recommendations for a prediction |
+| GET | `/recommendations/:predictionId` | Get stored recommendations for a prediction |
 
 Implemented:
 

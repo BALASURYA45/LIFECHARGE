@@ -90,6 +90,21 @@ const predictionSchema = new mongoose.Schema(
       plainEnglishExplanation: String,
       generatedAt: Date,
     },
+    recommendations: {
+      items: [
+        {
+          title: String,
+          description: String,
+          priority: {
+            type: String,
+            enum: ['High', 'Medium', 'Low'],
+          },
+          category: String,
+        },
+      ],
+      summary: String,
+      generatedAt: Date,
+    },
   },
   {
     timestamps: true,
