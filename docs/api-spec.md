@@ -58,6 +58,12 @@ Recommendation endpoints:
 | POST | `/recommendations/:predictionId` | Generate recommendations for a prediction |
 | GET | `/recommendations/:predictionId` | Get stored recommendations for a prediction |
 
+What-if endpoints:
+
+| Method | Endpoint | Purpose |
+| --- | --- | --- |
+| POST | `/what-if/simulate` | Compare baseline and scenario battery predictions |
+
 Machine learning endpoints:
 
 | Method | Endpoint | Purpose |
@@ -73,6 +79,7 @@ Machine learning endpoints:
 | GET | `/recommendations` | Get latest prediction recommendations |
 | POST | `/recommendations/:predictionId` | Generate recommendations for a prediction |
 | GET | `/recommendations/:predictionId` | Get stored recommendations for a prediction |
+| POST | `/what-if/simulate` | Compare baseline and scenario battery predictions |
 
 Implemented:
 

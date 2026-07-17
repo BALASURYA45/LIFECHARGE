@@ -73,6 +73,19 @@ Recommendation signals include:
 - high daily distance
 - high charging cycle count
 
+## What-If Analysis
+
+Module 8 compares a baseline battery profile against a changed scenario using the trained model.
+
+The simulation returns:
+
+- baseline SOH and RUL
+- scenario SOH and RUL
+- SOH delta
+- RUL delta
+- confidence delta
+- scenario insights
+
 ## Target Outputs
 
 - State of Health

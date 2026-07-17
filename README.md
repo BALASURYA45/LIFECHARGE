@@ -89,5 +89,6 @@ Module 4: Machine Learning is complete with a sample dataset.
 Module 5: Prediction is complete.
 Module 6: Explainable AI is complete.
 Module 7: Recommendation Engine is complete.
+Module 8: What-If Analysis is complete.
 
-Next module: What-If Analysis.
+Next module: Dashboard.

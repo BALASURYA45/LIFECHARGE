@@ -22,6 +22,9 @@ export default function DashboardPage() {
         <Link className="ml-3 mt-5 inline-block rounded border border-slate-700 px-4 py-3 font-semibold text-slate-100 hover:border-teal-400" to="/prediction">
           Run prediction
         </Link>
+        <Link className="ml-3 mt-5 inline-block rounded border border-slate-700 px-4 py-3 font-semibold text-slate-100 hover:border-teal-400" to="/what-if">
+          What-if analysis
+        </Link>
       </div>
       <div className="grid gap-4 md:grid-cols-3">
         {[

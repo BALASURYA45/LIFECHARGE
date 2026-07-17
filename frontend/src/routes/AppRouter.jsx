@@ -11,6 +11,7 @@ import PredictionPage from '../pages/PredictionPage.jsx';
 import ProfilePage from '../pages/ProfilePage.jsx';
 import RegisterPage from '../pages/RegisterPage.jsx';
 import ResetPasswordPage from '../pages/ResetPasswordPage.jsx';
+import WhatIfPage from '../pages/WhatIfPage.jsx';
 import ProtectedRoute from './ProtectedRoute.jsx';
 
 export const router = createBrowserRouter([
@@ -83,6 +84,14 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <PredictionPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'what-if',
+        element: (
+          <ProtectedRoute>
+            <WhatIfPage />
           </ProtectedRoute>
         ),
       },
