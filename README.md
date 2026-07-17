@@ -90,5 +90,6 @@ Module 5: Prediction is complete.
 Module 6: Explainable AI is complete.
 Module 7: Recommendation Engine is complete.
 Module 8: What-If Analysis is complete.
+Module 9: Dashboard is complete.
 
-Next module: Dashboard.
+Next module: Reports.

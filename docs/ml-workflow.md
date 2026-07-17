@@ -86,6 +86,19 @@ The simulation returns:
 - confidence delta
 - scenario insights
 
+## Dashboard Analytics
+
+Module 9 aggregates stored battery records, predictions, recommendations, and model outputs into dashboard-ready metrics.
+
+Dashboard data includes:
+
+- latest SOH and RUL
+- average SOH, RUL, confidence, temperature, fast charging, cycles, and daily distance
+- prediction status distribution
+- SOH/RUL trend
+- recent predictions
+- latest recommendations
+
 ## Target Outputs
 
 - State of Health

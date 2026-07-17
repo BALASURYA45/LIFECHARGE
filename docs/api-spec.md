@@ -64,6 +64,12 @@ What-if endpoints:
 | --- | --- | --- |
 | POST | `/what-if/simulate` | Compare baseline and scenario battery predictions |
 
+Dashboard endpoints:
+
+| Method | Endpoint | Purpose |
+| --- | --- | --- |
+| GET | `/dashboard/summary` | Get dashboard analytics summary |
+
 Machine learning endpoints:
 
 | Method | Endpoint | Purpose |
@@ -80,6 +86,7 @@ Machine learning endpoints:
 | POST | `/recommendations/:predictionId` | Generate recommendations for a prediction |
 | GET | `/recommendations/:predictionId` | Get stored recommendations for a prediction |
 | POST | `/what-if/simulate` | Compare baseline and scenario battery predictions |
+| GET | `/dashboard/summary` | Get dashboard analytics summary |
 
 Implemented:
 
