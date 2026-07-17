@@ -44,6 +44,20 @@ Fields implemented in Module 3:
 
 Stores prediction outputs including SOH, RUL, status, confidence score, degradation trend, feature importance snapshot, and recommendation references.
 
+Fields implemented in Module 5:
+
+- `user`
+- `input`
+- `SOH`
+- `RUL`
+- `batteryStatus`
+- `confidenceScore`
+- `degradationTrend`
+- `modelName`
+- `modelTrainingId`
+- `createdAt`
+- `updatedAt`
+
 ## Reports
 
 Stores report metadata such as user, report type, date range, generated file location, and export status.

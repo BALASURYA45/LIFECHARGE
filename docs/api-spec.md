@@ -32,10 +32,16 @@ Planned feature endpoints:
 
 | Method | Endpoint | Purpose |
 | --- | --- | --- |
-| POST | `/predict` | Generate SOH and RUL prediction |
-| GET | `/predictions` | List prediction history |
 | GET | `/recommendations` | Get recommendations |
 | GET | `/report/pdf` | Generate PDF report |
+
+Prediction endpoints:
+
+| Method | Endpoint | Purpose |
+| --- | --- | --- |
+| POST | `/predict` | Generate SOH and RUL prediction |
+| GET | `/predictions` | List prediction history |
+| GET | `/predictions/:id` | Get one prediction |
 
 Machine learning endpoints:
 
@@ -44,6 +50,9 @@ Machine learning endpoints:
 | POST | `/ml/train` | Train and compare ML models |
 | GET | `/ml/models/current` | Get current best trained model metadata |
 | GET | `/ml/training-history` | Get recent training runs |
+| POST | `/predict` | Generate SOH and RUL prediction |
+| GET | `/predictions` | List prediction history |
+| GET | `/predictions/:id` | Get one prediction |
 
 Implemented:
 

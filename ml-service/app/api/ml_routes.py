@@ -6,6 +6,7 @@ from app.services.ml_training_service import (
     get_training_history,
     train_battery_health_models,
 )
+from app.services.prediction_service import PredictionError, predict_battery_health
 
 ml_blueprint = Blueprint("ml", __name__)
 
@@ -35,3 +36,15 @@ def current_model_endpoint():
 @ml_blueprint.get("/training-history")
 def training_history_endpoint():
     return jsonify({"success": True, "history": get_training_history()})
+
+
+@ml_blueprint.post("/predict")
+def predict_endpoint():
+    payload = request.get_json(silent=True) or {}
+
+    try:
+        prediction = predict_battery_health(payload)
+    except PredictionError as error:
+        return jsonify({"success": False, "message": str(error)}), 400
+
+    return jsonify({"success": True, "prediction": prediction})

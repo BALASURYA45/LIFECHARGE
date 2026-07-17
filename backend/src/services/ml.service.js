@@ -39,3 +39,12 @@ export async function getTrainingHistory() {
     handleMlError(error);
   }
 }
+
+export async function predictBatteryHealth(payload) {
+  try {
+    const { data } = await mlClient.post('/predict', payload);
+    return data;
+  } catch (error) {
+    handleMlError(error);
+  }
+}

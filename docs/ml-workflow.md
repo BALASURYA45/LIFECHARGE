@@ -30,10 +30,21 @@ Replace this sample file or pass another dataset path once real historical data 
 
 ## Pending For Later Modules
 
-- Prediction endpoint using the saved model
 - SHAP explainability
 - What-if analysis integration
 - Recommendation engine integration
+
+## Prediction
+
+Module 5 loads the saved `best_model.joblib` bundle and predicts:
+
+- `SOH`
+- `RUL`
+- battery status
+- confidence score
+- degradation trend
+
+If no trained model exists, the ML API returns a clear error asking the user to train a model first.
 
 ## Target Outputs
 

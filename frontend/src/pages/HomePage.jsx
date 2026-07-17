@@ -1,9 +1,9 @@
 const setupItems = [
-  'Sample SOH/RUL training dataset',
-  'Random Forest model training',
-  'XGBoost model training',
-  'LightGBM model training',
-  'Automatic best model selection',
+  'SOH prediction',
+  'RUL prediction',
+  'Battery status classification',
+  'Confidence score',
+  'Prediction history',
 ];
 
 export default function HomePage() {
@@ -17,13 +17,13 @@ export default function HomePage() {
           Production-ready foundation for SOH, RUL, XAI, and predictive maintenance.
         </h1>
         <p className="mt-5 max-w-2xl text-base leading-7 text-slate-300">
-          The application now trains and compares battery health models before prediction,
+          The application now predicts battery health from the trained model before
           explainability, recommendations, dashboards, and reports are added.
         </p>
       </div>
 
       <div className="rounded border border-slate-800 bg-slate-900 p-5">
-        <h2 className="text-lg font-semibold text-white">Module 4 Completed Scope</h2>
+        <h2 className="text-lg font-semibold text-white">Module 5 Completed Scope</h2>
         <ul className="mt-4 space-y-3">
           {setupItems.map((item) => (
             <li key={item} className="flex items-center gap-3 text-sm text-slate-300">

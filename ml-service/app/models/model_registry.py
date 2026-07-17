@@ -48,6 +48,15 @@ def load_current_metadata(artifact_dir: str) -> dict[str, Any] | None:
     return json.loads(metadata_path.read_text(encoding="utf-8"))
 
 
+def load_model_bundle(artifact_dir: str) -> dict[str, Any] | None:
+    model_path = Path(artifact_dir) / MODEL_FILE
+
+    if not model_path.exists():
+        return None
+
+    return joblib.load(model_path)
+
+
 def load_training_history(artifact_dir: str) -> list[dict[str, Any]]:
     history_path = Path(artifact_dir) / HISTORY_FILE
 
