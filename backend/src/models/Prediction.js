@@ -55,6 +55,41 @@ const predictionSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    explanation: {
+      method: String,
+      featureImportance: [
+        {
+          feature: String,
+          label: String,
+          value: Number,
+          impact: Number,
+          direction: {
+            type: String,
+            enum: ['positive', 'negative'],
+          },
+        },
+      ],
+      topNegativeFactors: [
+        {
+          feature: String,
+          label: String,
+          value: Number,
+          impact: Number,
+          direction: String,
+        },
+      ],
+      topPositiveFactors: [
+        {
+          feature: String,
+          label: String,
+          value: Number,
+          impact: Number,
+          direction: String,
+        },
+      ],
+      plainEnglishExplanation: String,
+      generatedAt: Date,
+    },
   },
   {
     timestamps: true,

@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import BatteryDataForm from '../components/BatteryDataForm.jsx';
+import ExplanationPanel from '../components/ExplanationPanel.jsx';
 import PredictionResult from '../components/PredictionResult.jsx';
+import { generateExplanation } from '../services/explanationService.js';
 import { createPrediction, getPredictionHistory } from '../services/predictionService.js';
 import { getErrorMessage } from '../utils/getErrorMessage.js';
 
@@ -14,9 +16,11 @@ function formatDate(value) {
 
 export default function PredictionPage() {
   const [latestPrediction, setLatestPrediction] = useState(null);
+  const [explanation, setExplanation] = useState(null);
   const [history, setHistory] = useState([]);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
+  const [isExplaining, setIsExplaining] = useState(false);
   const [isLoadingHistory, setIsLoadingHistory] = useState(true);
 
   async function loadHistory() {
@@ -43,11 +47,40 @@ export default function PredictionPage() {
     try {
       const data = await createPrediction(values);
       setLatestPrediction(data.prediction);
+      setExplanation(data.prediction.explanation ?? null);
       setMessage('Prediction generated and saved to history.');
       await loadHistory();
     } catch (predictionError) {
       setError(getErrorMessage(predictionError));
     }
+  }
+
+  async function handleExplain() {
+    if (!latestPrediction?._id) {
+      setError('Generate a prediction before requesting an explanation.');
+      return;
+    }
+
+    setError('');
+    setIsExplaining(true);
+
+    try {
+      const data = await generateExplanation(latestPrediction._id);
+      setExplanation(data.explanation);
+      setLatestPrediction((current) => ({ ...current, explanation: data.explanation }));
+      await loadHistory();
+    } catch (explanationError) {
+      setError(getErrorMessage(explanationError));
+    } finally {
+      setIsExplaining(false);
+    }
+  }
+
+  function selectHistoryPrediction(prediction) {
+    setLatestPrediction(prediction);
+    setExplanation(prediction.explanation ?? null);
+    setMessage('');
+    setError('');
   }
 
   return (
@@ -76,6 +109,9 @@ export default function PredictionPage() {
 
         <div className="space-y-6">
           <PredictionResult prediction={latestPrediction} />
+          {latestPrediction ? (
+            <ExplanationPanel explanation={explanation} isLoading={isExplaining} onGenerate={handleExplain} />
+          ) : null}
 
           <section className="rounded border border-slate-800 bg-slate-900">
             <div className="border-b border-slate-800 p-4">
@@ -95,6 +131,13 @@ export default function PredictionPage() {
                       SOH {prediction.SOH}% · RUL {prediction.RUL} months · Confidence {prediction.confidenceScore}%
                     </p>
                     <p className="mt-1 text-slate-400">{prediction.degradationTrend}</p>
+                    <button
+                      className="mt-3 text-teal-300 hover:text-teal-200"
+                      type="button"
+                      onClick={() => selectHistoryPrediction(prediction)}
+                    >
+                      View result
+                    </button>
                   </article>
                 ))}
               </div>

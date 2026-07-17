@@ -87,5 +87,6 @@ Module 2: Authentication is complete.
 Module 3: Battery Dataset Management is complete.
 Module 4: Machine Learning is complete with a sample dataset.
 Module 5: Prediction is complete.
+Module 6: Explainable AI is complete.
 
-Next module: Explainable AI.
+Next module: Recommendation Engine.

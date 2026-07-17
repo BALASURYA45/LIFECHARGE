@@ -43,6 +43,13 @@ Prediction endpoints:
 | GET | `/predictions` | List prediction history |
 | GET | `/predictions/:id` | Get one prediction |
 
+Explainable AI endpoints:
+
+| Method | Endpoint | Purpose |
+| --- | --- | --- |
+| POST | `/explain/:predictionId` | Generate and store explanation for a prediction |
+| GET | `/explain/:predictionId` | Get stored explanation for a prediction |
+
 Machine learning endpoints:
 
 | Method | Endpoint | Purpose |
@@ -53,6 +60,8 @@ Machine learning endpoints:
 | POST | `/predict` | Generate SOH and RUL prediction |
 | GET | `/predictions` | List prediction history |
 | GET | `/predictions/:id` | Get one prediction |
+| POST | `/explain/:predictionId` | Generate and store explanation for a prediction |
+| GET | `/explain/:predictionId` | Get stored explanation for a prediction |
 
 Implemented:
 

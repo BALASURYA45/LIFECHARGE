@@ -46,6 +46,17 @@ Module 5 loads the saved `best_model.joblib` bundle and predicts:
 
 If no trained model exists, the ML API returns a clear error asking the user to train a model first.
 
+## Explainable AI
+
+Module 6 explains individual predictions using SHAP when possible. If SHAP cannot explain a model cleanly in the local environment, the system falls back to trained model feature importances.
+
+Explanation output includes:
+
+- feature importance
+- top negative factors
+- top positive factors
+- plain-English explanation
+
 ## Target Outputs
 
 - State of Health

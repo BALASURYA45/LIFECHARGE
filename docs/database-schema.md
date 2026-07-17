@@ -55,8 +55,18 @@ Fields implemented in Module 5:
 - `degradationTrend`
 - `modelName`
 - `modelTrainingId`
+- `explanation`
 - `createdAt`
 - `updatedAt`
+
+The `explanation` object stores:
+
+- `method`
+- `featureImportance`
+- `topNegativeFactors`
+- `topPositiveFactors`
+- `plainEnglishExplanation`
+- `generatedAt`
 
 ## Reports
 

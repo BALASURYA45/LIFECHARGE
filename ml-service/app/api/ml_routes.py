@@ -6,6 +6,7 @@ from app.services.ml_training_service import (
     get_training_history,
     train_battery_health_models,
 )
+from app.services.explainability_service import ExplanationError, explain_prediction
 from app.services.prediction_service import PredictionError, predict_battery_health
 
 ml_blueprint = Blueprint("ml", __name__)
@@ -48,3 +49,15 @@ def predict_endpoint():
         return jsonify({"success": False, "message": str(error)}), 400
 
     return jsonify({"success": True, "prediction": prediction})
+
+
+@ml_blueprint.post("/explain")
+def explain_endpoint():
+    payload = request.get_json(silent=True) or {}
+
+    try:
+        explanation = explain_prediction(payload)
+    except ExplanationError as error:
+        return jsonify({"success": False, "message": str(error)}), 400
+
+    return jsonify({"success": True, "explanation": explanation})
