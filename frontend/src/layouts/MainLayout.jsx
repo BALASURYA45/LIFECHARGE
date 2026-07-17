@@ -42,6 +42,9 @@ export default function MainLayout({ children }) {
                 <NavLink className="hover:text-white" to="/what-if">
                   What-If
                 </NavLink>
+                <NavLink className="hover:text-white" to="/reports">
+                  Reports
+                </NavLink>
                 <NavLink className="hover:text-white" to="/profile">
                   {user?.name ?? 'Profile'}
                 </NavLink>

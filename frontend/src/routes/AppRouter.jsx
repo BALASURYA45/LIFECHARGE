@@ -10,6 +10,7 @@ import MachineLearningPage from '../pages/MachineLearningPage.jsx';
 import PredictionPage from '../pages/PredictionPage.jsx';
 import ProfilePage from '../pages/ProfilePage.jsx';
 import RegisterPage from '../pages/RegisterPage.jsx';
+import ReportsPage from '../pages/ReportsPage.jsx';
 import ResetPasswordPage from '../pages/ResetPasswordPage.jsx';
 import WhatIfPage from '../pages/WhatIfPage.jsx';
 import ProtectedRoute from './ProtectedRoute.jsx';
@@ -92,6 +93,14 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <WhatIfPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'reports',
+        element: (
+          <ProtectedRoute>
+            <ReportsPage />
           </ProtectedRoute>
         ),
       },

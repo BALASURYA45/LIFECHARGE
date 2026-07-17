@@ -22,6 +22,7 @@ export default [
         document: 'readonly',
         FormData: 'readonly',
         localStorage: 'readonly',
+        URL: 'readonly',
         window: 'readonly',
       },
       parserOptions: {

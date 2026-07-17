@@ -1,9 +1,9 @@
 const setupItems = [
-  'Baseline scenario comparison',
-  'Adjustable battery inputs',
-  'SOH delta analysis',
-  'RUL delta analysis',
-  'Scenario insights',
+  'PDF report generation',
+  'CSV prediction export',
+  'Report metadata history',
+  'Latest recommendations in reports',
+  'Prediction history in reports',
 ];
 
 export default function HomePage() {
@@ -17,13 +17,13 @@ export default function HomePage() {
           Production-ready foundation for SOH, RUL, XAI, and predictive maintenance.
         </h1>
         <p className="mt-5 max-w-2xl text-base leading-7 text-slate-300">
-          The application now simulates battery health changes before dashboard analytics
-          and reports are added.
+          The application now exports battery prediction reports for submission, review,
+          and future analysis.
         </p>
       </div>
 
       <div className="rounded border border-slate-800 bg-slate-900 p-5">
-        <h2 className="text-lg font-semibold text-white">Module 8 Completed Scope</h2>
+        <h2 className="text-lg font-semibold text-white">Module 10 Completed Scope</h2>
         <ul className="mt-4 space-y-3">
           {setupItems.map((item) => (
             <li key={item} className="flex items-center gap-3 text-sm text-slate-300">

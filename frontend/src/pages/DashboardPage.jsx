@@ -102,6 +102,9 @@ export default function DashboardPage() {
           <Link className="rounded border border-slate-700 px-4 py-3 font-semibold text-slate-100 hover:border-teal-400" to="/what-if">
             What-if analysis
           </Link>
+          <Link className="rounded border border-slate-700 px-4 py-3 font-semibold text-slate-100 hover:border-teal-400" to="/reports">
+            Reports
+          </Link>
         </div>
       </div>
 

@@ -70,6 +70,14 @@ Dashboard endpoints:
 | --- | --- | --- |
 | GET | `/dashboard/summary` | Get dashboard analytics summary |
 
+Report endpoints:
+
+| Method | Endpoint | Purpose |
+| --- | --- | --- |
+| GET | `/reports` | List generated report metadata |
+| GET | `/report/pdf` | Generate and download PDF report |
+| GET | `/report/csv` | Generate and download CSV export |
+
 Machine learning endpoints:
 
 | Method | Endpoint | Purpose |
@@ -87,6 +95,9 @@ Machine learning endpoints:
 | GET | `/recommendations/:predictionId` | Get stored recommendations for a prediction |
 | POST | `/what-if/simulate` | Compare baseline and scenario battery predictions |
 | GET | `/dashboard/summary` | Get dashboard analytics summary |
+| GET | `/reports` | List generated report metadata |
+| GET | `/report/pdf` | Generate and download PDF report |
+| GET | `/report/csv` | Generate and download CSV export |
 
 Implemented:
 

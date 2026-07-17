@@ -85,3 +85,14 @@ Each recommendation item stores:
 ## Reports
 
 Stores report metadata such as user, report type, date range, generated file location, and export status.
+
+Fields implemented in Module 10:
+
+- `user`
+- `type`
+- `title`
+- `predictionCount`
+- `status`
+- `generatedAt`
+- `createdAt`
+- `updatedAt`

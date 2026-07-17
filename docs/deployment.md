@@ -28,3 +28,7 @@ The Flask ML API can be deployed as a Python web service. Production deployment 
 ## Database
 
 MongoDB Atlas is recommended for managed database hosting.
+
+## Reports
+
+PDF and CSV reports are generated on demand by the backend. Report metadata is stored in MongoDB, while generated files are streamed directly to the authenticated user.
