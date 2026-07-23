@@ -1,4 +1,47 @@
 import { predictBatteryHealth } from './ml.service.js';
+import { AppError } from '../utils/AppError.js';
+
+const REQUIRED_FIELDS = [
+  'batteryAge',
+  'chargingCycles',
+  'chargingFrequency',
+  'fastChargingUsage',
+  'averageTemperature',
+  'chargingDuration',
+  'dailyDistance',
+  'socHistory',
+  'batteryCapacity',
+  'voltage',
+  'current',
+  'is_two_wheeler',
+  'is_three_wheeler',
+  'is_four_wheeler',
+  'is_bus',
+  'is_chemistry_lfp',
+  'is_chemistry_nmc',
+  'is_chemistry_lead_acid',
+];
+
+function validateInput(input) {
+  const missing = REQUIRED_FIELDS.filter((field) => {
+    const value = input?.[field];
+    return value === undefined || value === null || value === '';
+  });
+
+  if (missing.length) {
+    throw new AppError(`Missing required fields: ${missing.join(', ')}`, 400);
+  }
+}
+
+function normalizePrediction(prediction) {
+  return {
+    SOH: prediction.SOH,
+    RUL: prediction.RUL,
+    batteryStatus: prediction.batteryStatus,
+    confidenceScore: prediction.confidenceScore,
+    degradationTrend: prediction.degradationTrend,
+  };
+}
 
 function buildInsights(baselineInput, scenarioInput, scenarioPrediction) {
   const insights = [];
@@ -34,21 +77,28 @@ function buildInsights(baselineInput, scenarioInput, scenarioPrediction) {
   return insights;
 }
 
-function normalizePrediction(prediction) {
-  return {
-    SOH: prediction.SOH,
-    RUL: prediction.RUL,
-    batteryStatus: prediction.batteryStatus,
-    confidenceScore: prediction.confidenceScore,
-    degradationTrend: prediction.degradationTrend,
-  };
-}
-
 export async function runWhatIfSimulation({ baseline, scenario }) {
-  const [baselineResult, scenarioResult] = await Promise.all([
-    predictBatteryHealth(baseline),
-    predictBatteryHealth(scenario),
-  ]);
+  validateInput(baseline);
+  validateInput(scenario);
+
+  let baselineResult;
+  let scenarioResult;
+
+  try {
+    [baselineResult, scenarioResult] = await Promise.all([
+      predictBatteryHealth(baseline),
+      predictBatteryHealth(scenario),
+    ]);
+  } catch (error) {
+    if (error instanceof AppError) {
+      throw error;
+    }
+
+    throw new AppError(
+      error?.response?.data?.message ?? error?.message ?? 'What-if simulation failed',
+      error?.response?.status === 404 ? 404 : 502
+    );
+  }
 
   const baselinePrediction = baselineResult.prediction;
   const scenarioPrediction = scenarioResult.prediction;
