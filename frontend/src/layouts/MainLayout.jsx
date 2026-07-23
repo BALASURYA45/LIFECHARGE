@@ -1,4 +1,4 @@
-import { BarChart3, BatteryCharging, ClipboardCheck, Gauge, LogIn, LogOut, Menu, SlidersHorizontal, UserRound, X } from 'lucide-react';
+import { BarChart3, BatteryCharging, ClipboardCheck, Gauge, LayoutGrid, LogIn, LogOut, Menu, SlidersHorizontal, UserRound, X } from 'lucide-react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../hooks/useAuth.js';
@@ -11,6 +11,7 @@ const navItems = [
   { to: '/dashboard', key: 'dashboard', icon: Gauge },
   { to: '/prediction', key: 'prediction', icon: ClipboardCheck },
   { to: '/battery', key: 'battery', icon: BatteryCharging },
+  { to: '/showroom', key: 'showroom', icon: LayoutGrid },
   { to: '/what-if', key: 'scenarios', icon: SlidersHorizontal },
   { to: '/reports', key: 'reports', icon: BarChart3 },
 ];
@@ -42,8 +43,8 @@ export default function MainLayout({ children }) {
               <BatteryCharging size={22} aria-hidden="true" />
             </span>
             <div className="hidden xs:block">
-              <p className="text-lg font-black tracking-[0.18em] text-white leading-tight">{t('app.title')}</p>
-              <p className="text-sm text-cyan-200/90 leading-tight">{t('app.subtitle')}</p>
+<p className="text-lg font-black tracking-[0.18em] text-slate-900 leading-tight">{t('app.title')}</p>
+<p className="text-sm text-cyan-700/80 leading-tight">{t('app.subtitle')}</p>
             </div>
           </Link>
 

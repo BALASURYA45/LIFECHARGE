@@ -1,6 +1,6 @@
 import { BrainCircuit, Car, History, Wrench } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import SimpleBatteryForm from '../components/SimpleBatteryForm.jsx';
 import ExplanationPanel from '../components/ExplanationPanel.jsx';
@@ -20,6 +20,7 @@ function formatDate(value) {
 
 export default function PredictionPage() {
   const { t } = useTranslation();
+  const [searchParams] = useSearchParams();
   const [latestPrediction, setLatestPrediction] = useState(null);
   const [explanation, setExplanation] = useState(null);
   const [recommendations, setRecommendations] = useState(null);
@@ -113,6 +114,31 @@ export default function PredictionPage() {
     setError('');
   }
 
+  // Pre-select vehicle from URL query params (from showcase page)
+  const preselectedVehicle = searchParams.get('category') && searchParams.get('make') && searchParams.get('model')
+    ? {
+        categoryId: searchParams.get('category'),
+        make: searchParams.get('make'),
+        model: searchParams.get('model'),
+      }
+    : null;
+
+  const defaultFormValues = preselectedVehicle
+    ? {
+        categoryId: preselectedVehicle.categoryId,
+        make: preselectedVehicle.make,
+        model: preselectedVehicle.model,
+        vehicleAge: '',
+        totalKmDriven: '',
+        dailyDistance: '',
+        chargingFrequency: '',
+        fastChargePercent: '',
+        avgTemperature: '',
+        chargingDuration: '',
+        socAtEndOfDay: '',
+      }
+    : undefined;
+
   return (
     <section className="space-y-6">
       <div className="flex flex-col justify-between gap-4 rounded-lg border border-cyan-500/20 bg-slate-900/60 p-4 md:flex-row md:items-end">
@@ -120,9 +146,19 @@ export default function PredictionPage() {
           <p className="text-sm font-bold uppercase tracking-[0.2em] text-accent-light">{t('prediction.title')}</p>
           <h1 className="mt-2 text-3xl font-black text-white md:text-4xl">Battery Health Check</h1>
           <p className="mt-2 max-w-3xl text-slate-300">
-            Check your EV battery health in 3 simple steps. Select your vehicle, tell us how you use it, and get a detailed health report.
+            {preselectedVehicle
+              ? `Selected: ${preselectedVehicle.make} ${preselectedVehicle.model} — enter your usage details to check battery health.`
+              : 'Check your EV battery health in 3 simple steps. Select your vehicle, tell us how you use it, and get a detailed health report.'}
           </p>
         </div>
+        {preselectedVehicle ? (
+          <Link
+            to="/showroom"
+            className="lc-focus inline-flex items-center gap-2 rounded-lg border border-violet-400/30 px-4 py-3 font-bold text-slate-100 hover:border-violet-400 hover:text-violet-300 transition"
+          >
+            ← Back to Showroom
+          </Link>
+        ) : null}
         <div className="flex flex-wrap gap-3">
           <Link className="lc-focus inline-flex items-center gap-2 rounded-lg border border-amber-400/40 px-4 py-3 font-bold text-slate-100 hover:border-warning hover:text-warning-light transition" to="/ml-training">
             <BrainCircuit size={18} aria-hidden="true" />
@@ -149,7 +185,7 @@ export default function PredictionPage() {
               <p className="text-sm text-slate-300">Select your EV and describe your usage pattern</p>
             </div>
           </div>
-          <SimpleBatteryForm onSubmit={handlePredict} />
+          <SimpleBatteryForm defaultValues={defaultFormValues} onSubmit={handlePredict} />
         </section>
 
         <div className="space-y-6">

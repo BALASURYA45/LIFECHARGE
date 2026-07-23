@@ -1,4 +1,4 @@
-import { ArrowRight, BarChart3, BatteryCharging, ClipboardCheck, FileText, ShieldCheck, Wrench } from 'lucide-react';
+import { ArrowRight, BarChart3, BatteryCharging, ClipboardCheck, FileText, ShieldCheck, Wrench, LayoutGrid, Bike, Truck, Car, Bus } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -97,10 +97,45 @@ export default function HomePage() {
               <BarChart3 size={18} aria-hidden="true" />
               {t('home.hero.viewDashboard')}
             </Link>
+            <Link
+              className="lc-focus inline-flex items-center gap-2 rounded-lg border border-violet-400/30 px-4 py-3 font-bold text-slate-700 transition hover:border-violet-500 hover:text-violet-600"
+              to="/showroom"
+            >
+              <LayoutGrid size={18} aria-hidden="true" />
+              3D Showroom
+            </Link>
           </div>
         </div>
         <BatteryVisual />
       </div>
+
+      {/* 3D Showroom Banner */}
+      <Link
+        to="/showroom"
+        className="group block rounded-2xl border border-violet-500/20 bg-gradient-to-br from-violet-50 via-white to-purple-50 p-6 transition hover:border-violet-400/40 hover:shadow-xl hover:shadow-violet-200/20 hover:-translate-y-0.5"
+      >
+        <div className="flex items-center gap-6">
+          <div className="hidden sm:grid size-20 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 shadow-lg">
+            <Bike size={36} className="text-white" />
+          </div>
+          <div className="flex-1">
+            <div className="flex items-center gap-2">
+              <h2 className="text-xl font-black text-slate-900">EV Fleet Showroom</h2>
+              <span className="rounded-full bg-gradient-to-r from-violet-500 to-purple-600 px-2.5 py-0.5 text-xs font-bold text-white">3D</span>
+            </div>
+            <p className="mt-2 text-sm leading-6 text-slate-600">
+              Browse our complete EV database in an interactive 3D showroom. Click any vehicle to instantly check its battery health.
+            </p>
+            <div className="mt-3 flex gap-3 text-xs text-slate-500">
+              <span className="flex items-center gap-1"><Bike size={14} /> {t('home.actions.checkBattery.title')} EVs</span>
+              <span className="flex items-center gap-1"><Truck size={14} /> 3-Wheelers</span>
+              <span className="flex items-center gap-1"><Car size={14} /> Cars & SUVs</span>
+              <span className="flex items-center gap-1"><Bus size={14} /> Buses</span>
+            </div>
+          </div>
+          <ArrowRight className="text-violet-400 transition group-hover:translate-x-1 group-hover:text-violet-600 shrink-0" size={24} aria-hidden="true" />
+        </div>
+      </Link>
 
       <div className="grid gap-4 lg:grid-cols-3">
         {actions.map(({ to, key, icon: Icon, tone }) => {
