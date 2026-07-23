@@ -3,12 +3,86 @@
 @tailwind utilities;
 
 :root {
-  color-scheme: dark;
-  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  color-scheme: light;
+  font-family: "Manrope", ui-sans-serif, system-ui, sans-serif;
+  background: #f8fafc;
 }
 
 body {
   margin: 0;
   min-width: 320px;
-  background: #020617;
+  background:
+    radial-gradient(circle at 18% 8%, rgba(34, 211, 238, 0.08), transparent 30rem),
+    radial-gradient(circle at 85% 12%, rgba(59, 130, 246, 0.08), transparent 28rem),
+    linear-gradient(180deg, #f8fafc 0%, #e0f2fe 48%, #f0f9ff 100%);
+}
+
+* {
+  min-width: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* Ensure touch targets are at least 44px for mobile */
+button, [role='button'], input[type='submit'], input[type='button'] {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Safe area padding for notched devices */
+@supports (padding-top: env(safe-area-inset-top)) {
+  .safe-area-top {
+    padding-top: env(safe-area-inset-top);
+  }
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .safe-area-left {
+    padding-left: env(safe-area-inset-left);
+  }
+  .safe-area-right {
+    padding-right: env(safe-area-inset-right);
+  }
+}
+
+/* Improve table scrolling on mobile */
+@media (max-width: 767px) {
+  table {
+    font-size: 0.875rem;
+  }
+}
+
+::selection {
+  background: rgba(34, 211, 238, 0.3);
+  color: #0f172a;
+}
+
+.lc-panel {
+  border: 1px solid rgba(34, 211, 238, 0.15);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(248, 250, 252, 0.9));
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.08);
+}
+
+.lc-focus {
+  outline: none;
+}
+
+.lc-focus:focus-visible {
+  outline: 2px solid #22d3ee;
+  outline-offset: 3px;
+}
+
+/* Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

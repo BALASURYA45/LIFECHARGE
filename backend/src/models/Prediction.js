@@ -8,6 +8,17 @@ const predictionSchema = new mongoose.Schema(
       required: true,
       index: true,
     },
+    // Vehicle identification
+    vehicleCategory: {
+      type: String,
+      enum: ['two_wheeler', 'three_wheeler', 'four_wheeler', 'bus_heavy'],
+    },
+    vehicleMake: String,
+    vehicleModel: String,
+    vehicleType: {
+      type: String,
+      enum: ['BIKE', 'AUTO', 'CAR', 'BUS'],
+    },
     input: {
       batteryAge: Number,
       chargingCycles: Number,
@@ -20,6 +31,10 @@ const predictionSchema = new mongoose.Schema(
       batteryCapacity: Number,
       voltage: Number,
       current: Number,
+      totalKmDriven: Number,
+      expectedCycles: Number,
+      typicalRange: Number,
+      estimatedLifeYears: Number,
     },
     SOH: {
       type: Number,
@@ -37,6 +52,18 @@ const predictionSchema = new mongoose.Schema(
       enum: ['Excellent', 'Good', 'Warning', 'Critical'],
       required: true,
     },
+    riskScore: {
+      type: Number,
+      min: 0,
+      max: 100,
+      default: 0,
+    },
+    riskLabel: {
+      type: String,
+      enum: ['Low Risk', 'Medium Risk', 'High Risk'],
+      default: 'Low Risk',
+    },
+    riskFactors: [String],
     confidenceScore: {
       type: Number,
       required: true,

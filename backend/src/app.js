@@ -19,7 +19,20 @@ import { notFoundHandler } from './middleware/notFoundHandler.js';
 const app = express();
 
 app.use(helmet());
-app.use(cors({ origin: env.clientOrigin, credentials: true }));
+app.use(
+  cors({
+    origin(origin, callback) {
+      if (!origin || env.clientOrigins.includes(origin)) {
+        callback(null, true);
+        return;
+      }
+
+      callback(new Error(`CORS blocked origin: ${origin}`));
+    },
+    credentials: true,
+  }),
+);
+app.options('*', cors({ origin: env.clientOrigins, credentials: true }));
 app.use(express.json({ limit: '2mb' }));
 app.use(express.urlencoded({ extended: true }));
 

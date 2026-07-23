@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import BatteryDataForm from '../components/BatteryDataForm.jsx';
 import { createBatteryRecord, getBatteryRecord, updateBatteryRecord } from '../services/batteryService.js';
 import { getErrorMessage } from '../utils/getErrorMessage.js';
 
 export default function BatteryDataFormPage() {
+  const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
   const [record, setRecord] = useState(null);
@@ -58,18 +60,24 @@ export default function BatteryDataFormPage() {
   }
 
   return (
-    <section className="mx-auto max-w-4xl rounded border border-slate-800 bg-slate-900 p-6">
-      <div className="mb-6 flex items-start justify-between gap-4">
+    <section className="mx-auto max-w-4xl rounded-lg border border-cyan-500/20 bg-slate-900/70 p-4 sm:p-6">
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <p className="text-sm font-semibold uppercase tracking-wide text-teal-300">Battery Dataset Management</p>
-          <h1 className="mt-2 text-2xl font-bold text-white">{isEditing ? 'Edit battery record' : 'Add battery record'}</h1>
+          <p className="text-sm font-semibold uppercase tracking-wide text-accent-light">{t('battery.title')}</p>
+          <h1 className="mt-2 text-2xl font-bold text-white">
+            {isEditing ? t('batteryForm.editRecord') : t('batteryForm.addRecord')}
+          </h1>
         </div>
-        <Link className="text-sm text-teal-300 hover:text-teal-200" to="/battery">
-          Back to history
+        <Link className="lc-focus text-sm text-accent-light hover:text-white" to="/battery">
+          {t('common.backToHistory')}
         </Link>
       </div>
-      {error ? <p className="mb-4 rounded border border-red-900 bg-red-950 p-3 text-sm text-red-200">{error}</p> : null}
-      {isLoading ? <p className="text-sm text-slate-400">Loading record...</p> : <BatteryDataForm defaultValues={record ?? {}} isLoading={isLoading} onSubmit={handleSubmit} />}
+      {error ? <p className="mb-4 rounded-lg border border-danger-light/30 bg-danger/10 p-3 text-sm text-danger-light">{error}</p> : null}
+      {isLoading ? (
+        <p className="text-sm text-slate-400">{t('batteryForm.loadingRecord')}</p>
+      ) : (
+        <BatteryDataForm defaultValues={record ?? {}} isLoading={isLoading} onSubmit={handleSubmit} />
+      )}
     </section>
   );
 }

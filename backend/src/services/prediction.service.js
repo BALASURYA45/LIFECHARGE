@@ -8,10 +8,24 @@ export async function createPrediction(userId, payload) {
 
   const record = await Prediction.create({
     user: userId,
-    input: prediction.input,
+    // Vehicle identification
+    vehicleCategory: payload.vehicleCategory,
+    vehicleMake: payload.vehicleMake,
+    vehicleModel: payload.vehicleModel,
+    vehicleType: payload.vehicleType,
+    input: {
+      ...prediction.input,
+      totalKmDriven: payload.totalKmDriven,
+      expectedCycles: payload.expectedCycles,
+      typicalRange: payload.typicalRange,
+      estimatedLifeYears: payload.estimatedLifeYears,
+    },
     SOH: prediction.SOH,
     RUL: prediction.RUL,
     batteryStatus: prediction.batteryStatus,
+    riskScore: prediction.riskScore,
+    riskLabel: prediction.riskLabel,
+    riskFactors: prediction.riskFactors,
     confidenceScore: prediction.confidenceScore,
     degradationTrend: prediction.degradationTrend,
     modelName: prediction.modelMetadata.bestModelName,

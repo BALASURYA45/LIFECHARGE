@@ -1,3 +1,4 @@
+import { ClipboardCheck } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { batteryFields, defaultBatteryValues } from '../constants/batteryFields.js';
 import SubmitButton from './SubmitButton.jsx';
@@ -32,7 +33,7 @@ export default function BatteryDataForm({ defaultValues, isLoading, onSubmit }) 
               <span className="text-xs text-slate-500">{field.unit}</span>
             </span>
             <input
-              className="mt-2 w-full rounded border border-slate-700 bg-slate-950 px-3 py-3 text-slate-100 outline-none focus:border-teal-400"
+              className="lc-focus mt-2 w-full rounded border border-slate-700 bg-slate-950 px-3 py-3 text-slate-100 transition placeholder:text-slate-600 focus:border-cyan-300"
               type="number"
               min={field.min}
               max={field.max}
@@ -48,14 +49,20 @@ export default function BatteryDataForm({ defaultValues, isLoading, onSubmit }) 
         ))}
       </div>
       <label className="block">
-        <span className="text-sm font-medium text-slate-200">Notes</span>
+        <span className="text-sm font-medium text-slate-200">Vehicle or service notes</span>
         <textarea
-          className="mt-2 min-h-28 w-full rounded border border-slate-700 bg-slate-950 px-3 py-3 text-slate-100 outline-none focus:border-teal-400"
+          className="lc-focus mt-2 min-h-28 w-full rounded border border-slate-700 bg-slate-950 px-3 py-3 text-slate-100 transition placeholder:text-slate-600 focus:border-cyan-300"
           maxLength={500}
+          placeholder="Optional: driving pattern, recent service, charging behavior, or symptoms."
           {...register('notes')}
         />
       </label>
-      <SubmitButton isLoading={isSubmitting || isLoading}>Save battery record</SubmitButton>
+      <SubmitButton isLoading={isSubmitting || isLoading}>
+        <span className="inline-flex items-center gap-2">
+          <ClipboardCheck size={18} aria-hidden="true" />
+          Run Battery Health Check
+        </span>
+      </SubmitButton>
     </form>
   );
 }

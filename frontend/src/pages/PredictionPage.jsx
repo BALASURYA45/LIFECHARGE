@@ -1,6 +1,8 @@
+import { BrainCircuit, Car, History, Wrench } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import BatteryDataForm from '../components/BatteryDataForm.jsx';
+import { useTranslation } from 'react-i18next';
+import SimpleBatteryForm from '../components/SimpleBatteryForm.jsx';
 import ExplanationPanel from '../components/ExplanationPanel.jsx';
 import PredictionResult from '../components/PredictionResult.jsx';
 import RecommendationPanel from '../components/RecommendationPanel.jsx';
@@ -17,6 +19,7 @@ function formatDate(value) {
 }
 
 export default function PredictionPage() {
+  const { t } = useTranslation();
   const [latestPrediction, setLatestPrediction] = useState(null);
   const [explanation, setExplanation] = useState(null);
   const [recommendations, setRecommendations] = useState(null);
@@ -53,7 +56,7 @@ export default function PredictionPage() {
       setLatestPrediction(data.prediction);
       setExplanation(data.prediction.explanation ?? null);
       setRecommendations(data.prediction.recommendations ?? null);
-      setMessage('Prediction generated and saved to history.');
+      setMessage('Battery health check saved to history.');
       await loadHistory();
     } catch (predictionError) {
       setError(getErrorMessage(predictionError));
@@ -62,7 +65,7 @@ export default function PredictionPage() {
 
   async function handleExplain() {
     if (!latestPrediction?._id) {
-      setError('Generate a prediction before requesting an explanation.');
+      setError('Run a battery health check before requesting an explanation.');
       return;
     }
 
@@ -83,7 +86,7 @@ export default function PredictionPage() {
 
   async function handleGenerateRecommendations() {
     if (!latestPrediction?._id) {
-      setError('Generate a prediction before requesting recommendations.');
+      setError('Run a battery health check before requesting maintenance guidance.');
       return;
     }
 
@@ -112,26 +115,41 @@ export default function PredictionPage() {
 
   return (
     <section className="space-y-6">
-      <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
+      <div className="flex flex-col justify-between gap-4 rounded-lg border border-cyan-500/20 bg-slate-900/60 p-4 md:flex-row md:items-end">
         <div>
-          <p className="text-sm font-semibold uppercase tracking-wide text-teal-300">Prediction</p>
-          <h1 className="mt-2 text-3xl font-bold text-white">Predict SOH and RUL</h1>
-          <p className="mt-2 max-w-3xl text-slate-400">
-            Enter battery operating data to estimate State of Health, Remaining Useful Life, battery status, confidence score, and degradation trend.
+          <p className="text-sm font-bold uppercase tracking-[0.2em] text-accent-light">{t('prediction.title')}</p>
+          <h1 className="mt-2 text-3xl font-black text-white md:text-4xl">Battery Health Check</h1>
+          <p className="mt-2 max-w-3xl text-slate-300">
+            Check your EV battery health in 3 simple steps. Select your vehicle, tell us how you use it, and get a detailed health report.
           </p>
         </div>
-        <Link className="rounded border border-slate-700 px-4 py-3 font-semibold text-slate-100 hover:border-teal-400" to="/ml-training">
-          Train model
-        </Link>
+        <div className="flex flex-wrap gap-3">
+          <Link className="lc-focus inline-flex items-center gap-2 rounded-lg border border-amber-400/40 px-4 py-3 font-bold text-slate-100 hover:border-warning hover:text-warning-light transition" to="/ml-training">
+            <BrainCircuit size={18} aria-hidden="true" />
+            {t('prediction.calibration')}
+          </Link>
+          <Link className="lc-focus inline-flex items-center gap-2 rounded-lg border border-cyan-500/30 px-4 py-3 font-bold text-slate-100 hover:border-accent hover:text-accent-light transition" to="/battery">
+            <Wrench size={18} aria-hidden="true" />
+            {t('prediction.batteryProfile')}
+          </Link>
+        </div>
       </div>
 
-      {message ? <p className="rounded border border-teal-800 bg-teal-950 p-3 text-sm text-teal-100">{message}</p> : null}
-      {error ? <p className="rounded border border-red-900 bg-red-950 p-3 text-sm text-red-200">{error}</p> : null}
+      {message ? <p className="rounded-lg border border-accent/40 bg-accent/10 p-3 text-sm text-accent-light">{message}</p> : null}
+      {error ? <p className="rounded-lg border border-danger-light/30 bg-danger/10 p-3 text-sm text-danger-light">{error}</p> : null}
 
-      <div className="grid gap-6 xl:grid-cols-[1fr_0.9fr]">
-        <section className="rounded border border-slate-800 bg-slate-900 p-6">
-          <h2 className="mb-5 text-lg font-semibold text-white">Battery input features</h2>
-          <BatteryDataForm onSubmit={handlePredict} />
+      <div className="grid gap-6 lg:grid-cols-[1fr_0.9fr]">
+        <section className="rounded-lg border border-cyan-500/15 bg-slate-900/80 p-4 sm:p-6">
+          <div className="mb-5 flex items-center gap-3">
+            <span className="grid size-11 place-items-center rounded-lg border border-accent/30 bg-accent/10 text-accent-light">
+              <Car size={22} aria-hidden="true" />
+            </span>
+            <div>
+              <h2 className="text-lg font-black text-white">Your Vehicle Details</h2>
+              <p className="text-sm text-slate-300">Select your EV and describe your usage pattern</p>
+            </div>
+          </div>
+          <SimpleBatteryForm onSubmit={handlePredict} />
         </section>
 
         <div className="space-y-6">
@@ -147,30 +165,38 @@ export default function PredictionPage() {
             />
           ) : null}
 
-          <section className="rounded border border-slate-800 bg-slate-900">
-            <div className="border-b border-slate-800 p-4">
-              <h2 className="font-semibold text-white">Prediction history</h2>
+          <section className="rounded-lg border border-cyan-500/15 bg-slate-900/80">
+            <div className="flex items-center gap-3 border-b border-cyan-500/20 p-4">
+              <History className="text-accent-light" size={20} aria-hidden="true" />
+              <h2 className="font-black text-white">{t('prediction.pastChecks')}</h2>
             </div>
-            {isLoadingHistory ? <p className="p-4 text-sm text-slate-400">Loading predictions...</p> : null}
-            {!isLoadingHistory && history.length === 0 ? <p className="p-4 text-sm text-slate-400">No predictions yet.</p> : null}
+            {isLoadingHistory ? <p className="p-4 text-sm text-slate-400">{t('common.loading')}</p> : null}
+            {!isLoadingHistory && history.length === 0 ? (
+              <p className="p-4 text-sm leading-6 text-slate-300">{t('prediction.noHistory')}</p>
+            ) : null}
             {history.length ? (
-              <div className="divide-y divide-slate-800">
+              <div className="divide-y divide-cyan-500/15">
                 {history.map((prediction) => (
                   <article key={prediction._id} className="p-4 text-sm">
-                    <div className="flex items-center justify-between gap-3">
-                      <p className="font-semibold text-white">{prediction.batteryStatus}</p>
-                      <p className="text-slate-500">{formatDate(prediction.createdAt)}</p>
+                    <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-center">
+                      <div>
+                        <p className="font-bold text-white">{prediction.batteryStatus}</p>
+                        {prediction.vehicleMake && prediction.vehicleModel ? (
+                          <p className="text-xs text-slate-400">{prediction.vehicleMake} {prediction.vehicleModel}</p>
+                        ) : null}
+                      </div>
+                      <p className="text-slate-400">{formatDate(prediction.createdAt)}</p>
                     </div>
-                    <p className="mt-2 text-slate-300">
-                      SOH {prediction.SOH}% · RUL {prediction.RUL} months · Confidence {prediction.confidenceScore}%
+                    <p className="mt-2 text-slate-200">
+                      SOH {prediction.SOH}% | RUL {prediction.RUL} months | {t('prediction.confidence')} {prediction.confidenceScore}%
                     </p>
-                    <p className="mt-1 text-slate-400">{prediction.degradationTrend}</p>
+                    <p className="mt-1 text-slate-300">{prediction.degradationTrend}</p>
                     <button
-                      className="mt-3 text-teal-300 hover:text-teal-200"
+                      className="lc-focus mt-3 rounded text-accent-light hover:text-white"
                       type="button"
                       onClick={() => selectHistoryPrediction(prediction)}
                     >
-                      View result
+                      {t('prediction.viewReport')}
                     </button>
                   </article>
                 ))}

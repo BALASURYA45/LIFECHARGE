@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import AuthCard from '../components/AuthCard.jsx';
@@ -8,6 +9,7 @@ import { forgotPassword } from '../services/authService.js';
 import { getErrorMessage } from '../utils/getErrorMessage.js';
 
 export default function ForgotPasswordPage() {
+  const { t } = useTranslation();
   const [message, setMessage] = useState('');
   const [serverError, setServerError] = useState('');
   const {
@@ -29,21 +31,21 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <AuthCard title="Reset password" subtitle="Enter your registered email to receive a secure reset link.">
+    <AuthCard title={t('auth.forgotPassword.title')} subtitle={t('auth.forgotPassword.subtitle')}>
       <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
         <FormField
-          label="Email"
+          label={t('auth.forgotPassword.email')}
           type="email"
           autoComplete="email"
           error={errors.email}
           {...register('email', { required: 'Email is required' })}
         />
-        {message ? <p className="rounded border border-teal-800 bg-teal-950 p-3 text-sm text-teal-100">{message}</p> : null}
-        {serverError ? <p className="text-sm text-red-300">{serverError}</p> : null}
-        <SubmitButton isLoading={isSubmitting}>Send reset link</SubmitButton>
+        {message ? <p className="rounded border border-energy/40 bg-energy/10 p-3 text-sm text-energy">{message}</p> : null}
+        {serverError ? <p className="text-sm text-danger-light">{serverError}</p> : null}
+        <SubmitButton isLoading={isSubmitting}>{t('auth.forgotPassword.submit')}</SubmitButton>
       </form>
-      <Link className="mt-5 inline-block text-sm text-teal-300 hover:text-teal-200" to="/login">
-        Back to login
+      <Link className="mt-5 inline-block text-sm text-accent-light hover:text-white" to="/login">
+        {t('auth.forgotPassword.backToLogin')}
       </Link>
     </AuthCard>
   );

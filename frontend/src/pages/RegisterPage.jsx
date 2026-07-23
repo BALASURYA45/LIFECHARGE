@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import AuthCard from '../components/AuthCard.jsx';
@@ -8,6 +9,7 @@ import { useAuth } from '../hooks/useAuth.js';
 import { getErrorMessage } from '../utils/getErrorMessage.js';
 
 export default function RegisterPage() {
+  const { t } = useTranslation();
   const { register: registerAccount } = useAuth();
   const navigate = useNavigate();
   const [serverError, setServerError] = useState('');
@@ -29,24 +31,24 @@ export default function RegisterPage() {
   }
 
   return (
-    <AuthCard title="Create account" subtitle="Start building a secure battery prediction workspace.">
+    <AuthCard title={t('auth.register.title')} subtitle={t('auth.register.subtitle')}>
       <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
         <FormField
-          label="Name"
+          label={t('auth.register.name')}
           type="text"
           autoComplete="name"
           error={errors.name}
           {...register('name', { required: 'Name is required', minLength: { value: 2, message: 'Name is too short' } })}
         />
         <FormField
-          label="Email"
+          label={t('auth.register.email')}
           type="email"
           autoComplete="email"
           error={errors.email}
           {...register('email', { required: 'Email is required' })}
         />
         <FormField
-          label="Password"
+          label={t('auth.register.password')}
           type="password"
           autoComplete="new-password"
           error={errors.password}
@@ -59,13 +61,13 @@ export default function RegisterPage() {
             },
           })}
         />
-        {serverError ? <p className="text-sm text-red-300">{serverError}</p> : null}
-        <SubmitButton isLoading={isSubmitting}>Register</SubmitButton>
+        {serverError ? <p className="text-sm text-danger-light">{serverError}</p> : null}
+        <SubmitButton isLoading={isSubmitting}>{t('auth.register.submit')}</SubmitButton>
       </form>
-      <p className="mt-5 text-sm text-slate-400">
-        Already registered?{' '}
-        <Link className="text-teal-300 hover:text-teal-200" to="/login">
-          Login
+      <p className="mt-5 text-sm text-slate-300">
+        {t('auth.register.alreadyRegistered')}{' '}
+        <Link className="text-accent-light hover:text-white" to="/login">
+          {t('auth.register.login')}
         </Link>
       </p>
     </AuthCard>

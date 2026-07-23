@@ -13,6 +13,18 @@ The ML module will use historical battery datasets only. No IoT integration is r
 7. Save the model and preprocessing pipeline with Joblib.
 8. Store model metadata and recent training history.
 
+## Real Dataset Training
+
+The uploaded battery dataset can be converted into the supervised training format with:
+
+```bash
+python ml-service/scripts/prepare_uploaded_datasets.py --dataset-root Dataset --output ml-service/app/data/processed/battery_training_real.csv
+```
+
+When `ml-service/app/data/processed/battery_training_real.csv` exists, the ML service uses it as the default training dataset. Otherwise, it falls back to the small sample file.
+
+The current trained model was built from 2,769 prepared rows and compared Random Forest, XGBoost, and LightGBM before saving the best pipeline.
+
 ## Sample Dataset
 
 Module 4 includes a temporary sample supervised dataset:

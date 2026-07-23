@@ -42,6 +42,8 @@ export async function generatePredictionCsv(userId) {
     'SOH',
     'RUL',
     'Battery Status',
+    'Risk Score',
+    'Risk Label',
     'Confidence Score',
     'Degradation Trend',
     'Model Name',
@@ -55,6 +57,8 @@ export async function generatePredictionCsv(userId) {
     prediction.SOH,
     prediction.RUL,
     prediction.batteryStatus,
+    prediction.riskScore,
+    prediction.riskLabel,
     prediction.confidenceScore,
     prediction.degradationTrend,
     prediction.modelName,
@@ -92,10 +96,20 @@ export async function generatePredictionPdf(userId, user) {
   doc.text(`SOH: ${latest.SOH}%`);
   doc.text(`RUL: ${latest.RUL} months`);
   doc.text(`Battery Status: ${latest.batteryStatus}`);
+  doc.text(`Risk: ${latest.riskLabel ?? 'Low Risk'} (${latest.riskScore ?? 0}/100)`);
   doc.text(`Confidence Score: ${latest.confidenceScore}%`);
   doc.text(`Degradation Trend: ${latest.degradationTrend}`);
   doc.text(`Model: ${latest.modelName}`);
   doc.moveDown(1);
+
+  if (latest.riskFactors?.length) {
+    doc.fontSize(16).text('Risk Drivers');
+    doc.moveDown(0.5);
+    latest.riskFactors.slice(0, 5).forEach((factor) => {
+      doc.fontSize(11).text(`- ${factor}`);
+    });
+    doc.moveDown(1);
+  }
 
   if (latest.recommendations?.items?.length) {
     doc.fontSize(16).text('Recommendations');
@@ -113,7 +127,7 @@ export async function generatePredictionPdf(userId, user) {
 
   predictions.slice(0, 30).forEach((prediction, index) => {
     doc.fontSize(10).text(
-      `${index + 1}. ${formatDate(prediction.createdAt)} | SOH ${prediction.SOH}% | RUL ${prediction.RUL} months | ${prediction.batteryStatus} | Confidence ${prediction.confidenceScore}%`,
+      `${index + 1}. ${formatDate(prediction.createdAt)} | SOH ${prediction.SOH}% | RUL ${prediction.RUL} months | ${prediction.batteryStatus} | ${prediction.riskLabel ?? 'Low Risk'} | Confidence ${prediction.confidenceScore}%`,
     );
   });
 

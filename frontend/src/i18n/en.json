@@ -1,0 +1,295 @@
+{
+  "app": {
+    "title": "LIFECHARGE",
+    "subtitle": "EV battery health companion",
+    "tagline": "Battery guidance for daily EV decisions"
+  },
+  "nav": {
+    "dashboard": "Health Overview",
+    "prediction": "Battery Check",
+    "battery": "Battery Profile",
+    "scenarios": "Scenarios",
+    "reports": "Reports",
+    "profile": "Profile",
+    "signOut": "Sign out",
+    "signIn": "Sign in",
+    "createAccount": "Create account"
+  },
+  "home": {
+    "hero": {
+      "badge": "Practical EV battery guidance",
+      "heading": "Know your EV battery before it fails.",
+      "description": "LifeCharge turns battery operating data into plain, service-ready decisions: health, useful life, confidence, risk, and maintenance guidance in one calm workspace.",
+      "checkBattery": "Check Battery",
+      "viewDashboard": "View Dashboard"
+    },
+    "actions": {
+      "checkBattery": {
+        "title": "Check Battery",
+        "description": "Enter current operating data and receive a clear SOH, RUL, risk, and confidence report."
+      },
+      "viewDashboard": {
+        "title": "View Dashboard",
+        "description": "Track recent checks, trends, status distribution, and the next best actions for your EV."
+      },
+      "reports": {
+        "title": "Reports",
+        "description": "Export battery health summaries for service visits, fleet reviews, or owner records."
+      }
+    },
+    "signals": {
+      "soh": "SOH",
+      "rul": "RUL",
+      "risk": "Risk",
+      "healthyRange": "Healthy operating range",
+      "projectedLife": "Projected useful life",
+      "noServiceFlag": "No immediate service flag"
+    },
+    "liveProfile": "Live battery profile",
+    "maintenanceSection": {
+      "heading": "Maintenance decisions, not model chores",
+      "description": "Check a vehicle, understand the result, generate recommendations, and keep a report trail for service or fleet planning.",
+      "addProfile": "Add Battery Profile"
+    }
+  },
+  "dashboard": {
+    "title": "Health overview",
+    "welcome": "Welcome back, {{name}}",
+    "description": "See your latest battery health, remaining useful life, confidence, risk, and maintenance priorities.",
+    "runHealthCheck": "Run Health Check",
+    "reports": "Reports",
+    "latestStatus": "Latest battery status",
+    "lastDiagnostic": "Last diagnostic shows {{soh}}% SOH with {{rul}} months projected useful life and {{confidence}}% confidence.",
+    "latestSoh": "Latest SOH",
+    "latestRul": "Latest RUL",
+    "confidence": "Confidence",
+    "risk": "Risk",
+    "averageSoh": "Average SOH",
+    "avgConfidence": "Avg Confidence",
+    "avgTemperature": "Avg Temperature",
+    "fastCharging": "Fast Charging",
+    "healthTrend": "Health trend",
+    "healthTrendDesc": "SOH and RUL across recent battery checks",
+    "statusDistribution": "Status distribution",
+    "statusDistDesc": "Recent battery checks by status",
+    "nextActions": "Next best actions",
+    "recentChecks": "Recent checks",
+    "noActions": "Generate recommendations from a health check to show actions here.",
+    "noChecks": "No battery health checks yet. Run one to build a useful history.",
+    "emptyTitle": "No battery checks yet",
+    "emptyDesc": "Add a battery profile, run your first health check, and LifeCharge will start tracking SOH, useful life, risk status, recommendations, and report history.",
+    "addProfile": "Add Battery Profile",
+    "runCheck": "Run Health Check",
+    "step1": "Vehicle profile",
+    "step2": "Health check",
+    "step3": "Service report"
+  },
+  "prediction": {
+    "title": "Battery health check",
+    "heading": "Run a service-ready diagnostic",
+    "description": "Enter battery operating data to estimate state of health, remaining useful life, risk status, confidence, and degradation trend.",
+    "calibration": "Calibration",
+    "batteryProfile": "Battery Profile",
+    "operatingInputs": "Operating inputs",
+    "inputsDesc": "Use the latest known values for the vehicle or pack.",
+    "runCheck": "Run Battery Health Check",
+    "diagnosticReport": "Diagnostic report",
+    "resultTitle": "Battery health check result",
+    "generatedUsing": "Generated using {{model}}",
+    "stateOfHealth": "State of health",
+    "usefulLife": "Useful life",
+    "riskScore": "Risk score",
+    "confidence": "Confidence",
+    "riskDrivers": "Risk drivers",
+    "noRiskDrivers": "No major risk drivers detected. Keep monitoring future predictions for trend changes.",
+    "planService": "Plan service around RUL, not guesswork",
+    "useConfidence": "Use confidence to decide if more data is needed",
+    "compareTrends": "Compare this check with future trends",
+    "pastChecks": "Past checks",
+    "loadingChecks": "Loading checks...",
+    "noHistory": "No battery health checks yet. Run one to build a useful history.",
+    "viewReport": "View report",
+    "notes": "Vehicle or service notes",
+    "notesPlaceholder": "Optional: driving pattern, recent service, charging behavior, or symptoms."
+  },
+  "explanation": {
+    "title": "Why this result?",
+    "method": "Method: {{method}}",
+    "generate": "Explain result",
+    "refresh": "Refresh explanation",
+    "generating": "Explaining...",
+    "topNegative": "Top negative factors",
+    "topPositive": "Top positive factors",
+    "noFactors": "No factors available.",
+    "featureImportance": "Feature importance"
+  },
+  "recommendation": {
+    "title": "Maintenance guidance",
+    "generate": "Get actions",
+    "refresh": "Refresh actions",
+    "generating": "Generating..."
+  },
+  "auth": {
+    "login": {
+      "title": "Welcome back",
+      "subtitle": "Login to continue monitoring EV battery health.",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Login",
+      "forgotPassword": "Forgot password?",
+      "createAccount": "Create account"
+    },
+    "register": {
+      "title": "Create account",
+      "subtitle": "Start building a secure battery prediction workspace.",
+      "name": "Name",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Register",
+      "alreadyRegistered": "Already registered?",
+      "login": "Login"
+    },
+    "forgotPassword": {
+      "title": "Reset password",
+      "subtitle": "Enter your registered email to receive a secure reset link.",
+      "email": "Email",
+      "submit": "Send reset link",
+      "backToLogin": "Back to login"
+    },
+    "resetPassword": {
+      "title": "Set new password",
+      "subtitle": "Choose a strong password for your LIFECHARGE account.",
+      "newPassword": "New password",
+      "submit": "Reset password"
+    }
+  },
+  "profile": {
+    "title": "Profile",
+    "name": "Name",
+    "save": "Save profile",
+    "updated": "Profile updated successfully."
+  },
+  "reports": {
+    "title": "Reports",
+    "heading": "Export battery health reports",
+    "description": "Generate PDF reports for submission and CSV exports for analysis from stored prediction history.",
+    "pdfTitle": "PDF Report",
+    "pdfDesc": "Includes latest SOH/RUL, battery status, recommendations, and prediction history.",
+    "downloadPdf": "Download PDF",
+    "generating": "Generating...",
+    "csvTitle": "CSV Export",
+    "csvDesc": "Exports prediction history with SOH, RUL, status, confidence, and key input features.",
+    "downloadCsv": "Download CSV",
+    "history": "Report history",
+    "loading": "Loading reports...",
+    "noReports": "No reports generated yet."
+  },
+  "battery": {
+    "title": "Battery Dataset Management",
+    "heading": "Historical battery records",
+    "description": "Add, import, validate, edit, and delete the records used by prediction and training modules.",
+    "addRecord": "Add record",
+    "history": "Dataset history",
+    "recordsStored": "{{count}} records stored",
+    "allSources": "All sources",
+    "manual": "Manual",
+    "csv": "CSV",
+    "loading": "Loading records...",
+    "noRecords": "No battery records found.",
+    "source": "Source",
+    "actions": "Actions",
+    "edit": "Edit",
+    "delete": "Delete"
+  },
+  "ml": {
+    "title": "Model operations",
+    "heading": "Battery health ML dashboard",
+    "description": "Train candidate algorithms, inspect the active model, and compare error signals before using predictions in service workflows.",
+    "train": "Train models",
+    "training": "Training models",
+    "currentBest": "Current best model",
+    "noModel": "No active model yet",
+    "productionReady": "Production ready",
+    "awaitingTraining": "Awaiting training",
+    "mae": "MAE",
+    "rmse": "RMSE",
+    "r2": "R2",
+    "rows": "Rows",
+    "lastTrained": "Last trained",
+    "dataset": "Dataset",
+    "artifact": "Artifact",
+    "pipelineReadiness": "Pipeline readiness",
+    "algorithmComparison": "Algorithm comparison",
+    "candidates": "candidates",
+    "best": "Best",
+    "trainingHistory": "Training history",
+    "noTraining": "No training runs recorded yet. Completed jobs will appear here with best model, timestamp, and metrics."
+  },
+  "whatIf": {
+    "title": "What-If Analysis",
+    "heading": "Simulate battery health changes",
+    "description": "Compare a baseline battery profile against a changed scenario to estimate how charging, temperature, SOC, and usage affect SOH and RUL.",
+    "copyBaseline": "Copy baseline",
+    "runSimulation": "Run simulation",
+    "simulating": "Simulating...",
+    "result": "Simulation result",
+    "generatedUsing": "Generated using {{model}}",
+    "scenarioSoh": "Scenario SOH",
+    "sohChange": "SOH Change",
+    "scenarioRul": "Scenario RUL",
+    "rulChange": "RUL Change",
+    "scenarioInsights": "Scenario insights",
+    "baseline": "Baseline",
+    "scenario": "Scenario"
+  },
+  "batteryFields": {
+    "batteryAge": "Battery Age",
+    "chargingCycles": "Charging Cycles",
+    "chargingFrequency": "Charging Frequency",
+    "fastChargingUsage": "Fast Charging Usage",
+    "averageTemperature": "Average Temperature",
+    "chargingDuration": "Charging Duration",
+    "dailyDistance": "Daily Distance",
+    "socHistory": "SOC History",
+    "batteryCapacity": "Battery Capacity",
+    "voltage": "Voltage",
+    "current": "Current",
+    "years": "years",
+    "cycles": "cycles",
+    "perWeek": "per week",
+    "percent": "%",
+    "celsius": "C",
+    "hours": "hours",
+    "km": "km",
+    "kwh": "kWh",
+    "volts": "V",
+    "amps": "A"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "confirm": "Confirm",
+    "search": "Search",
+    "filter": "Filter",
+    "noData": "No data available",
+    "step": "Step",
+    "backToHistory": "Back to history",
+    "deleteConfirm": "Delete this battery record?",
+    "menu": "Menu",
+    "close": "Close"
+  },
+  "batteryForm": {
+    "addRecord": "Add battery record",
+    "editRecord": "Edit battery record",
+    "loadingRecord": "Loading record..."
+  },
+  "language": {
+    "en": "English",
+    "ta": "தமிழ்",
+    "hi": "हिन्दी"
+  }
+}

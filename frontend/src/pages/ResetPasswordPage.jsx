@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 import AuthCard from '../components/AuthCard.jsx';
@@ -9,6 +10,7 @@ import { resetPassword } from '../services/authService.js';
 import { getErrorMessage } from '../utils/getErrorMessage.js';
 
 export default function ResetPasswordPage() {
+  const { t } = useTranslation();
   const { token } = useParams();
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -32,10 +34,10 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <AuthCard title="Set new password" subtitle="Choose a strong password for your LIFECHARGE account.">
+    <AuthCard title={t('auth.resetPassword.title')} subtitle={t('auth.resetPassword.subtitle')}>
       <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
         <FormField
-          label="New password"
+          label={t('auth.resetPassword.newPassword')}
           type="password"
           autoComplete="new-password"
           error={errors.password}
@@ -48,8 +50,8 @@ export default function ResetPasswordPage() {
             },
           })}
         />
-        {serverError ? <p className="text-sm text-red-300">{serverError}</p> : null}
-        <SubmitButton isLoading={isSubmitting}>Reset password</SubmitButton>
+        {serverError ? <p className="text-sm text-danger-light">{serverError}</p> : null}
+        <SubmitButton isLoading={isSubmitting}>{t('auth.resetPassword.submit')}</SubmitButton>
       </form>
     </AuthCard>
   );

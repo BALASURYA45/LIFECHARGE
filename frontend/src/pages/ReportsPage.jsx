@@ -1,5 +1,6 @@
 import { FileDown, FileText, Sheet } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { downloadReport, getReports } from '../services/reportService.js';
 import { getErrorMessage } from '../utils/getErrorMessage.js';
 
@@ -20,6 +21,7 @@ function saveBlob(blob, filename) {
 }
 
 export default function ReportsPage() {
+  const { t } = useTranslation();
   const [reports, setReports] = useState([]);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
@@ -63,69 +65,69 @@ export default function ReportsPage() {
   return (
     <section className="space-y-6">
       <div>
-        <p className="text-sm font-semibold uppercase tracking-wide text-teal-300">Reports</p>
-        <h1 className="mt-2 text-3xl font-bold text-white">Export battery health reports</h1>
-        <p className="mt-2 max-w-3xl text-slate-400">
-          Generate PDF reports for submission and CSV exports for analysis from stored prediction history.
+        <p className="text-sm font-semibold uppercase tracking-wide text-accent-dark">{t('reports.title')}</p>
+        <h1 className="mt-2 text-3xl font-bold text-slate-900">{t('reports.heading')}</h1>
+        <p className="mt-2 max-w-3xl text-slate-600">
+          {t('reports.description')}
         </p>
       </div>
 
-      {message ? <p className="rounded border border-teal-800 bg-teal-950 p-3 text-sm text-teal-100">{message}</p> : null}
-      {error ? <p className="rounded border border-red-900 bg-red-950 p-3 text-sm text-red-200">{error}</p> : null}
+      {message ? <p className="rounded-lg border border-accent/40 bg-accent/10 p-3 text-sm text-accent-light">{message}</p> : null}
+      {error ? <p className="rounded-lg border border-danger-light/30 bg-danger/10 p-3 text-sm text-danger-light">{error}</p> : null}
 
       <div className="grid gap-4 md:grid-cols-2">
-        <article className="rounded border border-slate-800 bg-slate-900 p-5">
-          <FileText className="text-teal-300" size={28} aria-hidden="true" />
-          <h2 className="mt-4 text-lg font-semibold text-white">PDF Report</h2>
-          <p className="mt-2 text-sm leading-6 text-slate-400">
-            Includes latest SOH/RUL, battery status, recommendations, and prediction history.
+        <article className="rounded-lg border border-cyan-500/15 bg-slate-900/80 p-4 sm:p-5">
+          <FileText className="text-accent-light" size={28} aria-hidden="true" />
+          <h2 className="mt-4 text-lg font-semibold text-white">{t('reports.pdfTitle')}</h2>
+          <p className="mt-2 text-sm leading-6 text-slate-300">
+            {t('reports.pdfDesc')}
           </p>
           <button
-            className="mt-5 inline-flex items-center gap-2 rounded bg-teal-500 px-4 py-3 font-semibold text-slate-950 hover:bg-teal-400 disabled:opacity-70"
+            className="mt-5 flex w-full items-center justify-center gap-2 rounded-lg bg-accent px-4 py-3 font-semibold text-slate-950 hover:bg-accent-light disabled:opacity-70 shadow-[0_0_18px_rgba(6,182,212,0.35)] transition"
             type="button"
             disabled={downloadingType === 'pdf'}
             onClick={() => handleDownload('pdf')}
           >
             <FileDown size={18} aria-hidden="true" />
-            {downloadingType === 'pdf' ? 'Generating...' : 'Download PDF'}
+            {downloadingType === 'pdf' ? t('reports.generating') : t('reports.downloadPdf')}
           </button>
         </article>
 
-        <article className="rounded border border-slate-800 bg-slate-900 p-5">
-          <Sheet className="text-teal-300" size={28} aria-hidden="true" />
-          <h2 className="mt-4 text-lg font-semibold text-white">CSV Export</h2>
-          <p className="mt-2 text-sm leading-6 text-slate-400">
-            Exports prediction history with SOH, RUL, status, confidence, and key input features.
+        <article className="rounded-lg border border-cyan-500/15 bg-slate-900/80 p-4 sm:p-5">
+          <Sheet className="text-accent-light" size={28} aria-hidden="true" />
+          <h2 className="mt-4 text-lg font-semibold text-white">{t('reports.csvTitle')}</h2>
+          <p className="mt-2 text-sm leading-6 text-slate-300">
+            {t('reports.csvDesc')}
           </p>
           <button
-            className="mt-5 inline-flex items-center gap-2 rounded bg-teal-500 px-4 py-3 font-semibold text-slate-950 hover:bg-teal-400 disabled:opacity-70"
+            className="mt-5 flex w-full items-center justify-center gap-2 rounded-lg bg-accent px-4 py-3 font-semibold text-slate-950 hover:bg-accent-light disabled:opacity-70 shadow-[0_0_18px_rgba(6,182,212,0.35)] transition"
             type="button"
             disabled={downloadingType === 'csv'}
             onClick={() => handleDownload('csv')}
           >
             <FileDown size={18} aria-hidden="true" />
-            {downloadingType === 'csv' ? 'Generating...' : 'Download CSV'}
+            {downloadingType === 'csv' ? t('reports.generating') : t('reports.downloadCsv')}
           </button>
         </article>
       </div>
 
-      <section className="rounded border border-slate-800 bg-slate-900">
-        <div className="border-b border-slate-800 p-4">
-          <h2 className="font-semibold text-white">Report history</h2>
+      <section className="rounded-lg border border-cyan-500/15 bg-slate-900/80">
+        <div className="border-b border-cyan-500/20 p-4">
+          <h2 className="font-semibold text-white">{t('reports.history')}</h2>
         </div>
-        {isLoading ? <p className="p-4 text-sm text-slate-400">Loading reports...</p> : null}
-        {!isLoading && reports.length === 0 ? <p className="p-4 text-sm text-slate-400">No reports generated yet.</p> : null}
+        {isLoading ? <p className="p-4 text-sm text-slate-400">{t('reports.loading')}</p> : null}
+        {!isLoading && reports.length === 0 ? <p className="p-4 text-sm text-slate-300">{t('reports.noReports')}</p> : null}
         {reports.length ? (
-          <div className="divide-y divide-slate-800">
+          <div className="divide-y divide-cyan-500/15">
             {reports.map((report) => (
               <article key={report._id} className="flex flex-col justify-between gap-2 p-4 text-sm md:flex-row md:items-center">
                 <div>
                   <p className="font-semibold text-white">{report.title}</p>
-                  <p className="mt-1 text-slate-400">
+                  <p className="mt-1 text-slate-300">
                     {report.type.toUpperCase()} | {report.predictionCount} predictions | {report.status}
                   </p>
                 </div>
-                <p className="text-slate-500">{formatDate(report.generatedAt)}</p>
+                <p className="text-slate-400">{formatDate(report.generatedAt)}</p>
               </article>
             ))}
           </div>

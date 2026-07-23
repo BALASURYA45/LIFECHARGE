@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import AuthCard from '../components/AuthCard.jsx';
@@ -8,6 +9,7 @@ import { useAuth } from '../hooks/useAuth.js';
 import { getErrorMessage } from '../utils/getErrorMessage.js';
 
 export default function LoginPage() {
+  const { t } = useTranslation();
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -30,31 +32,31 @@ export default function LoginPage() {
   }
 
   return (
-    <AuthCard title="Welcome back" subtitle="Login to continue monitoring EV battery health.">
+    <AuthCard title={t('auth.login.title')} subtitle={t('auth.login.subtitle')}>
       <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
         <FormField
-          label="Email"
+          label={t('auth.login.email')}
           type="email"
           autoComplete="email"
           error={errors.email}
           {...register('email', { required: 'Email is required' })}
         />
         <FormField
-          label="Password"
+          label={t('auth.login.password')}
           type="password"
           autoComplete="current-password"
           error={errors.password}
           {...register('password', { required: 'Password is required' })}
         />
-        {serverError ? <p className="text-sm text-red-300">{serverError}</p> : null}
-        <SubmitButton isLoading={isSubmitting}>Login</SubmitButton>
+        {serverError ? <p className="text-sm text-danger-light">{serverError}</p> : null}
+        <SubmitButton isLoading={isSubmitting}>{t('auth.login.submit')}</SubmitButton>
       </form>
-      <div className="mt-5 flex justify-between text-sm text-slate-400">
-        <Link className="text-teal-300 hover:text-teal-200" to="/forgot-password">
-          Forgot password?
+      <div className="mt-5 flex justify-between text-sm text-slate-300">
+        <Link className="text-accent-light hover:text-white" to="/forgot-password">
+          {t('auth.login.forgotPassword')}
         </Link>
-        <Link className="text-teal-300 hover:text-teal-200" to="/register">
-          Create account
+        <Link className="text-accent-light hover:text-white" to="/register">
+          {t('auth.login.createAccount')}
         </Link>
       </div>
     </AuthCard>
