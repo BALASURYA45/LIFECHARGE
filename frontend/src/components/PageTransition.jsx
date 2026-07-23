@@ -7,11 +7,11 @@ const transition = {
   mass: 0.8,
 };
 
-export default function PageTransition({ children, key }) {
+export default function PageTransition({ children, pageKey }) {
   return (
     <AnimatePresence mode="wait">
       <motion.div
-        key={key}
+        key={pageKey}
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -8 }}

@@ -2,34 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, BatteryCharging, Gauge, Zap, RotateCw, Search, X, Bike, Truck, Car, Bus, Sparkles } from 'lucide-react';
 import { vehicleCategories, vehicleDatabase } from '../constants/vehicleDatabase.js';
+import { getVehicleImageUrl } from '../constants/vehicleImageMap.js';
 
-// Colorful diverse vehicle images from Unsplash - red, blue, yellow, green, white, black
-const vehicleImages = {
-  two_wheeler: [
-    'https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=400&h=250',
-    'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?w=400&h=250',
-    'https://images.unsplash.com/photo-1591637333184-19aa84b3e01f?w=400&h=250',
-    'https://images.unsplash.com/photo-1607427293702-036933bbf3f0?w=400&h=250',
-  ],
-  three_wheeler: [
-    'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=400&h=250',
-    'https://images.unsplash.com/photo-1623869675781-80aa31012a5a?w=400&h=250',
-  ],
-  four_wheeler: [
-    'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=400&h=250',       // red sportscar
-    'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=400&h=250',       // silver luxury
-    'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=400&h=250',       // blue sportscar
-    'https://images.unsplash.com/photo-1619767886558-efdc7b9af5f5?w=400&h=250',       // white EV charging
-    'https://images.unsplash.com/photo-1593941707882-a5bba14938c7?w=400&h=250',       // blue mercedes
-    'https://images.unsplash.com/photo-1614200187524-dc4b892acf16?w=400&h=250',       // orange/amber
-    'https://images.unsplash.com/photo-1617788138017-80ad40651399?w=400&h=250',       // black luxury
-    'https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=400&h=250',       // blue/teal
-  ],
-  bus_heavy: [
-    'https://images.unsplash.com/photo-1570125909232-eb263c188f7e?w=400&h=250',
-    'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=400&h=250',
-  ],
-};
 
 // Colorful category themes with vibrant accents
 const categoryColors = {
@@ -53,13 +27,6 @@ const categoryIcons = {
   bus_heavy: Bus,
 };
 
-// Use a deterministic image per vehicle based on hashing for good distribution
-function getVehicleImage(categoryId, make, model) {
-  const images = vehicleImages[categoryId] || vehicleImages.four_wheeler;
-  // Simple hash from make+model to get a consistent index
-  const hash = [...(make + model)].reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
-  return images[hash % images.length];
-}
 
 function VehicleCard3D({ vehicle, categoryId, make, model }) {
   const cardRef = useRef(null);
@@ -68,10 +35,11 @@ function VehicleCard3D({ vehicle, categoryId, make, model }) {
   const [isFlipped, setIsFlipped] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
   const colors = categoryColors[categoryId];
   const accent = categoryAccents[categoryId];
   const Icon = categoryIcons[categoryId];
-  const vehicleImage = getVehicleImage(categoryId, make, model);
+  const vehicleImage = getVehicleImageUrl(categoryId, make, model);
 
   // Auto-rotation when not hovered
   useEffect(() => {
@@ -127,11 +95,12 @@ function VehicleCard3D({ vehicle, categoryId, make, model }) {
                 <Icon size={40} className="text-slate-600" />
               </div>
             )}
-            {(imageError) ? (
+            {(imageError && retryCount >= 2) ? (
               <div className="absolute inset-0 flex items-center justify-center bg-slate-800">
                 <div className="text-center">
                   <Icon size={48} className={`mx-auto ${accent.icon}`} />
                   <p className="mt-2 text-sm font-bold text-white">{make}</p>
+                  <p className="text-xs text-slate-400">{model}</p>
                 </div>
               </div>
             ) : (
@@ -140,7 +109,16 @@ function VehicleCard3D({ vehicle, categoryId, make, model }) {
                 alt={`${make} ${model}`}
                 className={`w-full h-full object-cover transition-all duration-700 ${imageLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-110'}`}
                 onLoad={() => setImageLoaded(true)}
-                onError={() => { setImageError(true); setImageLoaded(true); }}
+                onError={() => {
+                  if (retryCount < 2) {
+                    setRetryCount(c => c + 1);
+                    setImageLoaded(false);
+                    setImageError(false);
+                  } else {
+                    setImageError(true);
+                    setImageLoaded(true);
+                  }
+                }}
                 loading="lazy"
               />
             )}

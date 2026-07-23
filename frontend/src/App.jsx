@@ -7,7 +7,7 @@ export default function App() {
 
   return (
     <MainLayout>
-      <PageTransition key={location.pathname}>
+      <PageTransition pageKey={location.pathname}>
         <Outlet />
       </PageTransition>
     </MainLayout>
