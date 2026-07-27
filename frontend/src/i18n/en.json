@@ -8,6 +8,7 @@
     "dashboard": "Health Overview",
     "prediction": "Battery Check",
     "battery": "Battery Profile",
+    "batteryRecords": "Records",
     "scenarios": "Scenarios",
     "reports": "Reports",
     "profile": "Profile",

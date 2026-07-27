@@ -60,21 +60,21 @@ export default function BatteryDataFormPage() {
   }
 
   return (
-    <section className="mx-auto max-w-4xl rounded-lg border border-cyan-500/20 bg-slate-900/70 p-4 sm:p-6">
+    <section className="mx-auto max-w-4xl lc-card-static rounded-2xl p-5 sm:p-6 lg:p-8">
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <p className="text-sm font-semibold uppercase tracking-wide text-accent-light">{t('battery.title')}</p>
-          <h1 className="mt-2 text-2xl font-bold text-white">
+          <p className="text-sm font-semibold uppercase tracking-widest text-slate-500">{t('battery.title')}</p>
+          <h1 className="mt-2 text-2xl font-black text-slate-900 tracking-tight">
             {isEditing ? t('batteryForm.editRecord') : t('batteryForm.addRecord')}
           </h1>
         </div>
-        <Link className="lc-focus text-sm text-accent-light hover:text-white" to="/battery">
+        <Link className="lc-focus text-sm font-semibold text-slate-900 hover:text-accent transition-colors" to="/battery">
           {t('common.backToHistory')}
         </Link>
       </div>
-      {error ? <p className="mb-4 rounded-lg border border-danger-light/30 bg-danger/10 p-3 text-sm text-danger-light">{error}</p> : null}
+      {error ? <p className="mb-4 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">{error}</p> : null}
       {isLoading ? (
-        <p className="text-sm text-slate-400">{t('batteryForm.loadingRecord')}</p>
+        <p className="text-sm text-slate-500">{t('batteryForm.loadingRecord')}</p>
       ) : (
         <BatteryDataForm defaultValues={record ?? {}} isLoading={isLoading} onSubmit={handleSubmit} />
       )}

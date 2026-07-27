@@ -34,18 +34,20 @@ export default function ProfilePage() {
   }
 
   return (
-    <section className="max-w-xl rounded-lg border border-cyan-500/20 bg-slate-900/70 p-6">
-      <h1 className="text-2xl font-bold text-white">{t('profile.title')}</h1>
-      <p className="mt-2 text-sm text-slate-300">{user?.email}</p>
-      <form className="mt-6 space-y-4" onSubmit={handleSubmit(onSubmit)}>
+    <section className="max-w-xl lc-card-static rounded-2xl p-6 sm:p-8">
+      <div className="mb-6">
+        <h1 className="text-2xl font-black text-slate-900">{t('profile.title')}</h1>
+        <p className="mt-1 text-sm text-slate-600">{user?.email}</p>
+      </div>
+      <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
         <FormField
           label={t('profile.name')}
           type="text"
           error={errors.name}
           {...register('name', { required: 'Name is required', minLength: { value: 2, message: 'Name is too short' } })}
         />
-        {message ? <p className="text-sm text-accent-light">{message}</p> : null}
-        {serverError ? <p className="text-sm text-danger-light">{serverError}</p> : null}
+        {message ? <p className="text-sm text-emerald-600 bg-emerald-50 rounded-lg px-3 py-2">{message}</p> : null}
+        {serverError ? <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">{serverError}</p> : null}
         <SubmitButton isLoading={isSubmitting}>{t('profile.save')}</SubmitButton>
       </form>
     </section>

@@ -64,26 +64,30 @@ export default function ReportsPage() {
 
   return (
     <section className="space-y-6">
-      <div>
-        <p className="text-sm font-semibold uppercase tracking-wide text-accent-dark">{t('reports.title')}</p>
-        <h1 className="mt-2 text-3xl font-bold text-slate-900">{t('reports.heading')}</h1>
-        <p className="mt-2 max-w-3xl text-slate-600">
+      <div className="lc-card-static rounded-2xl p-5 sm:p-6 lg:p-8">
+        <p className="text-sm font-semibold uppercase tracking-widest text-slate-500">{t('reports.title')}</p>
+        <h1 className="mt-2 text-3xl font-black text-slate-900 md:text-4xl tracking-tight">{t('reports.heading')}</h1>
+        <p className="mt-3 max-w-3xl text-slate-600 leading-relaxed">
           {t('reports.description')}
         </p>
       </div>
 
-      {message ? <p className="rounded-lg border border-accent/40 bg-accent/10 p-3 text-sm text-accent-light">{message}</p> : null}
-      {error ? <p className="rounded-lg border border-danger-light/30 bg-danger/10 p-3 text-sm text-danger-light">{error}</p> : null}
+      {message ? <p className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-700">{message}</p> : null}
+      {error ? <p className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">{error}</p> : null}
 
       <div className="grid gap-4 md:grid-cols-2">
-        <article className="rounded-lg border border-cyan-500/15 bg-slate-900/80 p-4 sm:p-5">
-          <FileText className="text-accent-light" size={28} aria-hidden="true" />
-          <h2 className="mt-4 text-lg font-semibold text-white">{t('reports.pdfTitle')}</h2>
-          <p className="mt-2 text-sm leading-6 text-slate-300">
-            {t('reports.pdfDesc')}
-          </p>
+        <article className="lc-card-static rounded-xl p-5 sm:p-6">
+          <div className="flex items-center gap-3">
+            <span className="grid size-12 place-items-center rounded-xl bg-slate-900 text-white shadow-lg shadow-slate-900/20">
+              <FileText size={24} aria-hidden="true" />
+            </span>
+            <div>
+              <h2 className="text-lg font-black text-slate-900">{t('reports.pdfTitle')}</h2>
+              <p className="text-sm text-slate-600">{t('reports.pdfDesc')}</p>
+            </div>
+          </div>
           <button
-            className="mt-5 flex w-full items-center justify-center gap-2 rounded-lg bg-accent px-4 py-3 font-semibold text-slate-950 hover:bg-accent-light disabled:opacity-70 shadow-[0_0_18px_rgba(6,182,212,0.35)] transition"
+            className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-3 font-bold text-white hover:bg-slate-800 disabled:opacity-70 shadow-lg shadow-slate-900/20 transition-all duration-200"
             type="button"
             disabled={downloadingType === 'pdf'}
             onClick={() => handleDownload('pdf')}
@@ -93,14 +97,18 @@ export default function ReportsPage() {
           </button>
         </article>
 
-        <article className="rounded-lg border border-cyan-500/15 bg-slate-900/80 p-4 sm:p-5">
-          <Sheet className="text-accent-light" size={28} aria-hidden="true" />
-          <h2 className="mt-4 text-lg font-semibold text-white">{t('reports.csvTitle')}</h2>
-          <p className="mt-2 text-sm leading-6 text-slate-300">
-            {t('reports.csvDesc')}
-          </p>
+        <article className="lc-card-static rounded-xl p-5 sm:p-6">
+          <div className="flex items-center gap-3">
+            <span className="grid size-12 place-items-center rounded-xl bg-slate-900 text-white shadow-lg shadow-slate-900/20">
+              <Sheet size={24} aria-hidden="true" />
+            </span>
+            <div>
+              <h2 className="text-lg font-black text-slate-900">{t('reports.csvTitle')}</h2>
+              <p className="text-sm text-slate-600">{t('reports.csvDesc')}</p>
+            </div>
+          </div>
           <button
-            className="mt-5 flex w-full items-center justify-center gap-2 rounded-lg bg-accent px-4 py-3 font-semibold text-slate-950 hover:bg-accent-light disabled:opacity-70 shadow-[0_0_18px_rgba(6,182,212,0.35)] transition"
+            className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-3 font-bold text-white hover:bg-slate-800 disabled:opacity-70 shadow-lg shadow-slate-900/20 transition-all duration-200"
             type="button"
             disabled={downloadingType === 'csv'}
             onClick={() => handleDownload('csv')}
@@ -111,23 +119,23 @@ export default function ReportsPage() {
         </article>
       </div>
 
-      <section className="rounded-lg border border-cyan-500/15 bg-slate-900/80">
-        <div className="border-b border-cyan-500/20 p-4">
-          <h2 className="font-semibold text-white">{t('reports.history')}</h2>
+      <section className="lc-card-static rounded-xl overflow-hidden">
+        <div className="border-b border-slate-200 p-5">
+          <h2 className="text-lg font-black text-slate-900">{t('reports.history')}</h2>
         </div>
-        {isLoading ? <p className="p-4 text-sm text-slate-400">{t('reports.loading')}</p> : null}
-        {!isLoading && reports.length === 0 ? <p className="p-4 text-sm text-slate-300">{t('reports.noReports')}</p> : null}
+        {isLoading ? <p className="p-5 text-sm text-slate-500">{t('reports.loading')}</p> : null}
+        {!isLoading && reports.length === 0 ? <p className="p-5 text-sm text-slate-600">{t('reports.noReports')}</p> : null}
         {reports.length ? (
-          <div className="divide-y divide-cyan-500/15">
+          <div className="divide-y divide-slate-100">
             {reports.map((report) => (
-              <article key={report._id} className="flex flex-col justify-between gap-2 p-4 text-sm md:flex-row md:items-center">
+              <article key={report._id} className="flex flex-col justify-between gap-2 p-5 text-sm md:flex-row md:items-center">
                 <div>
-                  <p className="font-semibold text-white">{report.title}</p>
-                  <p className="mt-1 text-slate-300">
+                  <p className="font-bold text-slate-900">{report.title}</p>
+                  <p className="mt-1 text-slate-600">
                     {report.type.toUpperCase()} | {report.predictionCount} predictions | {report.status}
                   </p>
                 </div>
-                <p className="text-slate-400">{formatDate(report.generatedAt)}</p>
+                <p className="text-slate-500">{formatDate(report.generatedAt)}</p>
               </article>
             ))}
           </div>

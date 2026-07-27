@@ -1,7 +1,5 @@
 import { createBrowserRouter } from 'react-router-dom';
 import App from '../App.jsx';
-import BatteryDataFormPage from '../pages/BatteryDataFormPage.jsx';
-import BatteryDataPage from '../pages/BatteryDataPage.jsx';
 import DashboardPage from '../pages/DashboardPage.jsx';
 import ForgotPasswordPage from '../pages/ForgotPasswordPage.jsx';
 import HomePage from '../pages/HomePage.jsx';
@@ -13,7 +11,8 @@ import RegisterPage from '../pages/RegisterPage.jsx';
 import VehicleShowcasePage from '../pages/VehicleShowcasePage.jsx';
 import ReportsPage from '../pages/ReportsPage.jsx';
 import ResetPasswordPage from '../pages/ResetPasswordPage.jsx';
-import WhatIfPage from '../pages/WhatIfPage.jsx';
+import BatteryDataPage from '../pages/BatteryDataPage.jsx';
+import BatteryDataFormPage from '../pages/BatteryDataFormPage.jsx';
 import ProtectedRoute from './ProtectedRoute.jsx';
 
 export const router = createBrowserRouter([
@@ -50,30 +49,6 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: 'battery',
-        element: (
-          <ProtectedRoute>
-            <BatteryDataPage />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: 'battery/new',
-        element: (
-          <ProtectedRoute>
-            <BatteryDataFormPage />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: 'battery/:id/edit',
-        element: (
-          <ProtectedRoute>
-            <BatteryDataFormPage />
-          </ProtectedRoute>
-        ),
-      },
-      {
         path: 'ml-training',
         element: (
           <ProtectedRoute>
@@ -86,14 +61,6 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <PredictionPage />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: 'what-if',
-        element: (
-          <ProtectedRoute>
-            <WhatIfPage />
           </ProtectedRoute>
         ),
       },
@@ -118,6 +85,30 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <ProfilePage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'battery',
+        element: (
+          <ProtectedRoute>
+            <BatteryDataPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'battery/new',
+        element: (
+          <ProtectedRoute>
+            <BatteryDataFormPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'battery/:id/edit',
+        element: (
+          <ProtectedRoute>
+            <BatteryDataFormPage />
           </ProtectedRoute>
         ),
       },

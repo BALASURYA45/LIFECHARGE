@@ -132,6 +132,70 @@ const predictionSchema = new mongoose.Schema(
       summary: String,
       generatedAt: Date,
     },
+    enhancements: {
+      degradationRate: {
+        value: Number,
+        unit: String,
+        description: String,
+      },
+      thermalStress: {
+        score: Number,
+        level: String,
+      },
+      cyclicStress: {
+        score: Number,
+        level: String,
+      },
+      anomalyDetection: {
+        score: {
+          type: Number,
+          min: 0,
+          max: 100,
+        },
+        isAnomalous: Boolean,
+        factors: [String],
+      },
+      prognosis: {
+        OPTIMAL: {
+          label: String,
+          monthsTo80SOH: Number,
+          monthsToReplacement: Number,
+          estimatedCyclesRemaining: Number,
+        },
+        MODERATE: {
+          label: String,
+          monthsTo80SOH: Number,
+          monthsToReplacement: Number,
+          estimatedCyclesRemaining: Number,
+        },
+        HARSH: {
+          label: String,
+          monthsTo80SOH: Number,
+          monthsToReplacement: Number,
+          estimatedCyclesRemaining: Number,
+        },
+      },
+      confidenceInterval: {
+        soh: {
+          lower: Number,
+          upper: Number,
+          margin: Number,
+        },
+        rul: {
+          lower: Number,
+          upper: Number,
+          margin: Number,
+        },
+      },
+      comparison: {
+        vehicleType: String,
+        baselineSOHTarget: Number,
+        baselineRULTarget: Number,
+        sohDelta: Number,
+        rulDelta: Number,
+        performanceRating: String,
+      },
+    },
   },
   {
     timestamps: true,

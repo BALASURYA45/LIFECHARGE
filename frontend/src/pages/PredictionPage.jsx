@@ -18,6 +18,33 @@ function formatDate(value) {
   }).format(new Date(value));
 }
 
+function publishLatestPrediction(prediction) {
+  try {
+    window.localStorage.setItem('lifecharge.latestPrediction', JSON.stringify(prediction));
+    const storedHistory = window.localStorage.getItem('lifecharge.predictionHistory');
+    const history = storedHistory ? JSON.parse(storedHistory) : [];
+    const withoutDuplicate = history.filter((item) => item._id !== prediction._id);
+    window.localStorage.setItem(
+      'lifecharge.predictionHistory',
+      JSON.stringify([prediction, ...withoutDuplicate].slice(0, 10)),
+    );
+    window.dispatchEvent(new window.CustomEvent('lifecharge:prediction-updated', { detail: prediction }));
+  } catch {
+    // Local storage can be unavailable in private or restricted browser contexts.
+  }
+}
+
+function publishPredictionHistory(predictions) {
+  try {
+    window.localStorage.setItem('lifecharge.predictionHistory', JSON.stringify(predictions.slice(0, 10)));
+    if (predictions[0]) {
+      window.localStorage.setItem('lifecharge.latestPrediction', JSON.stringify(predictions[0]));
+    }
+  } catch {
+    // Local storage can be unavailable in private or restricted browser contexts.
+  }
+}
+
 export default function PredictionPage() {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
@@ -37,6 +64,7 @@ export default function PredictionPage() {
     try {
       const data = await getPredictionHistory({ limit: 10 });
       setHistory(data.predictions);
+      publishPredictionHistory(data.predictions);
     } catch (historyError) {
       setError(getErrorMessage(historyError));
     } finally {
@@ -57,6 +85,7 @@ export default function PredictionPage() {
       setLatestPrediction(data.prediction);
       setExplanation(data.prediction.explanation ?? null);
       setRecommendations(data.prediction.recommendations ?? null);
+      publishLatestPrediction(data.prediction);
       setMessage('Battery health check saved to history.');
       await loadHistory();
     } catch (predictionError) {
@@ -110,6 +139,7 @@ export default function PredictionPage() {
     setLatestPrediction(prediction);
     setExplanation(prediction.explanation ?? null);
     setRecommendations(prediction.recommendations ?? null);
+    publishLatestPrediction(prediction);
     setMessage('');
     setError('');
   }
@@ -141,48 +171,50 @@ export default function PredictionPage() {
 
   return (
     <section className="space-y-6">
-      <div className="flex flex-col justify-between gap-4 rounded-lg border border-cyan-500/20 bg-slate-900/60 p-4 md:flex-row md:items-end">
-        <div>
-          <p className="text-sm font-bold uppercase tracking-[0.2em] text-accent-light">{t('prediction.title')}</p>
-          <h1 className="mt-2 text-3xl font-black text-white md:text-4xl">Battery Health Check</h1>
-          <p className="mt-2 max-w-3xl text-slate-300">
-            {preselectedVehicle
-              ? `Selected: ${preselectedVehicle.make} ${preselectedVehicle.model} — enter your usage details to check battery health.`
-              : 'Check your EV battery health in 3 simple steps. Select your vehicle, tell us how you use it, and get a detailed health report.'}
-          </p>
-        </div>
-        {preselectedVehicle ? (
-          <Link
-            to="/showroom"
-            className="lc-focus inline-flex items-center gap-2 rounded-lg border border-violet-400/30 px-4 py-3 font-bold text-slate-100 hover:border-violet-400 hover:text-violet-300 transition"
-          >
-            ← Back to Showroom
-          </Link>
-        ) : null}
-        <div className="flex flex-wrap gap-3">
-          <Link className="lc-focus inline-flex items-center gap-2 rounded-lg border border-amber-400/40 px-4 py-3 font-bold text-slate-100 hover:border-warning hover:text-warning-light transition" to="/ml-training">
-            <BrainCircuit size={18} aria-hidden="true" />
-            {t('prediction.calibration')}
-          </Link>
-          <Link className="lc-focus inline-flex items-center gap-2 rounded-lg border border-cyan-500/30 px-4 py-3 font-bold text-slate-100 hover:border-accent hover:text-accent-light transition" to="/battery">
-            <Wrench size={18} aria-hidden="true" />
-            {t('prediction.batteryProfile')}
-          </Link>
+      <div className="lc-card-static rounded-2xl bg-slate-900 p-5 sm:p-6 lg:p-8">
+        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-widest text-accent-light">{t('prediction.title')}</p>
+            <h1 className="mt-3 text-3xl font-black text-white md:text-4xl tracking-tight">Battery Health Check</h1>
+            <p className="mt-3 max-w-2xl text-slate-300 leading-relaxed">
+              {preselectedVehicle
+                ? `Selected: ${preselectedVehicle.make} ${preselectedVehicle.model} — enter your usage details to check battery health.`
+                : 'Check your EV battery health in 3 simple steps. Select your vehicle, tell us how you use it, and get a detailed health report.'}
+            </p>
+          </div>
+          {preselectedVehicle ? (
+            <Link
+              to="/showroom"
+              className="lc-focus inline-flex items-center gap-2 rounded-xl border border-violet-400/30 px-4 py-3 font-bold text-slate-100 hover:border-violet-400 hover:text-violet-300 transition-all duration-200"
+            >
+              ← Back to Showroom
+            </Link>
+          ) : null}
+          <div className="flex flex-wrap gap-3">
+            <Link className="lc-focus inline-flex items-center gap-2 rounded-xl border border-amber-400/40 px-4 py-3 font-bold text-slate-100 hover:border-warning hover:text-warning-light transition-all duration-200" to="/ml-training">
+              <BrainCircuit size={18} aria-hidden="true" />
+              {t('prediction.calibration')}
+            </Link>
+            <Link className="lc-focus inline-flex items-center gap-2 rounded-xl border border-cyan-500/30 px-4 py-3 font-bold text-slate-100 hover:border-accent hover:text-accent-light transition-all duration-200" to="/battery">
+              <Wrench size={18} aria-hidden="true" />
+              {t('prediction.batteryProfile')}
+            </Link>
+          </div>
         </div>
       </div>
 
-      {message ? <p className="rounded-lg border border-accent/40 bg-accent/10 p-3 text-sm text-accent-light">{message}</p> : null}
-      {error ? <p className="rounded-lg border border-danger-light/30 bg-danger/10 p-3 text-sm text-danger-light">{error}</p> : null}
+      {message ? <p className="rounded-xl border border-accent/40 bg-accent/10 p-4 text-sm text-accent-light">{message}</p> : null}
+      {error ? <p className="rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-200">{error}</p> : null}
 
       <div className="grid gap-6 lg:grid-cols-[1fr_0.9fr]">
-        <section className="rounded-lg border border-cyan-500/15 bg-slate-900/80 p-4 sm:p-6">
+        <section className="lc-card-static rounded-xl bg-white p-4 sm:p-6">
           <div className="mb-5 flex items-center gap-3">
-            <span className="grid size-11 place-items-center rounded-lg border border-accent/30 bg-accent/10 text-accent-light">
+            <span className="grid size-11 place-items-center rounded-xl border border-slate-200 bg-slate-50 text-slate-900">
               <Car size={22} aria-hidden="true" />
             </span>
             <div>
-              <h2 className="text-lg font-black text-white">Your Vehicle Details</h2>
-              <p className="text-sm text-slate-300">Select your EV and describe your usage pattern</p>
+              <h2 className="text-lg font-black text-slate-900">Your Vehicle Details</h2>
+              <p className="text-sm text-slate-600">Select your EV and describe your usage pattern</p>
             </div>
           </div>
           <SimpleBatteryForm defaultValues={defaultFormValues} onSubmit={handlePredict} />
@@ -201,34 +233,34 @@ export default function PredictionPage() {
             />
           ) : null}
 
-          <section className="rounded-lg border border-cyan-500/15 bg-slate-900/80">
-            <div className="flex items-center gap-3 border-b border-cyan-500/20 p-4">
-              <History className="text-accent-light" size={20} aria-hidden="true" />
-              <h2 className="font-black text-white">{t('prediction.pastChecks')}</h2>
+          <section className="lc-card-static rounded-xl overflow-hidden">
+            <div className="flex items-center gap-3 border-b border-slate-200 p-4 sm:p-5">
+              <History className="text-slate-900" size={20} aria-hidden="true" />
+              <h2 className="font-black text-slate-900">{t('prediction.pastChecks')}</h2>
             </div>
-            {isLoadingHistory ? <p className="p-4 text-sm text-slate-400">{t('common.loading')}</p> : null}
+            {isLoadingHistory ? <p className="p-4 text-sm text-slate-500">{t('common.loading')}</p> : null}
             {!isLoadingHistory && history.length === 0 ? (
-              <p className="p-4 text-sm leading-6 text-slate-300">{t('prediction.noHistory')}</p>
+              <p className="p-4 text-sm leading-6 text-slate-600">{t('prediction.noHistory')}</p>
             ) : null}
             {history.length ? (
-              <div className="divide-y divide-cyan-500/15">
+              <div className="divide-y divide-slate-100">
                 {history.map((prediction) => (
-                  <article key={prediction._id} className="p-4 text-sm">
+                  <article key={prediction._id} className="p-4 text-sm sm:p-5">
                     <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-center">
                       <div>
-                        <p className="font-bold text-white">{prediction.batteryStatus}</p>
+                        <p className="font-bold text-slate-900">{prediction.batteryStatus}</p>
                         {prediction.vehicleMake && prediction.vehicleModel ? (
-                          <p className="text-xs text-slate-400">{prediction.vehicleMake} {prediction.vehicleModel}</p>
+                          <p className="mt-0.5 text-xs text-slate-500">{prediction.vehicleMake} {prediction.vehicleModel}</p>
                         ) : null}
                       </div>
-                      <p className="text-slate-400">{formatDate(prediction.createdAt)}</p>
+                      <p className="text-slate-500">{formatDate(prediction.createdAt)}</p>
                     </div>
-                    <p className="mt-2 text-slate-200">
+                    <p className="mt-2 text-slate-600">
                       SOH {prediction.SOH}% | RUL {prediction.RUL} months | {t('prediction.confidence')} {prediction.confidenceScore}%
                     </p>
-                    <p className="mt-1 text-slate-300">{prediction.degradationTrend}</p>
+                    <p className="mt-1 text-slate-500 text-xs">{prediction.degradationTrend}</p>
                     <button
-                      className="lc-focus mt-3 rounded text-accent-light hover:text-white"
+                      className="lc-focus mt-3 rounded text-slate-900 font-semibold hover:bg-slate-50 transition-colors"
                       type="button"
                       onClick={() => selectHistoryPrediction(prediction)}
                     >

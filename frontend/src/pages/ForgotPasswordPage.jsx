@@ -40,13 +40,16 @@ export default function ForgotPasswordPage() {
           error={errors.email}
           {...register('email', { required: 'Email is required' })}
         />
-        {message ? <p className="rounded border border-energy/40 bg-energy/10 p-3 text-sm text-energy">{message}</p> : null}
-        {serverError ? <p className="text-sm text-danger-light">{serverError}</p> : null}
+        {message ? <p className="text-sm text-emerald-600 bg-emerald-50 rounded-lg px-3 py-2">{message}</p> : null}
+        {serverError ? <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">{serverError}</p> : null}
         <SubmitButton isLoading={isSubmitting}>{t('auth.forgotPassword.submit')}</SubmitButton>
       </form>
-      <Link className="mt-5 inline-block text-sm text-accent-light hover:text-white" to="/login">
-        {t('auth.forgotPassword.backToLogin')}
-      </Link>
+      <p className="mt-6 text-center text-sm">
+        <span className="text-slate-600">{t('auth.forgotPassword.remembered')}</span>{' '}
+        <Link className="text-slate-900 font-bold hover:underline underline-offset-4" to="/login">
+          {t('auth.forgotPassword.backToLogin')}
+        </Link>
+      </p>
     </AuthCard>
   );
 }

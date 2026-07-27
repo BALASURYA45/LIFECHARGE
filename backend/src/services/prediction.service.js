@@ -1,10 +1,12 @@
 import { Prediction } from '../models/Prediction.js';
 import { AppError } from '../utils/AppError.js';
 import { predictBatteryHealth } from './ml.service.js';
+import { enhancePrediction } from './enhanced_prediction.service.js';
+import { getPredictionModelName, getPredictionTrainingId } from './modelMetadata.service.js';
 
 export async function createPrediction(userId, payload) {
   const mlResult = await predictBatteryHealth(payload);
-  const prediction = mlResult.prediction;
+  const prediction = enhancePrediction(mlResult.prediction || mlResult, payload);
 
   const record = await Prediction.create({
     user: userId,
@@ -28,8 +30,9 @@ export async function createPrediction(userId, payload) {
     riskFactors: prediction.riskFactors,
     confidenceScore: prediction.confidenceScore,
     degradationTrend: prediction.degradationTrend,
-    modelName: prediction.modelMetadata.bestModelName,
-    modelTrainingId: prediction.modelMetadata.trainingId,
+    modelName: getPredictionModelName(prediction.modelMetadata),
+    modelTrainingId: getPredictionTrainingId(prediction.modelMetadata),
+    enhancements: prediction.enhancements,
   });
 
   return record;

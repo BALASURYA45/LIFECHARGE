@@ -1,7 +1,8 @@
 import { predictBatteryHealth } from './ml.service.js';
 import { AppError } from '../utils/AppError.js';
+import { getPredictionModelName, getPredictionTrainingId } from './modelMetadata.service.js';
 
-const REQUIRED_FIELDS = [
+const MINIMUM_FIELDS = [
   'batteryAge',
   'chargingCycles',
   'chargingFrequency',
@@ -13,23 +14,67 @@ const REQUIRED_FIELDS = [
   'batteryCapacity',
   'voltage',
   'current',
-  'is_two_wheeler',
-  'is_three_wheeler',
-  'is_four_wheeler',
-  'is_bus',
-  'is_chemistry_lfp',
-  'is_chemistry_nmc',
-  'is_chemistry_lead_acid',
 ];
 
+const ONE_HOT_FIELDS = {
+  is_two_wheeler: [1, 0, 0, 0],
+  is_three_wheeler: [0, 1, 0, 0],
+  is_four_wheeler: [0, 0, 1, 0],
+  is_bus: [0, 0, 0, 1],
+};
+
+const CHEMISTRY_ONE_HOT = {
+  lfp: { is_chemistry_lfp: 1, is_chemistry_nmc: 0, is_chemistry_lead_acid: 0 },
+  nmc: { is_chemistry_lfp: 0, is_chemistry_nmc: 1, is_chemistry_lead_acid: 0 },
+  lead_acid: { is_chemistry_lfp: 0, is_chemistry_nmc: 0, is_chemistry_lead_acid: 1 },
+  default: { is_chemistry_lfp: 0, is_chemistry_nmc: 1, is_chemistry_lead_acid: 0 },
+};
+
+function inferVehicleType(input) {
+  // Infer vehicle type from is_* fields if present, otherwise default to four_wheeler
+  if (input.is_two_wheeler === 1) return 'two_wheeler';
+  if (input.is_three_wheeler === 1) return 'three_wheeler';
+  if (input.is_four_wheeler === 1) return 'four_wheeler';
+  if (input.is_bus === 1) return 'bus_heavy';
+  return 'four_wheeler'; // default
+}
+
+function inferChemistry(input) {
+  if (input.is_chemistry_lfp === 1) return 'lfp';
+  if (input.is_chemistry_nmc === 1) return 'nmc';
+  if (input.is_chemistry_lead_acid === 1) return 'lead_acid';
+  // Infer from battery capacity: LFP for high capacity, NMC otherwise
+  if (input.batteryCapacity && input.batteryCapacity > 50) return 'lfp';
+  return 'nmc';
+}
+
+function normalizeInput(input) {
+  // Ensure all one-hot vehicle type fields are set
+  const vehicleType = inferVehicleType(input);
+  const oneHots = ONE_HOT_FIELDS[vehicleType] || ONE_HOT_FIELDS.four_wheeler;
+  const chemistry = inferChemistry(input);
+  const chemHots = CHEMISTRY_ONE_HOT[chemistry] || CHEMISTRY_ONE_HOT.default;
+
+  return {
+    ...input,
+    is_two_wheeler: input.is_two_wheeler ?? oneHots[0],
+    is_three_wheeler: input.is_three_wheeler ?? oneHots[1],
+    is_four_wheeler: input.is_four_wheeler ?? oneHots[2],
+    is_bus: input.is_bus ?? oneHots[3],
+    is_chemistry_lfp: input.is_chemistry_lfp ?? chemHots.is_chemistry_lfp,
+    is_chemistry_nmc: input.is_chemistry_nmc ?? chemHots.is_chemistry_nmc,
+    is_chemistry_lead_acid: input.is_chemistry_lead_acid ?? chemHots.is_chemistry_lead_acid,
+  };
+}
+
 function validateInput(input) {
-  const missing = REQUIRED_FIELDS.filter((field) => {
+  const missing = MINIMUM_FIELDS.filter((field) => {
     const value = input?.[field];
     return value === undefined || value === null || value === '';
   });
 
   if (missing.length) {
-    throw new AppError(`Missing required fields: ${missing.join(', ')}`, 400);
+    throw new AppError(`Missing required battery fields: ${missing.join(', ')}`, 400);
   }
 }
 
@@ -81,13 +126,17 @@ export async function runWhatIfSimulation({ baseline, scenario }) {
   validateInput(baseline);
   validateInput(scenario);
 
+  // Normalize inputs to include one-hot encoded fields for ML model
+  const normalizedBaseline = normalizeInput(baseline);
+  const normalizedScenario = normalizeInput(scenario);
+
   let baselineResult;
   let scenarioResult;
 
   try {
     [baselineResult, scenarioResult] = await Promise.all([
-      predictBatteryHealth(baseline),
-      predictBatteryHealth(scenario),
+      predictBatteryHealth(normalizedBaseline),
+      predictBatteryHealth(normalizedScenario),
     ]);
   } catch (error) {
     if (error instanceof AppError) {
@@ -112,7 +161,7 @@ export async function runWhatIfSimulation({ baseline, scenario }) {
       confidenceScore: Number((scenarioPrediction.confidenceScore - baselinePrediction.confidenceScore).toFixed(2)),
     },
     insights: buildInsights(baselinePrediction.input, scenarioPrediction.input, scenarioPrediction),
-    modelName: scenarioPrediction.modelMetadata.bestModelName,
-    modelTrainingId: scenarioPrediction.modelMetadata.trainingId,
+    modelName: getPredictionModelName(scenarioPrediction.modelMetadata),
+    modelTrainingId: getPredictionTrainingId(scenarioPrediction.modelMetadata),
   };
 }

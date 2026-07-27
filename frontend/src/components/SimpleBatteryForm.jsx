@@ -58,11 +58,21 @@ export default function SimpleBatteryForm({ defaultValues, isLoading, onSubmit }
     const isFourWheeler = vehicle.categoryId === 'four_wheeler' ? 1 : 0;
     const isBus = vehicle.categoryId === 'bus_heavy' ? 1 : 0;
 
+    // Estimate average battery current (Amperes) from vehicle specs.
+    // Current = (batteryCapacity_kWh × 1000 × avgSpeed_kmh) / (typicalRange_km × voltage_V)
+    // Using 40 km/h as typical average speed for city driving.
+    const estimatedCurrent = selectedSpec.voltage > 0 && selectedSpec.typicalRange > 0
+      ? Math.round((selectedSpec.batteryCapacity * 1000 * 40) / (selectedSpec.typicalRange * selectedSpec.voltage))
+      : 10;
+
     // Determine chemistry one-hot encoding
     const batteryType = (selectedSpec.batteryType || '').toLowerCase();
     const isLfp = (batteryType.includes('lfp') || batteryType.includes('lithium iron')) ? 1 : 0;
     const isNmc = (batteryType.includes('nmc') || batteryType.includes('nickel')) ? 1 : 0;
     const isLeadAcid = (batteryType.includes('lead acid') || batteryType.includes('lead-acid')) ? 1 : 0;
+
+    // Estimate expected life years for storage
+    const estimatedLifeYears = selectedSpec.estimatedLifeYears || age + 2;
 
     return {
       // Vehicle identification (for display & storage)
@@ -87,6 +97,12 @@ export default function SimpleBatteryForm({ defaultValues, isLoading, onSubmit }
       averageTemperature: temp,
       chargingDuration: chargeDur,
       socHistory: socEnd,
+
+      // Estimated electrical parameters for ML model
+      current: estimatedCurrent,
+
+      // Metadata
+      estimatedLifeYears,
 
       // Vehicle-type one-hot encoding for ML model
       is_two_wheeler: isTwoWheeler,

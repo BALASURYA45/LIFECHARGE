@@ -61,12 +61,12 @@ export default function RegisterPage() {
             },
           })}
         />
-        {serverError ? <p className="text-sm text-danger-light">{serverError}</p> : null}
+        {serverError ? <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">{serverError}</p> : null}
         <SubmitButton isLoading={isSubmitting}>{t('auth.register.submit')}</SubmitButton>
       </form>
-      <p className="mt-5 text-sm text-slate-300">
-        {t('auth.register.alreadyRegistered')}{' '}
-        <Link className="text-accent-light hover:text-white" to="/login">
+      <p className="mt-6 text-center text-sm">
+        <span className="text-slate-600">{t('auth.register.alreadyRegistered')}</span>{' '}
+        <Link className="text-slate-900 font-bold hover:underline underline-offset-4" to="/login">
           {t('auth.register.login')}
         </Link>
       </p>

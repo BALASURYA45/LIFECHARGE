@@ -48,14 +48,14 @@ export default function LoginPage() {
           error={errors.password}
           {...register('password', { required: 'Password is required' })}
         />
-        {serverError ? <p className="text-sm text-danger-light">{serverError}</p> : null}
+        {serverError ? <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">{serverError}</p> : null}
         <SubmitButton isLoading={isSubmitting}>{t('auth.login.submit')}</SubmitButton>
       </form>
-      <div className="mt-5 flex justify-between text-sm text-slate-300">
-        <Link className="text-accent-light hover:text-white" to="/forgot-password">
+      <div className="mt-6 flex flex-col sm:flex-row justify-between items-center gap-3 text-sm">
+        <Link className="text-slate-600 hover:text-slate-900 font-medium transition-colors" to="/forgot-password">
           {t('auth.login.forgotPassword')}
         </Link>
-        <Link className="text-accent-light hover:text-white" to="/register">
+        <Link className="text-slate-900 font-bold hover:underline underline-offset-4" to="/register">
           {t('auth.login.createAccount')}
         </Link>
       </div>

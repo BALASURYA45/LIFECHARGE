@@ -57,27 +57,29 @@ export default function BatteryDataPage() {
 
   return (
     <section className="space-y-6">
-      <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
-        <div>
-          <p className="text-sm font-semibold uppercase tracking-wide text-accent-light">{t('battery.title')}</p>
-          <h1 className="mt-2 text-3xl font-bold text-white">{t('battery.heading')}</h1>
-          <p className="mt-2 max-w-2xl text-slate-300">{t('battery.description')}</p>
+      <div className="lc-card-static rounded-2xl p-5 sm:p-6 lg:p-8">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-widest text-slate-500">{t('battery.title')}</p>
+            <h1 className="mt-2 text-3xl font-black text-slate-900 md:text-4xl tracking-tight">{t('battery.heading')}</h1>
+            <p className="mt-3 max-w-2xl text-slate-600 leading-relaxed">{t('battery.description')}</p>
+          </div>
+          <Link className="lc-focus inline-flex items-center justify-center gap-2 rounded-xl bg-slate-900 px-5 py-3 font-bold text-white hover:bg-slate-800 shadow-lg shadow-slate-900/20 transition-all duration-200" to="/battery/new">
+            {t('battery.addRecord')}
+          </Link>
         </div>
-        <Link className="rounded-lg bg-accent px-4 py-3 font-semibold text-slate-950 hover:bg-accent-light shadow-[0_0_18px_rgba(6,182,212,0.35)] transition" to="/battery/new">
-          {t('battery.addRecord')}
-        </Link>
       </div>
 
       <CsvUploadPanel onUploaded={loadRecords} />
 
-      <div className="rounded-lg border border-cyan-500/15 bg-slate-900/80">
-        <div className="flex flex-col gap-3 border-b border-cyan-500/20 p-4 md:flex-row md:items-center md:justify-between">
+      <div className="lc-card-static rounded-xl overflow-hidden">
+        <div className="flex flex-col gap-3 border-b border-slate-200 p-5 md:flex-row md:items-center md:justify-between">
           <div>
-            <h2 className="font-semibold text-white">{t('battery.history')}</h2>
-            <p className="text-sm text-slate-300">{t('battery.recordsStored', { count: pagination.total })}</p>
+            <h2 className="text-lg font-black text-slate-900">{t('battery.history')}</h2>
+            <p className="text-sm text-slate-600">{t('battery.recordsStored', { count: pagination.total })}</p>
           </div>
           <select
-            className="w-full rounded border border-cyan-500/25 bg-slate-950 px-3 py-2 text-sm text-slate-200 md:w-auto"
+            className="lc-focus w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 md:w-auto"
             value={source}
             onChange={(event) => {
               setSource(event.target.value);
@@ -89,34 +91,34 @@ export default function BatteryDataPage() {
             <option value="csv">{t('battery.csv')}</option>
           </select>
         </div>
-        {error ? <p className="p-4 text-sm text-danger-light">{error}</p> : null}
-        {isLoading ? <p className="p-4 text-sm text-slate-400">{t('battery.loading')}</p> : null}
-        {!isLoading && records.length === 0 ? <p className="p-4 text-sm text-slate-400">{t('battery.noRecords')}</p> : null}
+        {error ? <p className="p-5 text-sm text-red-700 bg-red-50 border-t border-red-100">{error}</p> : null}
+        {isLoading ? <p className="p-5 text-sm text-slate-500">{t('battery.loading')}</p> : null}
+        {!isLoading && records.length === 0 ? <p className="p-5 text-sm text-slate-600">{t('battery.noRecords')}</p> : null}
         {records.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="w-full min-w-[980px] text-left text-sm">
-               <thead className="bg-slate-950 text-slate-300">
+               <thead className="bg-slate-50 text-slate-600">
                 <tr>
-                  <th className="px-4 py-3">{t('battery.source')}</th>
+                  <th className="px-5 py-3 text-xs font-bold uppercase tracking-wider">{t('battery.source')}</th>
                   {batteryFields.slice(0, 6).map((field) => (
-                    <th key={field.name} className="px-4 py-3">{field.label}</th>
+                    <th key={field.name} className="px-5 py-3 text-xs font-bold uppercase tracking-wider">{field.label}</th>
                   ))}
-                  <th className="px-4 py-3">{t('battery.actions')}</th>
+                  <th className="px-5 py-3 text-xs font-bold uppercase tracking-wider">{t('battery.actions')}</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800">
+              <tbody className="divide-y divide-slate-100">
                 {records.map((record) => (
-                  <tr key={record._id} className="text-slate-200">
-                    <td className="px-4 py-3 uppercase">{record.source}</td>
+                  <tr key={record._id} className="text-slate-900 hover:bg-slate-50/60">
+                    <td className="px-5 py-4 uppercase text-xs font-semibold">{record.source}</td>
                     {batteryFields.slice(0, 6).map((field) => (
-                      <td key={field.name} className="px-4 py-3">{record[field.name]}</td>
+                      <td key={field.name} className="px-5 py-4">{record[field.name]}</td>
                     ))}
-                    <td className="px-4 py-3">
-                      <div className="flex gap-3">
-                         <Link className="text-accent-light hover:text-white" to={`/battery/${record._id}/edit`}>
+                    <td className="px-5 py-4">
+                      <div className="flex gap-4">
+                         <Link className="text-slate-900 font-semibold hover:text-accent transition-colors" to={`/battery/${record._id}/edit`}>
                           {t('battery.edit')}
                         </Link>
-                         <button className="text-danger-light hover:text-danger" type="button" onClick={() => handleDelete(record._id)}>
+                         <button className="text-slate-600 hover:text-red-600 transition-colors" type="button" onClick={() => handleDelete(record._id)}>
                           {t('battery.delete')}
                         </button>
                       </div>

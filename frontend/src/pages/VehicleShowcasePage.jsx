@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, BatteryCharging, Gauge, Zap, RotateCw, Search, X, Bike, Truck, Car, Bus, Sparkles } from 'lucide-react';
 import { vehicleCategories, vehicleDatabase } from '../constants/vehicleDatabase.js';
@@ -31,8 +31,8 @@ const categoryIcons = {
 function VehicleCard3D({ vehicle, categoryId, make, model }) {
   const cardRef = useRef(null);
   const [rotation, setRotation] = useState({ x: 0, y: 0 });
-  const [isHovered, setIsHovered] = useState(false);
   const [isFlipped, setIsFlipped] = useState(false);
+  const [flipDirection, setFlipDirection] = useState(1);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
@@ -40,15 +40,6 @@ function VehicleCard3D({ vehicle, categoryId, make, model }) {
   const accent = categoryAccents[categoryId];
   const Icon = categoryIcons[categoryId];
   const vehicleImage = getVehicleImageUrl(categoryId, make, model);
-
-  // Auto-rotation when not hovered
-  useEffect(() => {
-    if (isHovered) return;
-    const interval = window.setInterval(() => {
-      setRotation(prev => ({ ...prev, y: prev.y + 0.6 }));
-    }, 50);
-    return () => window.clearInterval(interval);
-  }, [isHovered]);
 
   function handleMouseMove(e) {
     if (!cardRef.current) return;
@@ -59,7 +50,17 @@ function VehicleCard3D({ vehicle, categoryId, make, model }) {
     const centerY = rect.height / 2;
     const rotateX = ((y - centerY) / centerY) * -12;
     const rotateY = ((x - centerX) / centerX) * 12;
-    setRotation({ x: rotateX, y: rotation.y + rotateY * 0.3 });
+    setRotation({ x: rotateX, y: rotateY * 0.35 });
+  }
+
+  function handleMouseEnter() {
+    setFlipDirection(Math.random() > 0.5 ? 1 : -1);
+    setIsFlipped(true);
+  }
+
+  function handleMouseLeave() {
+    setIsFlipped(false);
+    setRotation({ x: 0, y: 0 });
   }
 
   // Build query params for prediction page
@@ -76,12 +77,12 @@ function VehicleCard3D({ vehicle, categoryId, make, model }) {
         className="relative w-full cursor-pointer transition-all duration-700"
         style={{
           transformStyle: 'preserve-3d',
-          transform: `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`,
+          transform: `rotateX(${rotation.x}deg) rotateY(${rotation.y + (isFlipped ? 180 * flipDirection : 0)}deg)`,
           minHeight: '400px',
         }}
         onMouseMove={handleMouseMove}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => { setIsHovered(false); setRotation(prev => ({ ...prev, x: 0 })); }}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
       >
         {/* Front Face */}
         <div
@@ -227,7 +228,10 @@ function VehicleCard3D({ vehicle, categoryId, make, model }) {
 
       {/* Flip button */}
       <button
-        onClick={() => setIsFlipped(!isFlipped)}
+        onClick={() => {
+          setFlipDirection(Math.random() > 0.5 ? 1 : -1);
+          setIsFlipped(!isFlipped);
+        }}
         className="mt-2 flex items-center gap-1.5 text-xs text-slate-400 hover:text-white transition-colors mx-auto"
       >
         <RotateCw size={12} />
@@ -274,15 +278,15 @@ export default function VehicleShowcasePage() {
   return (
     <section className="space-y-8">
       {/* Header */}
-      <div className="rounded-2xl border border-cyan-500/30 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-8 md:p-12 text-center relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(34,211,238,0.12),transparent_70%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(139,92,246,0.08),transparent_50%)]" />
+      <div className="lc-card-static rounded-2xl overflow-hidden bg-slate-900 p-8 md:p-12 text-center relative">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(99,102,241,0.15),transparent_70%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(139,92,246,0.1),transparent_50%)]" />
         <div className="relative z-10">
-          <div className="inline-flex items-center gap-2 rounded-full bg-cyan-500/10 border border-cyan-400/30 px-4 py-1.5 text-sm text-cyan-200 mb-4">
+          <div className="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/20 px-4 py-1.5 text-sm font-semibold text-white mb-4">
             <Sparkles size={16} />
             Interactive 3D Showroom
           </div>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-3 leading-tight">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-3 leading-tight tracking-tight">
             EV Fleet Showroom
           </h1>
           <p className="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed">
@@ -306,16 +310,16 @@ export default function VehicleShowcasePage() {
             placeholder="Search by make or model..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full rounded-xl border border-white/20 bg-slate-800/80 pl-10 pr-4 py-3 text-white placeholder-slate-400 focus:border-accent focus:outline-none transition focus:ring-2 focus:ring-accent/20"
+            className="w-full rounded-xl border border-slate-200 bg-white pl-10 pr-4 py-3 text-slate-900 placeholder-slate-400 focus:border-accent focus:outline-none transition focus:ring-2 focus:ring-accent/20"
           />
         </div>
         <div className="flex gap-2 flex-wrap">
           <button
             onClick={() => setSelectedCategory('all')}
-            className={`rounded-lg px-4 py-2.5 text-sm font-bold transition ${
+            className={`lc-focus rounded-xl px-4 py-2.5 text-sm font-bold transition ${
               selectedCategory === 'all'
-                ? 'bg-accent text-white shadow-lg shadow-accent/30'
-                : 'bg-slate-800 text-slate-300 hover:bg-slate-700 border border-white/10'
+                ? 'bg-slate-900 text-white shadow-lg shadow-slate-900/20'
+                : 'bg-white text-slate-700 hover:bg-slate-50 border border-slate-200'
             }`}
           >
             All Vehicles
@@ -326,10 +330,10 @@ export default function VehicleShowcasePage() {
               <button
                 key={cat.id}
                 onClick={() => setSelectedCategory(cat.id)}
-                className={`rounded-lg px-4 py-2.5 text-sm font-bold transition flex items-center gap-1.5 ${
+                className={`lc-focus rounded-xl px-4 py-2.5 text-sm font-bold transition flex items-center gap-1.5 ${
                   selectedCategory === cat.id
-                    ? 'bg-accent text-white shadow-lg shadow-accent/30'
-                    : 'bg-slate-800 text-slate-300 hover:bg-slate-700 border border-white/10'
+                    ? 'bg-slate-900 text-white shadow-lg shadow-slate-900/20'
+                    : 'bg-white text-slate-700 hover:bg-slate-50 border border-slate-200'
                 }`}
               >
                 <CatIcon size={16} />
@@ -342,12 +346,12 @@ export default function VehicleShowcasePage() {
 
       {/* Vehicle Grid */}
       {Object.entries(groupedVehicles).length === 0 ? (
-        <div className="text-center py-16 bg-slate-900/50 rounded-2xl border border-white/10">
-          <Search size={48} className="mx-auto mb-4 text-slate-600" />
-          <p className="text-xl text-slate-400">No vehicles found matching your search.</p>
+        <div className="text-center py-16 bg-slate-50 rounded-2xl border border-slate-200">
+          <Search size={48} className="mx-auto mb-4 text-slate-400" />
+          <p className="text-xl text-slate-600">No vehicles found matching your search.</p>
           <button
             onClick={() => setSearchQuery('')}
-            className="mt-4 text-accent-light hover:text-white transition font-semibold"
+            className="mt-4 text-slate-900 font-bold hover:underline underline-offset-4 transition"
           >
             Clear search
           </button>
@@ -356,12 +360,12 @@ export default function VehicleShowcasePage() {
         Object.entries(groupedVehicles).map(([make, vehicles]) => (
           <div key={make}>
             <div className="flex items-center gap-3 mb-5">
-              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-              <h2 className="text-lg font-black text-white tracking-wider uppercase flex items-center gap-2">
-                <Sparkles size={16} className="text-accent-light" />
+              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-slate-300 to-transparent" />
+              <h2 className="text-lg font-black text-slate-900 tracking-wider uppercase flex items-center gap-2">
+                <Sparkles size={16} className="text-slate-900" />
                 {make}
               </h2>
-              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-slate-300 to-transparent" />
             </div>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {vehicles.map((v) => (

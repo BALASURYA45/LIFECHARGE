@@ -126,12 +126,19 @@ def explain_prediction(payload: dict[str, Any]) -> dict[str, Any]:
         raise ExplanationError(str(error)) from error
 
     features = prediction["input"]
-    dataframe = pd.DataFrame([features], columns=FEATURE_COLUMNS)
-    transformed_input = bundle["model"].named_steps["scaler"].transform(
-        bundle["model"].named_steps["imputer"].transform(dataframe)
-    )
 
-    importances = _shap_importances(bundle, transformed_input)
+    # Get the full feature column list from the bundle (may include engineered features)
+    feature_columns = bundle.get("featureColumns", FEATURE_COLUMNS)
+
+    # Build DataFrame with all columns needed (fill missing with 0)
+    input_dict = {}
+    for col in feature_columns:
+        input_dict[col] = features.get(col, 0.0)
+    dataframe = pd.DataFrame([input_dict], columns=feature_columns)
+
+    # Use the pipeline's transform path: the model step extracts named steps internally
+    # For tree-based pipelines we don't have a scaler - just pass through imputer + model
+    importances = _shap_importances(bundle, dataframe.values)
     method = "SHAP"
 
     if importances is None:

@@ -70,38 +70,38 @@ export default function HomePage() {
     <section className="space-y-8">
       <div className="grid items-center gap-8 lg:grid-cols-[1.05fr_0.95fr]">
         <div className="space-y-6">
-          <div className="inline-flex items-center gap-2 rounded-lg border border-cyan-500/30 bg-cyan-50 px-3 py-2 text-sm font-semibold text-cyan-800">
+          <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm font-semibold text-slate-700">
             <ShieldCheck size={16} aria-hidden="true" />
             {t('home.hero.badge')}
           </div>
           <div>
-            <h1 className="max-w-4xl text-4xl font-black leading-tight text-slate-900 md:text-6xl">
+            <h1 className="max-w-4xl text-4xl font-black leading-[1.1] text-slate-900 md:text-6xl tracking-tight">
               {t('home.hero.heading')}
             </h1>
-            <p className="mt-5 max-w-2xl text-base leading-7 text-slate-700 md:text-lg">
+            <p className="mt-5 max-w-2xl text-base leading-7 text-slate-600 md:text-lg">
               {t('home.hero.description')}
             </p>
           </div>
           <div className="flex flex-wrap gap-3">
             <Link
-              className="lc-focus inline-flex items-center gap-2 rounded-lg bg-accent px-4 py-3 font-bold text-white shadow-[0_0_18px_rgba(6,182,212,0.35)] transition hover:bg-accent-light"
+              className="lc-focus inline-flex items-center gap-2 rounded-xl bg-slate-900 px-5 py-3.5 font-bold text-white hover:bg-slate-800 shadow-lg shadow-slate-900/20 transition-all duration-200"
               to="/prediction"
             >
-              <ClipboardCheck size={18} aria-hidden="true" />
+              <ClipboardCheck size={20} aria-hidden="true" />
               {t('home.hero.checkBattery')}
             </Link>
             <Link
-              className="lc-focus inline-flex items-center gap-2 rounded-lg border border-cyan-500/30 px-4 py-3 font-bold text-slate-700 transition hover:border-accent hover:text-accent"
+              className="lc-focus inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3.5 font-bold text-slate-700 hover:border-slate-300 hover:bg-slate-50 transition-all duration-200"
               to="/dashboard"
             >
-              <BarChart3 size={18} aria-hidden="true" />
+              <BarChart3 size={20} aria-hidden="true" />
               {t('home.hero.viewDashboard')}
             </Link>
             <Link
-              className="lc-focus inline-flex items-center gap-2 rounded-lg border border-violet-400/30 px-4 py-3 font-bold text-slate-700 transition hover:border-violet-500 hover:text-violet-600"
+              className="lc-focus inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3.5 font-bold text-slate-700 hover:border-violet-300 hover:text-violet-700 transition-all duration-200"
               to="/showroom"
             >
-              <LayoutGrid size={18} aria-hidden="true" />
+              <LayoutGrid size={20} aria-hidden="true" />
               3D Showroom
             </Link>
           </div>
@@ -112,7 +112,7 @@ export default function HomePage() {
       {/* 3D Showroom Banner */}
       <Link
         to="/showroom"
-        className="group block rounded-2xl border border-violet-500/20 bg-gradient-to-br from-violet-50 via-white to-purple-50 p-6 transition hover:border-violet-400/40 hover:shadow-xl hover:shadow-violet-200/20 hover:-translate-y-0.5"
+        className="group block rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 transition-all duration-300 hover:border-violet-300 hover:shadow-card-hover hover:-translate-y-0.5"
       >
         <div className="flex items-center gap-6">
           <div className="hidden sm:grid size-20 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 shadow-lg">
@@ -133,7 +133,7 @@ export default function HomePage() {
               <span className="flex items-center gap-1"><Bus size={14} /> Buses</span>
             </div>
           </div>
-          <ArrowRight className="text-violet-400 transition group-hover:translate-x-1 group-hover:text-violet-600 shrink-0" size={24} aria-hidden="true" />
+          <ArrowRight className="text-violet-400 transition-all duration-300 group-hover:translate-x-1 group-hover:text-violet-600 shrink-0" size={24} aria-hidden="true" />
         </div>
       </Link>
 
@@ -148,23 +148,23 @@ export default function HomePage() {
           return (
             <Link
               key={key}
-              className="lc-focus group rounded-lg border border-cyan-500/15 bg-white p-5 transition hover:-translate-y-0.5 hover:border-accent/40 hover:bg-slate-50"
+              className="lc-focus group lc-card rounded-xl p-5 sm:p-6"
               to={to}
             >
               <div className={`mb-5 grid size-11 place-items-center rounded-lg border ${toneClass}`}>
                 <Icon size={22} aria-hidden="true" />
               </div>
               <div className="flex items-center justify-between gap-4">
-                <h2 className="text-xl font-black text-slate-900">{t(`home.actions.${key}.title`)}</h2>
-                <ArrowRight className="text-slate-500 transition group-hover:translate-x-1 group-hover:text-accent" size={20} aria-hidden="true" />
+                <h2 className="text-lg font-black text-slate-900">{t(`home.actions.${key}.title`)}</h2>
+                <ArrowRight className="text-slate-400 transition-all duration-200 group-hover:translate-x-1 group-hover:text-accent" size={20} aria-hidden="true" />
               </div>
-              <p className="mt-3 text-sm leading-6 text-slate-600">{t(`home.actions.${key}.description`)}</p>
+              <p className="mt-2.5 text-sm leading-6 text-slate-600">{t(`home.actions.${key}.description`)}</p>
             </Link>
           );
         })}
       </div>
 
-      <section className="rounded-lg border border-cyan-500/15 bg-white p-5">
+      <section className="lc-card-static rounded-xl p-5 sm:p-6">
         <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
           <div>
             <h2 className="text-lg font-black text-slate-900">{t('home.maintenanceSection.heading')}</h2>
@@ -173,7 +173,7 @@ export default function HomePage() {
             </p>
           </div>
           <Link
-            className="lc-focus inline-flex w-fit items-center gap-2 rounded-lg border border-amber-400/40 px-4 py-3 font-bold text-slate-700 hover:border-warning hover:text-warning transition"
+            className="lc-focus inline-flex w-fit items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 font-bold text-slate-700 hover:border-amber-400 hover:text-amber-700 transition-all duration-200"
             to="/battery"
           >
             <Wrench size={18} aria-hidden="true" />

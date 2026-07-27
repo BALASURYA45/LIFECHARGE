@@ -9,6 +9,7 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parents[2]
 SAMPLE_TRAINING_DATASET = "app/data/sample/battery_training_sample.csv"
 REAL_TRAINING_DATASET = "app/data/processed/battery_training_real.csv"
+ENHANCED_TRAINING_DATASET = "app/data/real_datasets/realistic_ev_battery.csv"
 
 
 def resolve_ml_path(path_value: str) -> str:
@@ -25,6 +26,10 @@ def default_training_dataset_path() -> str:
 
     if configured_path:
         return resolve_ml_path(configured_path)
+
+    enhanced_dataset = Path(resolve_ml_path(ENHANCED_TRAINING_DATASET))
+    if enhanced_dataset.exists():
+        return str(enhanced_dataset)
 
     real_dataset = Path(resolve_ml_path(REAL_TRAINING_DATASET))
 
