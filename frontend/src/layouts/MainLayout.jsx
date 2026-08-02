@@ -1,4 +1,4 @@
-import { BarChart3, BatteryCharging, ClipboardCheck, Database, Gauge, LayoutGrid, LogIn, LogOut, Menu, UserRound, X } from 'lucide-react';
+import { BarChart3, BatteryCharging, CalendarClock, ClipboardCheck, Database, Gauge, LayoutGrid, LogIn, LogOut, Menu, UserRound, X } from 'lucide-react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../hooks/useAuth.js';
@@ -10,6 +10,7 @@ import { useState } from 'react';
 
 const navItems = [
   { to: '/dashboard', key: 'dashboard', icon: Gauge },
+  { to: '/routine', key: 'routine', icon: CalendarClock },
   { to: '/prediction', key: 'prediction', icon: ClipboardCheck },
   { to: '/battery', key: 'batteryRecords', icon: Database },
   { to: '/showroom', key: 'showroom', icon: LayoutGrid },
@@ -194,3 +195,5 @@ export default function MainLayout({ children }) {
     </div>
   );
 }
+
+

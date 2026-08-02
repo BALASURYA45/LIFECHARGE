@@ -1,4 +1,4 @@
-import { Activity, AlertTriangle, BarChart3, BatteryCharging, ClipboardCheck, Gauge, Plus, Thermometer, Zap } from 'lucide-react';
+import { Activity, AlertTriangle, BarChart3, BatteryCharging, CalendarClock, ClipboardCheck, Gauge, Plus, Thermometer, Zap } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -65,9 +65,9 @@ function EmptyState() {
               <Plus size={18} aria-hidden="true" />
               {t('dashboard.addProfile')}
             </Link>
-            <Link className="lc-focus inline-flex items-center gap-2 rounded border border-slate-700 px-4 py-3 font-bold text-slate-100 hover:border-cyan-300" to="/prediction">
-              <ClipboardCheck size={18} aria-hidden="true" />
-              {t('dashboard.runCheck')}
+            <Link className="lc-focus inline-flex items-center gap-2 rounded border border-cyan-300/40 px-4 py-3 font-bold text-slate-100 hover:border-cyan-300" to="/routine">
+              <CalendarClock size={18} aria-hidden="true" />
+              Add Routine
             </Link>
           </div>
         </div>
@@ -139,13 +139,17 @@ export default function DashboardPage() {
             <p className="text-sm font-semibold uppercase tracking-widest text-slate-500">{t('dashboard.title')}</p>
             <h1 className="mt-2 text-3xl font-black text-slate-900 md:text-4xl tracking-tight">{t('dashboard.welcome', { name: user?.name ?? 'driver' })}</h1>
             <p className="mt-3 max-w-2xl text-slate-600 leading-relaxed">
-              {t('dashboard.description')}
+              Enter your daily, weekly, or monthly routine first. LifeCharge translates habits into battery-life analysis, while the legacy analyzer stays available for manual checks.
             </p>
           </div>
           <div className="flex flex-wrap gap-3">
-            <Link className="lc-focus inline-flex items-center gap-2 rounded-xl bg-slate-900 px-5 py-3 font-bold text-white hover:bg-slate-800 shadow-lg shadow-slate-900/20 transition-all duration-200" to="/prediction">
+            <Link className="lc-focus inline-flex items-center gap-2 rounded-xl bg-slate-900 px-5 py-3 font-bold text-white hover:bg-slate-800 shadow-lg shadow-slate-900/20 transition-all duration-200" to="/routine">
+              <CalendarClock size={20} aria-hidden="true" />
+              Analyze Routine
+            </Link>
+            <Link className="lc-focus inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 font-bold text-slate-700 hover:border-slate-300 hover:bg-slate-50 transition-all duration-200" to="/prediction">
               <ClipboardCheck size={20} aria-hidden="true" />
-              {t('dashboard.runHealthCheck')}
+              Legacy Check
             </Link>
             <Link className="lc-focus inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 font-bold text-slate-700 hover:border-slate-300 hover:bg-slate-50 transition-all duration-200" to="/reports">
               <BarChart3 size={20} aria-hidden="true" />
@@ -322,3 +326,7 @@ export default function DashboardPage() {
     </section>
   );
 }
+
+
+
+

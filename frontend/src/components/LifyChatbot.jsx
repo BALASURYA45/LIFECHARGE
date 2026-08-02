@@ -1,15 +1,40 @@
 import { BatteryCharging, Bot, ChevronDown, MessageCircle, Send, X } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const STORAGE_KEY = 'lifecharge.latestPrediction';
 const HISTORY_KEY = 'lifecharge.predictionHistory';
 
-const quickPrompts = [
-  'Compare previous reports',
-  'Explain my report',
-  'Ask anything',
-  'Battery life tips',
-];
+function normalizeLanguageInput(message) {
+  let normalized = message.toLowerCase();
+  const pairs = [
+    [/\bबैटरी\b/g, 'battery'],
+    [/\bरिपोर्ट\b/g, 'report'],
+    [/\bस्वास्थ्य\b/g, 'health'],
+    [/\bतापमान\b/g, 'temperature'],
+    [/\bचार्ज(?:िंg)?\b/g, 'charging'],
+    [/\bलाइफ\b/g, 'life'],
+    [/\bधन्यवाद\b/g, 'thanks'],
+    [/\bनमस्ते\b/g, 'hello'],
+    [/\bसहायक\b/g, 'assistant'],
+    [/\bकृपया\b/g, 'please'],
+    [/\bபேட்டரி\b/g, 'battery'],
+    [/\bஅறிக்கை\b/g, 'report'],
+    [/\bஆரோக்கியம்\b/g, 'health'],
+    [/\bவெப்பநிலை\b/g, 'temperature'],
+    [/\bசார்ஜ்\b/g, 'charging'],
+    [/\bநன்றி\b/g, 'thanks'],
+    [/\bவணக்கம்\b/g, 'hello'],
+    [/\bஉதவியாளர்\b/g, 'assistant'],
+    [/\bதயவு\b/g, 'please'],
+  ];
+
+  pairs.forEach(([pattern, replacement]) => {
+    normalized = normalized.replace(pattern, replacement);
+  });
+
+  return normalized;
+}
 
 function formatVehicle(prediction) {
   if (!prediction?.vehicleMake && !prediction?.vehicleModel) return 'your EV';
@@ -243,13 +268,13 @@ function answerGeneralQuestion(message) {
   return null;
 }
 
-function buildReply(message, prediction, history = []) {
+function buildReply(message, prediction, history = [], t) {
   const text = message.toLowerCase();
   const generalAnswer = answerGeneralQuestion(message);
   const appAnswer = answerAppQuestion(text);
 
-  if (/\b(hi|hello|hey|vanakkam|thanks|thank you)\b/.test(text)) {
-    return generalAnswer || `Hi, I am Lify, your LIFECHARGE assistant. Ask me about your report, previous checks, charging habits, company-specific battery care, app features, or simple general questions.`;
+  if (/\b(hi|hello|hey|vanakkam|thanks|thank you|नमस्ते|धन्यवाद|நன்றி)\b/.test(text)) {
+    return generalAnswer || t('chatbot.greeting');
   }
 
   if (text.includes('previous') || text.includes('history') || text.includes('compare') || text.includes('past')) {
@@ -296,6 +321,7 @@ function readStoredPrediction() {
 }
 
 export default function LifyChatbot() {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [prediction, setPrediction] = useState(null);
   const [history, setHistory] = useState([]);
@@ -304,7 +330,7 @@ export default function LifyChatbot() {
   const [messages, setMessages] = useState([
     {
       role: 'assistant',
-      content: 'Hi, I am Lify. Run a battery check, then I can explain the report and suggest practical maintenance steps for your exact EV.',
+      content: t('chatbot.intro'),
     },
   ]);
   const endRef = useRef(null);
@@ -358,9 +384,10 @@ export default function LifyChatbot() {
     setIsTyping(true);
 
     window.setTimeout(() => {
+      const normalized = normalizeLanguageInput(trimmed);
       setMessages((current) => [
         ...current,
-        { role: 'assistant', content: buildReply(trimmed, prediction, history) },
+        { role: 'assistant', content: buildReply(normalized, prediction, history, t) },
       ]);
       setIsTyping(false);
     }, 850 + Math.min(trimmed.length * 12, 900));
@@ -378,7 +405,7 @@ export default function LifyChatbot() {
               <h2 className="font-black leading-tight">Lify</h2>
               <p className="mt-1 truncate text-xs text-slate-300">{contextLabel}</p>
             </div>
-            <button className="lc-focus rounded-lg p-1 text-slate-300 hover:bg-white/10 hover:text-white" type="button" onClick={() => setIsOpen(false)} aria-label="Close Lify chat">
+            <button className="lc-focus rounded-lg p-1 text-slate-300 hover:bg-white/10 hover:text-white" type="button" onClick={() => setIsOpen(false)} aria-label={t('chatbot.closeButton')}>
               <X size={20} aria-hidden="true" />
             </button>
           </header>
@@ -405,7 +432,7 @@ export default function LifyChatbot() {
 
           <div className="border-t border-slate-200 bg-white p-3">
             <div className="mb-2 flex gap-2 overflow-x-auto pb-1">
-              {quickPrompts.map((prompt) => (
+              {t('chatbot.quickPrompts', { returnObjects: true }).map((prompt) => (
                 <button key={prompt} className="lc-focus shrink-0 rounded-lg border border-slate-200 px-3 py-2 text-xs font-bold text-slate-700 hover:border-cyan-400 hover:text-slate-900" type="button" onClick={() => sendMessage(prompt)}>
                   {prompt}
                 </button>
@@ -417,7 +444,7 @@ export default function LifyChatbot() {
                 value={input}
                 onChange={(event) => setInput(event.target.value)}
                 disabled={isTyping}
-                placeholder="Ask Lify anything..."
+                placeholder={t('chatbot.placeholder')}
               />
               <button className="lc-focus grid size-11 place-items-center rounded-lg bg-cyan-400 text-slate-950 hover:bg-cyan-300 disabled:cursor-not-allowed disabled:opacity-60" type="submit" disabled={isTyping} aria-label="Send message">
                 <Send size={18} aria-hidden="true" />
@@ -430,12 +457,12 @@ export default function LifyChatbot() {
           className="lc-focus flex items-center gap-2 rounded-full bg-slate-900 px-4 py-3 font-bold text-white shadow-2xl shadow-slate-900/25 hover:bg-slate-800"
           type="button"
           onClick={() => setIsOpen(true)}
-          aria-label="Open Lify battery guide"
+          aria-label={t('chatbot.openButton')}
         >
           <span className="grid size-9 place-items-center rounded-full bg-cyan-300 text-slate-950">
             <BatteryCharging size={19} aria-hidden="true" />
           </span>
-          <span className="hidden sm:inline">Ask Lify</span>
+          <span className="hidden sm:inline">{t('chatbot.openButton')}</span>
           <MessageCircle className="sm:hidden" size={18} aria-hidden="true" />
           <ChevronDown className="hidden rotate-180 sm:block" size={16} aria-hidden="true" />
         </button>

@@ -13,6 +13,7 @@ import ReportsPage from '../pages/ReportsPage.jsx';
 import ResetPasswordPage from '../pages/ResetPasswordPage.jsx';
 import BatteryDataPage from '../pages/BatteryDataPage.jsx';
 import BatteryDataFormPage from '../pages/BatteryDataFormPage.jsx';
+import RoutineAnalysisPage from '../pages/RoutineAnalysisPage.jsx';
 import ProtectedRoute from './ProtectedRoute.jsx';
 
 export const router = createBrowserRouter([
@@ -53,6 +54,14 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <MachineLearningPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'routine',
+        element: (
+          <ProtectedRoute>
+            <RoutineAnalysisPage />
           </ProtectedRoute>
         ),
       },
@@ -115,3 +124,4 @@ export const router = createBrowserRouter([
     ],
   },
 ]);
+

@@ -4,9 +4,24 @@
     "subtitle": "EV battery health companion",
     "tagline": "Battery guidance for daily EV decisions"
   },
+  "chatbot": {
+    "intro": "Hi, I am Lify. Run a battery check, then I can explain the report and suggest practical maintenance steps for your exact EV.",
+    "placeholder": "Ask Lify anything...",
+    "openButton": "Ask Lify",
+    "closeButton": "Close Lify chat",
+    "fallback": "I can answer general questions too, but I only know what is available inside this app and stable built-in guidance. For questions needing live internet or expert confirmation, please verify from an official source.",
+    "greeting": "Hi, I am Lify, your LIFECHARGE assistant. Ask me about your report, previous checks, charging habits, company-specific battery care, app features, or simple general questions.",
+    "quickPrompts": [
+      "Compare previous reports",
+      "Explain my report",
+      "Ask anything",
+      "Battery life tips"
+    ]
+  },
   "nav": {
     "dashboard": "Health Overview",
-    "prediction": "Battery Check",
+    "routine": "Routine",
+    "prediction": "Manual Check",
     "battery": "Battery Profile",
     "batteryRecords": "Records",
     "scenarios": "Scenarios",
@@ -57,7 +72,7 @@
     "title": "Health overview",
     "welcome": "Welcome back, {{name}}",
     "description": "See your latest battery health, remaining useful life, confidence, risk, and maintenance priorities.",
-    "runHealthCheck": "Run Health Check",
+    "runHealthCheck": "Analyze Routine",
     "reports": "Reports",
     "latestStatus": "Latest battery status",
     "lastDiagnostic": "Last diagnostic shows {{soh}}% SOH with {{rul}} months projected useful life and {{confidence}}% confidence.",
@@ -80,7 +95,7 @@
     "emptyTitle": "No battery checks yet",
     "emptyDesc": "Add a battery profile, run your first health check, and LifeCharge will start tracking SOH, useful life, risk status, recommendations, and report history.",
     "addProfile": "Add Battery Profile",
-    "runCheck": "Run Health Check",
+    "runCheck": "Analyze Routine",
     "step1": "Vehicle profile",
     "step2": "Health check",
     "step3": "Service report"
@@ -294,3 +309,5 @@
     "hi": "हिन्दी"
   }
 }
+
+

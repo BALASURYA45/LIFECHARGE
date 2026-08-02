@@ -14,7 +14,7 @@ export default function SimpleBatteryForm({ defaultValues, isLoading, onSubmit }
     categoryId: defaultValues?.categoryId ?? '',
     make: defaultValues?.make ?? '',
     model: defaultValues?.model ?? '',
-  });
+  }); 
   const [usage, setUsage] = useState({
     vehicleAge: defaultValues?.vehicleAge ?? '',
     totalKmDriven: defaultValues?.totalKmDriven ?? '',
