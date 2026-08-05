@@ -152,6 +152,7 @@
       "email": "Email",
       "password": "Password",
       "submit": "Login",
+      "google": "Continue with Google",
       "forgotPassword": "Forgot password?",
       "createAccount": "Create account"
     },
@@ -162,6 +163,7 @@
       "email": "Email",
       "password": "Password",
       "submit": "Register",
+      "google": "Continue with Google",
       "alreadyRegistered": "Already registered?",
       "login": "Login"
     },

@@ -4,6 +4,7 @@ import {
   forgotPassword,
   getProfile,
   login,
+  loginWithGoogle,
   register,
   updateProfile,
 } from '../controllers/auth.controller.js';
@@ -22,6 +23,7 @@ const router = Router();
 
 router.post('/register', validateRequest(registerSchema), asyncHandler(register));
 router.post('/login', validateRequest(loginSchema), asyncHandler(login));
+router.post('/google', asyncHandler(loginWithGoogle));
 router.post('/forgot-password', validateRequest(forgotPasswordSchema), asyncHandler(forgotPassword));
 router.post('/reset-password/:token', validateRequest(resetPasswordSchema), asyncHandler(completePasswordReset));
 router.get('/profile', protect, getProfile);

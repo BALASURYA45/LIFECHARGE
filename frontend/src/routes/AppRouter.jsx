@@ -11,8 +11,6 @@ import RegisterPage from '../pages/RegisterPage.jsx';
 import VehicleShowcasePage from '../pages/VehicleShowcasePage.jsx';
 import ReportsPage from '../pages/ReportsPage.jsx';
 import ResetPasswordPage from '../pages/ResetPasswordPage.jsx';
-import BatteryDataPage from '../pages/BatteryDataPage.jsx';
-import BatteryDataFormPage from '../pages/BatteryDataFormPage.jsx';
 import RoutineAnalysisPage from '../pages/RoutineAnalysisPage.jsx';
 import ProtectedRoute from './ProtectedRoute.jsx';
 
@@ -94,30 +92,6 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <ProfilePage />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: 'battery',
-        element: (
-          <ProtectedRoute>
-            <BatteryDataPage />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: 'battery/new',
-        element: (
-          <ProtectedRoute>
-            <BatteryDataFormPage />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: 'battery/:id/edit',
-        element: (
-          <ProtectedRoute>
-            <BatteryDataFormPage />
           </ProtectedRoute>
         ),
       },

@@ -1,4 +1,5 @@
 import {
+  ArrowRight,
   BatteryCharging,
   CalendarDays,
   CalendarRange,
@@ -7,10 +8,12 @@ import {
   History,
   Info,
   Route,
+  Sparkles,
   Thermometer,
   Zap,
 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import ExplanationPanel from '../components/ExplanationPanel.jsx';
 import PredictionResult from '../components/PredictionResult.jsx';
 import RecommendationPanel from '../components/RecommendationPanel.jsx';
@@ -23,9 +26,9 @@ import { generateRecommendations } from '../services/recommendationService.js';
 import { getErrorMessage } from '../utils/getErrorMessage.js';
 
 const routineModes = [
-  { id: 'daily', label: 'Daily', description: 'Same pattern most days' },
-  { id: 'weekly', label: 'Weekly', description: 'Plan by commute and weekend use' },
-  { id: 'monthly', label: 'Monthly', description: 'Best for irregular use' },
+  { id: 'daily', label: 'Daily routine', description: 'Best for predictable commutes and home charging', hint: 'Great for daily city usage', icon: CalendarDays },
+  { id: 'weekly', label: 'Weekly routine', description: 'Perfect for school, work, and weekend travel', hint: 'Best when your week varies', icon: Route },
+  { id: 'monthly', label: 'Monthly routine', description: 'Ideal for seasonal or irregular EV use', hint: 'Useful for less frequent trips', icon: CalendarRange },
 ];
 
 const defaults = {
@@ -41,6 +44,12 @@ const defaults = {
   chargeDuration: '4',
   endSoc: '35',
 };
+
+const routineSteps = [
+  { title: 'Pick your rhythm', description: 'Choose daily, weekly, or monthly so the form matches how you actually travel.' },
+  { title: 'Add the details', description: 'Enter distance, charging frequency, temperature, and charging habits you can remember easily.' },
+  { title: 'Review the insight', description: 'See the translated routine, battery health, and recommended next step in one view.' },
+];
 
 function toNumber(value, fallback = 0) {
   const parsed = Number(value);
@@ -155,6 +164,7 @@ export default function RoutineAnalysisPage() {
   const selectedSpec = vehicle.categoryId && vehicle.make && vehicle.model
     ? getVehicleSpec(vehicle.categoryId, vehicle.make, vehicle.model)
     : null;
+  const selectedMode = routineModes.find((item) => item.id === mode) ?? routineModes[0];
   const metrics = useMemo(() => buildRoutineMetrics(mode, routine, selectedSpec), [mode, routine, selectedSpec]);
 
   useEffect(() => {
@@ -230,73 +240,108 @@ export default function RoutineAnalysisPage() {
 
   return (
     <section className="space-y-6">
-      <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr] lg:items-stretch">
-        <div className="lc-card-static rounded-2xl p-5 sm:p-6 lg:p-8">
-          <p className="text-sm font-semibold uppercase tracking-widest text-cyan-700">Routine analysis</p>
-          <h1 className="mt-2 max-w-3xl text-3xl font-black tracking-tight text-slate-950 md:text-4xl">
-            Tell LifeCharge how you actually use your EV.
-          </h1>
-          <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600 sm:text-base">
-            Fill daily, weekly, or monthly driving and charging habits. LifeCharge translates the routine into battery health inputs and estimates SOH, useful life, confidence, and risk.
-          </p>
-          <div className="mt-5 flex flex-wrap gap-3">
-            {routineModes.map((item) => (
-              <button
-                key={item.id}
-                className={`lc-focus rounded-xl border px-4 py-3 text-left transition ${
-                  mode === item.id
-                    ? 'border-slate-950 bg-slate-950 text-white shadow-lg shadow-slate-900/20'
-                    : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'
-                }`}
-                type="button"
-                onClick={() => setMode(item.id)}
-              >
-                <span className="block text-sm font-black">{item.label}</span>
-                <span className={`mt-0.5 block text-xs ${mode === item.id ? 'text-slate-300' : 'text-slate-500'}`}>{item.description}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="rounded-2xl border border-slate-200 bg-slate-950 p-5 text-white shadow-xl shadow-slate-900/15 sm:p-6">
-          <div className="flex items-center gap-3">
-            <span className="grid size-11 place-items-center rounded-xl bg-cyan-300 text-slate-950">
-              <CalendarRange size={22} aria-hidden="true" />
-            </span>
-            <div>
-              <p className="text-xs font-bold uppercase tracking-widest text-cyan-200">Routine translator</p>
-              <h2 className="font-black">Converted for analysis</h2>
+      <div className="overflow-hidden rounded-3xl border border-slate-200 bg-gradient-to-br from-slate-950 via-slate-900 to-cyan-950 p-6 text-white shadow-2xl sm:p-8">
+        <div className="grid gap-8 lg:grid-cols-[1.08fr_0.92fr] lg:items-start">
+          <div>
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-sm font-semibold text-cyan-100">
+              <Sparkles size={16} aria-hidden="true" />
+              Routine-first battery analysis
+            </div>
+            <h1 className="mt-4 max-w-3xl text-3xl font-black tracking-tight md:text-4xl">
+              Describe how you really use your EV, then let LifeCharge estimate battery life from that routine.
+            </h1>
+            <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-300 sm:text-base">
+              Pick a daily, weekly, or monthly rhythm, enter the details you remember, and turn your habits into battery health insight without needing to think like a data scientist.
+            </p>
+            <div className="mt-6 flex flex-wrap items-center gap-3">
+              <Link className="lc-focus inline-flex items-center gap-2 rounded-xl bg-cyan-300 px-4 py-3 font-bold text-slate-950 transition hover:bg-cyan-200" to="/prediction">
+                <ClipboardCheck size={18} aria-hidden="true" />
+                Keep the legacy analyzer
+              </Link>
+              <span className="text-sm text-slate-300">Still available for manual checks whenever you want it.</span>
             </div>
           </div>
-          <div className="mt-5 grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
-            <Metric label="Avg daily drive" value={`${metrics.averageDailyDistance} km`} />
-            <Metric label="Charging frequency" value={`${metrics.weeklyChargingFrequency} / week`} />
-            <Metric label="Usage stress" value={`${metrics.stressScore}/100`} />
+
+          <div className="rounded-2xl border border-white/15 bg-white/10 p-5 backdrop-blur">
+            <div className="flex items-center gap-3">
+              <span className="grid size-11 place-items-center rounded-xl bg-cyan-300 text-slate-950">
+                <CalendarRange size={20} aria-hidden="true" />
+              </span>
+              <div>
+                <p className="text-xs font-bold uppercase tracking-widest text-cyan-100">Selected routine</p>
+                <h2 className="font-black">{selectedMode.label}</h2>
+              </div>
+            </div>
+            <div className="mt-5 grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
+              <Metric label="Avg daily drive" value={`${metrics.averageDailyDistance} km`} />
+              <Metric label="Charging frequency" value={`${metrics.weeklyChargingFrequency} / week`} />
+              <Metric label="Usage stress" value={`${metrics.stressScore}/100`} />
+            </div>
+            <p className="mt-4 text-sm leading-6 text-slate-300">
+              <span className="font-bold text-white">{selectedMode.hint}</span> — {selectedMode.description}
+            </p>
           </div>
-          <p className="mt-5 flex gap-2 text-sm leading-6 text-slate-300">
-            <Info className="mt-0.5 shrink-0 text-cyan-200" size={16} aria-hidden="true" />
-            These derived values are sent to the existing battery model, so the old health-check page stays available while routine entry becomes the easier path.
-          </p>
         </div>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-3">
+        {routineSteps.map((step, index) => (
+          <div key={step.title} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-black uppercase tracking-[0.2em] text-cyan-700">Step {index + 1}</span>
+              {index === 0 ? <CalendarDays className="text-cyan-700" size={18} aria-hidden="true" /> : null}
+              {index === 1 ? <BatteryCharging className="text-cyan-700" size={18} aria-hidden="true" /> : null}
+              {index === 2 ? <ArrowRight className="text-cyan-700" size={18} aria-hidden="true" /> : null}
+            </div>
+            <h3 className="mt-3 text-lg font-black text-slate-900">{step.title}</h3>
+            <p className="mt-2 text-sm leading-6 text-slate-600">{step.description}</p>
+          </div>
+        ))}
       </div>
 
       {message ? <p className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">{message}</p> : null}
       {error ? <p className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">{error}</p> : null}
 
       <div className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
-        <form className="lc-card-static rounded-xl p-4 sm:p-6" onSubmit={handleSubmit}>
+        <form id="routine-form" className="lc-card-static rounded-xl p-4 sm:p-6" onSubmit={handleSubmit}>
           <div className="mb-5 flex items-center gap-3">
             <span className="grid size-11 place-items-center rounded-xl border border-slate-200 bg-slate-50 text-slate-900">
               <BatteryCharging size={22} aria-hidden="true" />
             </span>
             <div>
-              <h2 className="text-lg font-black text-slate-900">Vehicle and routine details</h2>
-              <p className="text-sm text-slate-600">Pick your EV, then enter the habits you can remember easily.</p>
+              <h2 className="text-lg font-black text-slate-900">Capture your routine</h2>
+              <p className="text-sm text-slate-600">Choose the rhythm that fits your life, then fill the details you remember best.</p>
             </div>
           </div>
 
-          <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
+          <div className="mt-5 flex flex-wrap gap-3">
+            {routineModes.map((item) => (
+              <button
+                key={item.id}
+                className={`lc-focus rounded-xl border px-4 py-3 text-left transition ${
+                  mode === item.id
+                    ? 'border-cyan-500 bg-cyan-50 text-slate-950 shadow-sm'
+                    : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'
+                }`}
+                type="button"
+                onClick={() => setMode(item.id)}
+              >
+                <span className="flex items-center gap-2 text-sm font-black">
+                  <item.icon size={16} aria-hidden="true" />
+                  {item.label}
+                </span>
+                <span className={`mt-1 block text-xs ${mode === item.id ? 'text-slate-600' : 'text-slate-500'}`}>{item.description}</span>
+              </button>
+            ))}
+          </div>
+
+          <div className="mt-6 rounded-lg border border-slate-200 bg-slate-50 p-4">
             <VehicleSelector value={vehicle} onChange={setVehicle} />
+          </div>
+
+          <div className="mt-6 rounded-xl border border-cyan-200 bg-cyan-50 p-4 text-sm text-slate-700">
+            <p className="font-black text-slate-950">What this routine means</p>
+            <p className="mt-1">LifeCharge converts your selected pattern into weekly distance, charging frequency, and stress signals before it runs the analysis.</p>
           </div>
 
           <div className="mt-6 grid gap-4 md:grid-cols-2">

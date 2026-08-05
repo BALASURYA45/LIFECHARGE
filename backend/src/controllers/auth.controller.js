@@ -1,5 +1,6 @@
 import {
   loginUser,
+  loginUserWithGoogle,
   registerUser,
   requestPasswordReset,
   resetPassword,
@@ -13,6 +14,11 @@ export async function register(request, response) {
 
 export async function login(request, response) {
   const payload = await loginUser(request.body);
+  response.status(200).json({ success: true, ...payload });
+}
+
+export async function loginWithGoogle(request, response) {
+  const payload = await loginUserWithGoogle(request.body);
   response.status(200).json({ success: true, ...payload });
 }
 
