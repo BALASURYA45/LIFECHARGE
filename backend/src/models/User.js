@@ -30,6 +30,18 @@ const userSchema = new mongoose.Schema(
       enum: ['user', 'admin'],
       default: 'user',
     },
+    dailyReminderEnabled: {
+      type: Boolean,
+      default: true,
+    },
+    reminderTime: {
+      type: String,
+      default: '20:00',
+    },
+    browserNotificationsEnabled: {
+      type: Boolean,
+      default: false,
+    },
     passwordResetToken: {
       type: String,
       select: false,

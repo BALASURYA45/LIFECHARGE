@@ -51,15 +51,15 @@ const vehicleImageMap = {
   },
   three_wheeler: {
     'Mahindra Electric|Treo':
-      'https://images.unsplash.com/photo-1570125909232-eb263c188f7e?w=400&h=250&fit=crop&auto=format',
+      'https://images.unsplash.com/photo-1626149637281-4e227308da18?fm=jpg&q=80&w=400&h=250&fit=crop&auto=format',
     'Mahindra Electric|Treo Zor (Cargo)':
-      'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=400&h=250&fit=crop&auto=format',
+      'https://images.unsplash.com/photo-1639919397870-cc2c183be021?fm=jpg&q=80&w=400&h=250&fit=crop&auto=format',
     'Piaggio|Ape E-City':
-      'https://images.unsplash.com/photo-1570125909232-eb263c188f7e?w=400&h=250&fit=crop&auto=format',
+      'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?fm=jpg&q=80&w=400&h=250&fit=crop&auto=format',
     'Piaggio|Ape E-Xtra':
-      'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=400&h=250&fit=crop&auto=format',
+      'https://images.unsplash.com/photo-1626491058156-2daaeea7f578?fm=jpg&q=80&w=400&h=250&fit=crop&auto=format',
     'Bajaj Auto|RE EV':
-      'https://images.unsplash.com/photo-1570125909232-eb263c188f7e?w=400&h=250&fit=crop&auto=format',
+      'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?fm=jpg&q=80&w=400&h=250&fit=crop&auto=format',
   },
   four_wheeler: {
     'Tata Motors|Nexon EV Prime':

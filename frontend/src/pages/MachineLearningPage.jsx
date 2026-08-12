@@ -161,7 +161,7 @@ export default function MachineLearningPage() {
     }
   }
 
-  const modelResults = currentModel?.modelResults ?? [];
+  const modelResults = useMemo(() => currentModel?.modelResults ?? [], [currentModel?.modelResults]);
   const bestModelName = currentModel?.bestModelName;
   const hasModel = Boolean(currentModel);
   const metricCeilings = useMemo(() => {

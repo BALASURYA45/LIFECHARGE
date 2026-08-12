@@ -1,6 +1,9 @@
 import { BatteryCharging, Bot, ChevronDown, MessageCircle, Send, X } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { sendChatMessage } from '../services/aiService.js';
+import { useAuth } from '../hooks/useAuth.js';
+import { getVehicleSpec } from '../constants/vehicleDatabase.js';
 
 const STORAGE_KEY = 'lifecharge.latestPrediction';
 const HISTORY_KEY = 'lifecharge.predictionHistory';
@@ -268,14 +271,112 @@ function answerGeneralQuestion(message) {
   return null;
 }
 
-function buildReply(message, prediction, history = [], t) {
+function classifyBatteryConcern(message, prediction = null) {
+  const text = normalizeLanguageInput(message || '').replace(/[^a-z0-9%\s]/g, ' ');
+  const batteryWords = ['battery', 'batteries', 'health', 'soh', 'rul', 'charging', 'charge', 'risk', 'status', 'temperature', 'thermal', 'degradation', 'cell', 'capacity', 'range'];
+  const issueWords = ['serious', 'issue', 'problem', 'critical', 'warning', 'bad', 'decline', 'failing', 'health check', 'not good'];
+
+  const hasBatterySignal = batteryWords.some((word) => text.includes(word));
+  const hasMetricSignal = /(soh|rul|health).*\d|\d.*(soh|rul|health)/.test(text) || /\b\d{1,3}%\b/.test(text) && /battery|health|charge|risk|status|temperature/.test(text);
+  const isBatteryRelated = hasBatterySignal || hasMetricSignal;
+
+  if (!isBatteryRelated) {
+    return { isBatteryRelated: false, category: 'non_battery', needsClarification: true };
+  }
+
+  let category = 'general';
+  if (issueWords.some((word) => text.includes(word))) category = 'issue';
+  else if (/(charging|charge|fast|soc|temperature|heat)/.test(text)) category = 'charging';
+  else if (/(maintain|life|service|replace|warranty|care)/.test(text)) category = 'maintenance';
+  else if (/(report|result|status|risk|soh|rul|confidence|explain)/.test(text)) category = 'report';
+
+  if (prediction && category === 'issue') {
+    const soh = Number(prediction.SOH ?? 100);
+    const rul = Number(prediction.RUL ?? 60);
+    const status = String(prediction.batteryStatus || '').toLowerCase();
+    const risk = String(prediction.riskLabel || '').toLowerCase();
+
+    if (soh < 80 || rul < 12 || status.includes('critical') || status.includes('warning') || risk.includes('high')) {
+      category = 'issue';
+    }
+  }
+
+  return { isBatteryRelated: true, category, needsClarification: false };
+}
+
+function getIssueAnswer(prediction, history = []) {
+  if (!prediction) {
+    return 'I need your latest battery health report before I can tell if this is a real issue. Please run a battery health check and I will review the SOH, RUL, risk, and charging pattern.';
+  }
+
+  const latest = history[0] ?? prediction;
+  const soh = Number(latest.SOH ?? 100);
+  const rul = Number(latest.RUL ?? 60);
+  const status = String(latest.batteryStatus || 'Good');
+  const risk = String(latest.riskLabel || 'Low Risk');
+  const fastCharge = Number(latest.input?.fastChargingUsage ?? 0);
+  const averageTemp = Number(latest.input?.averageTemperature ?? 25);
+
+  const issueText = [];
+  if (soh < 80) issueText.push(`SOH is ${soh}%`, 'below the healthy threshold');
+  if (rul < 12) issueText.push(`RUL is only ${rul} months`);
+  if (status.toLowerCase().includes('critical') || status.toLowerCase().includes('warning')) issueText.push(`the battery status is ${status}`);
+  if (risk.toLowerCase().includes('high')) issueText.push(`the risk level is ${risk}`);
+  if (fastCharge >= 50) issueText.push(`fast charging is high at ${fastCharge}%`);
+  if (averageTemp >= 35) issueText.push(`temperature is high at ${averageTemp}°C`);
+
+  const summary = issueText.length ? issueText.join(', ') : 'the current report is still stable but should be monitored';
+
+  return `Yes — this is serious based on your current report: ${summary}. I recommend checking the battery sooner, reducing fast charging, avoiding heat stress, and keeping daily SOC in the 20-80% range until the next inspection.`;
+}
+
+function getRunnableConditionAnswer(prediction, selectedVehicle) {
+  const vehName = selectedVehicle ? `${selectedVehicle.make} ${selectedVehicle.model}` : (prediction ? formatVehicle(prediction) : 'your EV');
+
+  if (!prediction) {
+    return `Based on your connected profile vehicle (**${vehName}**), your vehicle is configured!\n\nTo evaluate if your car is in good, runnable condition, please run a quick **Battery Health Check** on the Prediction page. Once completed, I will analyze your State of Health (SOH %), Remaining Life (RUL), and risk levels for an exact verdict.`;
+  }
+
+  const soh = Number(prediction.SOH ?? 100);
+  const rul = Number(prediction.RUL ?? 60);
+  const status = String(prediction.batteryStatus || 'Good');
+  const risk = String(prediction.riskLabel || 'Low Risk');
+
+  let verdict = '✅ **YES, your vehicle is in GOOD RUNNABLE CONDITION!**';
+  if (soh < 70 || status.toLowerCase().includes('critical') || risk.toLowerCase().includes('high')) {
+    verdict = '❌ **ATTENTION: Immediate Service Inspection Recommended.**';
+  } else if (soh < 80 || rul < 12 || status.toLowerCase().includes('warning')) {
+    verdict = '⚠️ **CAUTION: Suitable for daily city commutes, but schedule maintenance soon.**';
+  }
+
+  return `${verdict}\n\n**Health Report Analysis for ${vehName}:**\n- **State of Health (SOH):** ${soh}%\n- **Remaining Useful Life (RUL):** ${rul} months\n- **Battery Status:** ${status}\n- **Risk Level:** ${risk}\n\n**Maintenance Tips:**\n- Keep daily state of charge between **20% and 80%**.\n- Prefer AC slow charging for routine daily use.\n- Avoid fast charging when the battery pack is warm.`;
+}
+
+export { buildReply, classifyBatteryConcern };
+
+function buildReply(message, prediction, history = [], t, selectedVehicle = null) {
   const text = message.toLowerCase();
   const generalAnswer = answerGeneralQuestion(message);
   const appAnswer = answerAppQuestion(text);
+  const concern = classifyBatteryConcern(message, prediction);
 
   if (/\b(hi|hello|hey|vanakkam|thanks|thank you|नमस्ते|धन्यवाद|நன்றி)\b/.test(text)) {
     return generalAnswer || t('chatbot.greeting');
   }
+
+  if (/(runnable|condition|good|run|drive|healthy|road trip|long trip|safe)/.test(text)) {
+    return getRunnableConditionAnswer(prediction, selectedVehicle);
+  }
+
+  if (!concern.isBatteryRelated) {
+    const contextLine = prediction ? `For your battery context: ${getReportSummary(prediction)}` : 'Run a battery health check first so I can explain your actual battery results.';
+    return `I am trained mainly for battery health and charging questions. Are you asking about your battery report, a charging issue, or battery maintenance? ${contextLine}`;
+  }
+
+  if (concern.category === 'issue') {
+    return getIssueAnswer(prediction, history);
+  }
+
 
   if (text.includes('previous') || text.includes('history') || text.includes('compare') || text.includes('past')) {
     return getReportHistoryAnswer(history, prediction);
@@ -320,10 +421,27 @@ function readStoredPrediction() {
   }
 }
 
+function readStoredSelectedVehicle() {
+  try {
+    const stored = window.localStorage.getItem('lifecharge_user_selected_vehicle');
+    if (!stored) return null;
+    const parsed = JSON.parse(stored);
+    if (parsed?.categoryId && parsed?.make && parsed?.model) {
+      const spec = getVehicleSpec(parsed.categoryId, parsed.make, parsed.model);
+      return { ...parsed, spec };
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 export default function LifyChatbot() {
   const { t } = useTranslation();
+  const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [prediction, setPrediction] = useState(null);
+  const [selectedVehicle, setSelectedVehicle] = useState(readStoredSelectedVehicle);
   const [history, setHistory] = useState([]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -337,10 +455,12 @@ export default function LifyChatbot() {
 
   useEffect(() => {
     setPrediction(readStoredPrediction());
+    setSelectedVehicle(readStoredSelectedVehicle());
     setHistory(readStoredHistory());
 
     function handlePredictionUpdated(event) {
       setPrediction(event.detail ?? readStoredPrediction());
+      setSelectedVehicle(readStoredSelectedVehicle());
       setHistory(readStoredHistory());
       setMessages((current) => [
         ...current,
@@ -353,6 +473,7 @@ export default function LifyChatbot() {
 
     function handleStorage() {
       setPrediction(readStoredPrediction());
+      setSelectedVehicle(readStoredSelectedVehicle());
       setHistory(readStoredHistory());
     }
 
@@ -368,36 +489,62 @@ export default function LifyChatbot() {
     endRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isOpen]);
 
-  const contextLabel = useMemo(() => (
-    prediction ? `${formatVehicle(prediction)} · SOH ${prediction.SOH}% · ${prediction.batteryStatus}` : 'Ready to help'
-  ), [prediction]);
+  const activeVeh = selectedVehicle || (prediction ? { make: prediction.vehicleMake, model: prediction.vehicleModel } : null);
 
-  function sendMessage(text = input) {
+  const contextLabel = useMemo(() => (
+    activeVeh?.model
+      ? `${activeVeh.make ? `${activeVeh.make} ` : ''}${activeVeh.model}${prediction ? ` · SOH ${prediction.SOH}%` : ''}`
+      : 'Groq AI Powered'
+  ), [activeVeh, prediction]);
+
+  async function sendMessage(text = input) {
     const trimmed = text.trim();
     if (!trimmed || isTyping) return;
 
-    setMessages((current) => [
-      ...current,
-      { role: 'user', content: trimmed },
-    ]);
+    const userMessage = { role: 'user', content: trimmed };
+    const updatedMessages = [...messages, userMessage];
+
+    setMessages(updatedMessages);
     setInput('');
     setIsTyping(true);
 
-    window.setTimeout(() => {
+    const currentVeh = selectedVehicle || readStoredSelectedVehicle();
+    const profileContext = {
+      userName: user?.name,
+      userEmail: user?.email,
+      userRole: user?.role,
+      selectedVehicle: currentVeh,
+    };
+
+    try {
+      const reply = await sendChatMessage({
+        message: trimmed,
+        history: updatedMessages,
+        predictionContext: prediction,
+        profileContext,
+      });
+
+      setMessages((current) => [
+        ...current,
+        { role: 'assistant', content: reply },
+      ]);
+    } catch (error) {
+      console.warn('Lify AI Groq response fallback:', error);
       const normalized = normalizeLanguageInput(trimmed);
       setMessages((current) => [
         ...current,
-        { role: 'assistant', content: buildReply(normalized, prediction, history, t) },
+        { role: 'assistant', content: buildReply(normalized, prediction, history, t, currentVeh) },
       ]);
+    } finally {
       setIsTyping(false);
-    }, 850 + Math.min(trimmed.length * 12, 900));
+    }
   }
 
   return (
     <div className="fixed bottom-4 right-4 z-50 sm:bottom-6 sm:right-6">
       {isOpen ? (
-        <section className="flex h-[min(620px,calc(100vh-96px))] w-[calc(100vw-32px)] max-w-sm flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-2xl shadow-slate-900/20">
-          <header className="flex items-start gap-3 border-b border-slate-200 bg-slate-900 p-4 text-white">
+        <section className="flex h-[min(620px,calc(100vh-96px))] w-[calc(100vw-32px)] max-w-sm flex-col overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 shadow-2xl shadow-slate-900/20">
+          <header className="flex items-start gap-3 border-b border-slate-200 dark:border-slate-800 bg-slate-900 dark:bg-slate-950 p-4 text-white">
             <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-cyan-300 text-slate-950">
               <Bot size={22} aria-hidden="true" />
             </span>
@@ -410,43 +557,43 @@ export default function LifyChatbot() {
             </button>
           </header>
 
-          <div className="flex-1 space-y-3 overflow-y-auto bg-slate-50 p-4">
+          <div className="flex-1 space-y-3 overflow-y-auto bg-slate-50 dark:bg-slate-950 p-4">
             {messages.map((message, index) => (
               <div key={`${message.role}-${index}`} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                <div className={`max-w-[88%] whitespace-pre-line rounded-xl px-3 py-2 text-sm leading-6 ${message.role === 'user' ? 'bg-slate-900 text-white' : 'border border-slate-200 bg-white text-slate-700'}`}>
+                <div className={`max-w-[88%] whitespace-pre-line rounded-xl px-3 py-2 text-sm leading-6 ${message.role === 'user' ? 'bg-cyan-600 text-white font-medium shadow-sm' : 'border border-slate-200 bg-white text-slate-800 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100 shadow-sm'}`}>
                   {message.content}
                 </div>
               </div>
             ))}
             {isTyping ? (
               <div className="flex justify-start">
-                <div className="flex items-center gap-1 rounded-xl border border-slate-200 bg-white px-3 py-3">
-                  <span className="size-2 animate-bounce rounded-full bg-slate-400 [animation-delay:-0.2s]" />
-                  <span className="size-2 animate-bounce rounded-full bg-slate-400 [animation-delay:-0.1s]" />
-                  <span className="size-2 animate-bounce rounded-full bg-slate-400" />
+                <div className="flex items-center gap-1 rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 px-3 py-3">
+                  <span className="size-2 animate-bounce rounded-full bg-cyan-400 [animation-delay:-0.2s]" />
+                  <span className="size-2 animate-bounce rounded-full bg-cyan-400 [animation-delay:-0.1s]" />
+                  <span className="size-2 animate-bounce rounded-full bg-cyan-400" />
                 </div>
               </div>
             ) : null}
             <div ref={endRef} />
           </div>
 
-          <div className="border-t border-slate-200 bg-white p-3">
-            <div className="mb-2 flex gap-2 overflow-x-auto pb-1">
+          <div className="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-3">
+            <div className="mb-2 flex gap-2 overflow-x-auto pb-1 scrollbar-none">
               {t('chatbot.quickPrompts', { returnObjects: true }).map((prompt) => (
-                <button key={prompt} className="lc-focus shrink-0 rounded-lg border border-slate-200 px-3 py-2 text-xs font-bold text-slate-700 hover:border-cyan-400 hover:text-slate-900" type="button" onClick={() => sendMessage(prompt)}>
+                <button key={prompt} className="lc-focus shrink-0 rounded-lg border border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-800/80 px-3 py-2 text-xs font-bold text-slate-700 dark:text-slate-200 hover:border-cyan-500 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors" type="button" onClick={() => sendMessage(prompt)}>
                   {prompt}
                 </button>
               ))}
             </div>
             <form className="flex items-center gap-2" onSubmit={(event) => { event.preventDefault(); sendMessage(); }}>
               <input
-                className="lc-focus min-h-11 flex-1 rounded-lg border border-slate-200 px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-cyan-500"
+                className="lc-focus min-h-11 flex-1 rounded-lg border border-slate-200 bg-slate-50 dark:bg-slate-800 dark:border-slate-700 px-3 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-cyan-500"
                 value={input}
                 onChange={(event) => setInput(event.target.value)}
                 disabled={isTyping}
                 placeholder={t('chatbot.placeholder')}
               />
-              <button className="lc-focus grid size-11 place-items-center rounded-lg bg-cyan-400 text-slate-950 hover:bg-cyan-300 disabled:cursor-not-allowed disabled:opacity-60" type="submit" disabled={isTyping} aria-label="Send message">
+              <button className="lc-focus grid size-11 place-items-center rounded-lg bg-cyan-500 text-white hover:bg-cyan-400 disabled:cursor-not-allowed disabled:opacity-60 shadow-md shadow-cyan-500/20" type="submit" disabled={isTyping} aria-label="Send message">
                 <Send size={18} aria-hidden="true" />
               </button>
             </form>

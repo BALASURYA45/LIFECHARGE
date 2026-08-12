@@ -8,6 +8,11 @@ from app.services.ml_training_service import (
 )
 from app.services.explainability_service import ExplanationError, explain_prediction
 from app.services.prediction_service import PredictionError, predict_battery_health
+from app.services.early_life_service import predict_early_life
+from app.services.uncertainty_service import compute_conformal_uncertainty
+from app.services.anomaly_service import detect_battery_anomalies
+from app.services.research_experiment_service import run_research_experiment
+from app.models.multitask_model import MultiTaskBatteryModel
 
 ml_blueprint = Blueprint("ml", __name__)
 
@@ -61,3 +66,49 @@ def explain_endpoint():
         return jsonify({"success": False, "message": str(error)}), 400
 
     return jsonify({"success": True, "explanation": explanation})
+
+
+@ml_blueprint.post("/early-life")
+def early_life_endpoint():
+    payload = request.get_json(silent=True) or {}
+    battery_features = payload.get("battery", payload)
+    cycles_used = int(payload.get("cyclesUsed", 100))
+
+    try:
+        res = predict_early_life(battery_features, cycles_used=cycles_used)
+    except Exception as error:
+        return jsonify({"success": False, "message": str(error)}), 400
+
+    return jsonify({"success": True, "data": res})
+
+
+@ml_blueprint.post("/uncertainty")
+def uncertainty_endpoint():
+    payload = request.get_json(silent=True) or {}
+    soh = float(payload.get("soh", 85.0))
+    rul = float(payload.get("rul", 450.0))
+    features = payload.get("features", {})
+
+    res = compute_conformal_uncertainty(soh, rul, feature_vector=features)
+    return jsonify({"success": True, "uncertainty": res})
+
+
+@ml_blueprint.post("/anomaly")
+def anomaly_endpoint():
+    payload = request.get_json(silent=True) or {}
+    features = payload.get("features", payload)
+
+    res = detect_battery_anomalies(features)
+    return jsonify({"success": True, "anomaly": res})
+
+
+@ml_blueprint.post("/experiments/run")
+def experiment_run_endpoint():
+    payload = request.get_json(silent=True) or {}
+
+    try:
+        res = run_research_experiment(payload)
+    except Exception as error:
+        return jsonify({"success": False, "message": str(error)}), 400
+
+    return jsonify({"success": True, "experiment": res})

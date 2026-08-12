@@ -17,7 +17,7 @@ import MetricCard from '../components/MetricCard.jsx';
 import { useAuth } from '../hooks/useAuth.js';
 import { getDashboardSummary } from '../services/dashboardService.js';
 import { getErrorMessage } from '../utils/getErrorMessage.js';
-import { useToast } from '../components/Toast.jsx';
+import { useToast } from '../components/useToastHook.jsx';
 
 function formatDate(value) {
   if (!value) {
@@ -93,7 +93,7 @@ export default function DashboardPage() {
   const [summary, setSummary] = useState(null);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(true);
-  const toast = useToast();
+  const { addToast } = useToast();
 
   useEffect(() => {
     let isMounted = true;
@@ -108,7 +108,7 @@ export default function DashboardPage() {
         if (isMounted) {
           const message = getErrorMessage(dashboardError);
           setError(message);
-          toast.addToast(message, 'error');
+          addToast(message, 'error');
         }
       } finally {
         if (isMounted) {
@@ -122,7 +122,7 @@ export default function DashboardPage() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [addToast]);
 
   const hasPredictions = Boolean(summary?.counts?.predictions);
   const statusData = summary?.statusDistribution ?? [];
@@ -143,16 +143,24 @@ export default function DashboardPage() {
             </p>
           </div>
           <div className="flex flex-wrap gap-3">
-            <Link className="lc-focus inline-flex items-center gap-2 rounded-xl bg-slate-900 px-5 py-3 font-bold text-white hover:bg-slate-800 shadow-lg shadow-slate-900/20 transition-all duration-200" to="/routine">
-              <CalendarClock size={20} aria-hidden="true" />
+            <Link className="lc-focus inline-flex items-center gap-2 rounded-xl bg-cyan-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-cyan-500 shadow-md shadow-cyan-500/20 transition-all duration-200" to="/digital-twin">
+              <BatteryCharging size={18} aria-hidden="true" />
+              Digital Twin
+            </Link>
+            <Link className="lc-focus inline-flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-bold text-white hover:bg-slate-800 shadow-md shadow-slate-900/20 transition-all duration-200" to="/routine">
+              <CalendarClock size={18} aria-hidden="true" />
               Analyze Routine
             </Link>
-            <Link className="lc-focus inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 font-bold text-slate-700 hover:border-slate-300 hover:bg-slate-50 transition-all duration-200" to="/prediction">
-              <ClipboardCheck size={20} aria-hidden="true" />
-              Legacy Check
+            <Link className="lc-focus inline-flex items-center gap-2 rounded-xl bg-purple-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-purple-500 shadow-md shadow-purple-500/20 transition-all duration-200" to="/model-comparison">
+              <BarChart3 size={18} aria-hidden="true" />
+              Model Benchmark
             </Link>
-            <Link className="lc-focus inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 font-bold text-slate-700 hover:border-slate-300 hover:bg-slate-50 transition-all duration-200" to="/reports">
-              <BarChart3 size={20} aria-hidden="true" />
+            <Link className="lc-focus inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-emerald-500 shadow-md shadow-emerald-500/20 transition-all duration-200" to="/research-experiments">
+              <Zap size={18} aria-hidden="true" />
+              Experiments
+            </Link>
+            <Link className="lc-focus inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 hover:border-slate-300 hover:bg-slate-50 transition-all duration-200" to="/reports">
+              <ClipboardCheck size={18} aria-hidden="true" />
               {t('dashboard.reports')}
             </Link>
           </div>

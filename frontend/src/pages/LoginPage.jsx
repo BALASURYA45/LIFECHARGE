@@ -5,11 +5,10 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import GoogleAuthButton from '../components/GoogleAuthButton.jsx';
 import { useAuth } from '../hooks/useAuth.js';
 import { getErrorMessage } from '../utils/getErrorMessage.js';
-import { loginWithGoogle } from '../services/authService.js';
 
 export default function LoginPage() {
   const { t } = useTranslation();
-  const { login } = useAuth();
+  const { login, loginGoogle } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [serverError, setServerError] = useState('');
@@ -31,9 +30,13 @@ export default function LoginPage() {
   }
 
   async function handleGoogleSuccess(credential) {
-    const data = await loginWithGoogle(credential);
-    localStorage.setItem('lifecharge_token', data.token);
-    navigate(location.state?.from?.pathname ?? '/dashboard', { replace: true });
+    setServerError('');
+    try {
+      await loginGoogle(credential);
+      navigate(location.state?.from?.pathname ?? '/dashboard', { replace: true });
+    } catch (error) {
+      setServerError(getErrorMessage(error));
+    }
   }
 
   return (

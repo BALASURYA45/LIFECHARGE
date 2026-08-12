@@ -6,7 +6,6 @@ import {
   ClipboardCheck,
   Gauge,
   History,
-  Info,
   Route,
   Sparkles,
   Thermometer,

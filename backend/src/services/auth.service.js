@@ -18,14 +18,18 @@ function canUseDatabase() {
   return Boolean(env.mongoUri) && mongoose.connection.readyState === 1;
 }
 
-async function findUserByEmail(email) {
+async function findUserByEmail(email, includePassword = false) {
   const normalizedEmail = getNormalizedEmail(email);
 
   if (!canUseDatabase()) {
     return inMemoryUsers.get(normalizedEmail) ?? null;
   }
 
-  return User.findOne({ email: normalizedEmail });
+  const query = User.findOne({ email: normalizedEmail });
+  if (includePassword) {
+    query.select('+password');
+  }
+  return query;
 }
 
 async function createUserRecord({ name, email, password }) {
@@ -80,7 +84,7 @@ export async function registerUser({ name, email, password }) {
 }
 
 export async function loginUser({ email, password }) {
-  const user = await findUserByEmail(email);
+  const user = await findUserByEmail(email, true);
 
   if (!user || !(await user.comparePassword(password))) {
     throw new AppError('Invalid email or password', 401);
@@ -97,19 +101,25 @@ export async function loginUserWithGoogle({ credential, accessToken }) {
   }
 
   try {
-    const response = await axios.get('https://oauth2.googleapis.com/tokeninfo', {
-      params: {
-        ...(credential ? { id_token: credential } : {}),
-        ...(accessToken ? { access_token: accessToken } : {}),
-      },
-    });
+    let email = '';
+    let name = 'Google User';
 
-    const payload = response.data;
-    const email = payload.email?.toLowerCase();
-    const name = payload.name || payload.given_name || email?.split('@')[0] || 'Google User';
+    if (credential) {
+      const response = await axios.get('https://oauth2.googleapis.com/tokeninfo', {
+        params: { id_token: credential },
+      });
+      email = response.data?.email?.toLowerCase();
+      name = response.data?.name || response.data?.given_name || email?.split('@')[0] || 'Google User';
+    } else if (accessToken) {
+      const response = await axios.get('https://www.googleapis.com/oauth2/v3/userinfo', {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+      email = response.data?.email?.toLowerCase();
+      name = response.data?.name || response.data?.given_name || email?.split('@')[0] || 'Google User';
+    }
 
     if (!email) {
-      throw new AppError('Google authentication failed', 401);
+      throw new AppError('Google authentication failed: Email not found', 401);
     }
 
     let user = await findUserByEmail(email);
@@ -118,7 +128,7 @@ export async function loginUserWithGoogle({ credential, accessToken }) {
       user = await createUserRecord({
         name,
         email,
-        password: crypto.randomBytes(16).toString('hex'),
+        password: crypto.randomBytes(16).toString('hex') + 'A1!',
       });
     }
 
@@ -168,8 +178,24 @@ export async function resetPassword({ token, password }) {
   return authPayload(user);
 }
 
-export async function updateUserProfile(userId, { name }) {
-  const user = await User.findByIdAndUpdate(userId, { name }, { new: true, runValidators: true });
+export async function updateUserProfile(userId, updates) {
+  const fields = {};
+  if (typeof updates.name === 'string') fields.name = updates.name;
+  if (typeof updates.dailyReminderEnabled === 'boolean') fields.dailyReminderEnabled = updates.dailyReminderEnabled;
+  if (typeof updates.reminderTime === 'string') fields.reminderTime = updates.reminderTime;
+  if (typeof updates.browserNotificationsEnabled === 'boolean') fields.browserNotificationsEnabled = updates.browserNotificationsEnabled;
+
+  if (!canUseDatabase()) {
+    for (const [_, user] of inMemoryUsers.entries()) {
+      if (user._id === userId) {
+        Object.assign(user, fields);
+        return user;
+      }
+    }
+    throw new AppError('User not found', 404);
+  }
+
+  const user = await User.findByIdAndUpdate(userId, fields, { new: true, runValidators: true });
 
   if (!user) {
     throw new AppError('User not found', 404);

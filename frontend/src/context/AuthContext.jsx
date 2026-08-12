@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   getProfile,
   loginUser,
+  loginWithGoogle,
   registerUser,
   updateProfile,
 } from '../services/authService.js';
@@ -66,6 +67,12 @@ export function AuthProvider({ children }) {
     return data;
   }, [persistSession]);
 
+  const loginGoogle = useCallback(async (credential) => {
+    const data = await loginWithGoogle(credential);
+    persistSession(data);
+    return data;
+  }, [persistSession]);
+
   const saveProfile = useCallback(async (payload) => {
     const data = await updateProfile(payload);
     setUser(data.user);
@@ -86,10 +93,11 @@ export function AuthProvider({ children }) {
       isInitializing,
       register,
       login,
+      loginGoogle,
       logout,
       saveProfile,
     }),
-    [token, user, isInitializing, register, login, logout, saveProfile],
+    [token, user, isInitializing, register, login, loginGoogle, logout, saveProfile],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

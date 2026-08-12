@@ -22,6 +22,7 @@ export const env = {
   clientOrigin: process.env.CLIENT_ORIGIN ?? 'http://localhost:5173',
   clientOrigins: [...new Set(clientOriginValues)],
   mlServiceUrl: process.env.ML_SERVICE_URL ?? 'http://localhost:8000',
+  groqApiKey: process.env.GROQ_API_KEY ?? '',
   smtp: {
     host: process.env.SMTP_HOST ?? '',
     port: Number(process.env.SMTP_PORT ?? 587),

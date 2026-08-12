@@ -1,6 +1,6 @@
-import { createContext, useContext, useState } from 'react';
-
-const ConfirmContext = createContext(null);
+import { useState } from 'react';
+import { ConfirmContext } from './ConfirmContext.jsx';
+export { ConfirmContext };
 
 export function ConfirmProvider({ children }) {
   const [state, setState] = useState({ open: false, title: '', message: '', onConfirm: () => {} });
@@ -57,12 +57,4 @@ export function ConfirmProvider({ children }) {
       ) : null}
     </ConfirmContext.Provider>
   );
-}
-
-export function useConfirm() {
-  const context = useContext(ConfirmContext);
-  if (!context) {
-    throw new Error('useConfirm must be used within a ConfirmProvider');
-  }
-  return context;
 }

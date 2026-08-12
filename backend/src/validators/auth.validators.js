@@ -28,5 +28,8 @@ export const resetPasswordSchema = Joi.object({
 });
 
 export const updateProfileSchema = Joi.object({
-  name: Joi.string().trim().min(2).max(80).required(),
+  name: Joi.string().trim().min(2).max(80).optional(),
+  dailyReminderEnabled: Joi.boolean().optional(),
+  reminderTime: Joi.string().regex(/^([01]\d|2[0-3]):?([0-5]\d)$/).optional(),
+  browserNotificationsEnabled: Joi.boolean().optional(),
 });

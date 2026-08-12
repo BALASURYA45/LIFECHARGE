@@ -2,6 +2,58 @@
 
 AI-Based Battery Health Prediction and Predictive Maintenance System for Electric Vehicles.
 
+## Developer Setup
+
+1. Install dependencies
+
+   ```bash
+   npm install
+   npm install --prefix frontend
+   npm install --prefix backend
+   python -m pip install -r ml-service/requirements.txt
+   ```
+
+2. Run locally
+
+   ```bash
+   npm run dev:frontend
+   npm run dev:backend
+   npm run dev:ml
+   ```
+
+3. Run tests
+
+   ```bash
+   npm test
+   ```
+
+4. Build for production
+
+   ```bash
+   npm run build:frontend
+   ```
+
+## Docker / Local Container Setup
+
+```bash
+docker compose up --build
+```
+
+The services exposed locally will be:
+
+- Frontend: `http://localhost:5173`
+- Backend: `http://localhost:5000`
+- ML service: `http://localhost:8000`
+- MongoDB: `mongodb://localhost:27017`
+
+## CI Pipeline
+
+A GitHub Actions workflow is included at `.github/workflows/ci.yml`. It runs:
+
+- frontend lint and build
+- backend lint and tests
+- ML service syntax checks
+
 ## Enhanced Version - Major Upgrades
 
 ### What's New

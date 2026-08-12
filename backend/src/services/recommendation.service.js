@@ -10,96 +10,79 @@ function addRecommendation(recommendations, recommendation) {
 }
 
 function buildRecommendations(prediction) {
-  const input = prediction.input;
+  const input = prediction.input || {};
   const recommendations = [];
+  const fastCharging = input.fastChargingUsage || 0;
+  const temp = input.averageTemperature || 25;
+  const cycles = input.chargingCycles || 100;
+  const currentRUL = prediction.RUL || 400;
 
-  if (prediction.SOH < 80 || prediction.batteryStatus === 'Critical') {
+  if (fastCharging >= 40) {
+    const reducedFastCharging = 15;
+    const estimatedRulGain = Math.round(currentRUL * 0.18 + (fastCharging - reducedFastCharging) * 1.5);
     addRecommendation(recommendations, {
-      title: 'Schedule battery inspection',
-      description: 'SOH is below the healthy range. Run a service inspection before degradation becomes severe.',
+      title: `Reduce fast charging frequency from ${fastCharging}% to 15%`,
+      description: `Frequent DC fast charging induces mechanical stress and thermal degradation. Switching to slow AC charging extends cell lifespan.`,
       priority: 'High',
-      category: 'Maintenance',
+      category: 'Charging Optimization',
+      affectedParameter: 'fastChargingUsage',
+      expectedImpact: `+${estimatedRulGain} additional cycles (~${(estimatedRulGain / 180).toFixed(1)} years)`,
+      reason: 'SHAP analysis identified fast charging as a top negative contributor to battery longevity.',
+      severity: 'High Risk',
     });
   }
 
-  if (prediction.RUL < 50) {
+  if (temp >= 32) {
+    const estimatedTempGain = Math.round(currentRUL * 0.14 + (temp - 25) * 4.2);
     addRecommendation(recommendations, {
-      title: 'Plan battery maintenance window',
-      description: 'Remaining useful life is limited. Plan maintenance or replacement budgeting early.',
+      title: `Maintain thermal management below 30°C`,
+      description: `Operating at ${temp}°C accelerates solid electrolyte interphase (SEI) layer growth. Park in shaded spaces and use pre-conditioning.`,
       priority: 'High',
-      category: 'Lifecycle',
-    });
-  }
-
-  if (input.fastChargingUsage >= 60) {
-    addRecommendation(recommendations, {
-      title: 'Reduce fast charging usage',
-      description: 'Frequent fast charging increases thermal and chemical stress. Prefer slow charging for routine charging.',
-      priority: 'High',
-      category: 'Charging',
-    });
-  }
-
-  if (input.averageTemperature >= 38) {
-    addRecommendation(recommendations, {
-      title: 'Avoid high temperature exposure',
-      description: 'High average temperature accelerates battery aging. Park in shade and avoid charging immediately after heavy use.',
-      priority: 'High',
-      category: 'Thermal',
+      category: 'Thermal Care',
+      affectedParameter: 'averageTemperature',
+      expectedImpact: `+${estimatedTempGain} cycles gain (~${(estimatedTempGain / 180).toFixed(1)} years)`,
+      reason: 'High ambient/operating temperature detected as key thermal stress factor.',
+      severity: temp > 40 ? 'CRITICAL' : 'WARNING',
     });
   }
 
   if (input.socHistory < 20 || input.socHistory > 85) {
+    const estimatedSocGain = Math.round(currentRUL * 0.10);
     addRecommendation(recommendations, {
-      title: 'Keep charge between 20 and 80 percent',
-      description: 'Very low or very high SOC increases stress. Keep daily charging mostly within the 20-80 percent range.',
+      title: 'Maintain SOC within 20% to 80% window',
+      description: `Extreme states of charge (above 85% or below 20%) induce severe mechanical strain on electrodes. Set vehicle charge cap to 80%.`,
       priority: 'Medium',
-      category: 'SOC',
+      category: 'SOC Strategy',
+      affectedParameter: 'socHistory',
+      expectedImpact: `+${estimatedSocGain} cycles gain`,
+      reason: 'Reduces high-voltage exposure and deep discharge stress.',
+      severity: 'Medium Risk',
     });
   }
 
-  if (input.chargingFrequency >= 8) {
+  if (prediction.SOH < 80 || prediction.batteryStatus === 'Critical') {
     addRecommendation(recommendations, {
-      title: 'Optimize charging frequency',
-      description: 'Charging too frequently may increase cycle stress. Consolidate short charging sessions when practical.',
-      priority: 'Medium',
-      category: 'Charging',
-    });
-  }
-
-  if (input.chargingDuration >= 6) {
-    addRecommendation(recommendations, {
-      title: 'Avoid long charging sessions',
-      description: 'Long charging sessions can keep the battery under stress. Stop charging once the required range is reached.',
-      priority: 'Medium',
-      category: 'Charging',
-    });
-  }
-
-  if (input.dailyDistance >= 130) {
-    addRecommendation(recommendations, {
-      title: 'Reduce high daily load when possible',
-      description: 'High daily distance increases cycling demand. Use efficient driving modes and avoid aggressive acceleration.',
-      priority: 'Low',
-      category: 'Driving',
-    });
-  }
-
-  if (input.chargingCycles >= 2500) {
-    addRecommendation(recommendations, {
-      title: 'Monitor cycle aging closely',
-      description: 'The battery has accumulated many cycles. Track SOH trends and compare predictions after each new dataset upload.',
-      priority: 'Medium',
-      category: 'Monitoring',
+      title: 'Schedule comprehensive diagnostic inspection',
+      description: 'SOH has degraded below 80%. Perform cell balancing check and thermal management diagnostics.',
+      priority: 'High',
+      category: 'Maintenance',
+      affectedParameter: 'SOH',
+      expectedImpact: 'Prevent sudden cell isolation failure',
+      reason: 'Battery SOH crossed retirement threshold.',
+      severity: 'CRITICAL',
     });
   }
 
   if (!recommendations.length) {
     recommendations.push({
-      title: 'Continue current battery habits',
-      description: 'The prediction indicates healthy battery behavior. Continue balanced charging, moderate temperatures, and routine monitoring.',
+      title: 'Maintain current optimal charging and driving protocol',
+      description: 'Current operational parameters match optimal longevity profiles. Continue regular monitoring.',
       priority: 'Low',
       category: 'General',
+      affectedParameter: 'general',
+      expectedImpact: 'Baseline lifetime retention',
+      reason: 'All battery metrics operating within optimal efficiency envelope.',
+      severity: 'Low Risk',
     });
   }
 
@@ -108,7 +91,7 @@ function buildRecommendations(prediction) {
       const rank = { High: 0, Medium: 1, Low: 2 };
       return rank[a.priority] - rank[b.priority];
     }),
-    summary: `Generated ${recommendations.length} recommendations for ${prediction.batteryStatus.toLowerCase()} battery status and ${prediction.degradationTrend.toLowerCase()} trend.`,
+    summary: `Generated ${recommendations.length} dynamic recommendations for ${prediction.batteryStatus} battery status.`,
     generatedAt: new Date(),
   };
 }

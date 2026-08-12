@@ -13,12 +13,20 @@ import predictionRoutes from './routes/prediction.routes.js';
 import recommendationRoutes from './routes/recommendation.routes.js';
 import reportRoutes from './routes/report.routes.js';
 import whatIfRoutes from './routes/whatIf.routes.js';
+import notificationRoutes from './routes/notification.routes.js';
+import aiRoutes from './routes/ai.routes.js';
+import researchRoutes from './routes/research.routes.js';
+import digitalTwinRoutes from './routes/digitalTwin.routes.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { notFoundHandler } from './middleware/notFoundHandler.js';
 
 const app = express();
 
-app.use(helmet());
+app.use(
+  helmet({
+    crossOriginOpenerPolicy: { policy: 'same-origin-allow-popups' },
+  }),
+);
 app.use(
   cors({
     origin(origin, callback) {
@@ -41,15 +49,19 @@ if (env.nodeEnv !== 'test') {
 }
 
 app.use('/api/auth', authRoutes);
+app.use('/api/ai', aiRoutes);
 app.use('/api/battery', batteryRoutes);
 app.use('/api/dashboard', dashboardRoutes);
-app.use('/api', explanationRoutes);
 app.use('/api/health', healthRoutes);
+app.use('/api', explanationRoutes);
 app.use('/api/ml', mlRoutes);
 app.use('/api', predictionRoutes);
 app.use('/api', recommendationRoutes);
 app.use('/api', reportRoutes);
 app.use('/api', whatIfRoutes);
+app.use('/api', notificationRoutes);
+app.use('/api', researchRoutes);
+app.use('/api', digitalTwinRoutes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

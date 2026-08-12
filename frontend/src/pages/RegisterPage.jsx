@@ -5,11 +5,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import GoogleAuthButton from '../components/GoogleAuthButton.jsx';
 import { useAuth } from '../hooks/useAuth.js';
 import { getErrorMessage } from '../utils/getErrorMessage.js';
-import { loginWithGoogle } from '../services/authService.js';
 
 export default function RegisterPage() {
   const { t } = useTranslation();
-  const { register: registerAccount } = useAuth();
+  const { register: registerAuth, loginGoogle } = useAuth();
   const navigate = useNavigate();
   const [serverError, setServerError] = useState('');
   const {
@@ -22,7 +21,7 @@ export default function RegisterPage() {
     setServerError('');
 
     try {
-      await registerAccount(values);
+      await registerAuth(values);
       navigate('/dashboard', { replace: true });
     } catch (error) {
       setServerError(getErrorMessage(error));
@@ -30,9 +29,13 @@ export default function RegisterPage() {
   }
 
   async function handleGoogleSuccess(credential) {
-    const data = await loginWithGoogle(credential);
-    localStorage.setItem('lifecharge_token', data.token);
-    navigate('/dashboard', { replace: true });
+    setServerError('');
+    try {
+      await loginGoogle(credential);
+      navigate('/dashboard', { replace: true });
+    } catch (error) {
+      setServerError(getErrorMessage(error));
+    }
   }
 
   return (

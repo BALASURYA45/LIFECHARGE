@@ -1,0 +1,61 @@
+version: '3.9'
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    ports:
+      - '5173:80'
+    depends_on:
+      - backend
+    networks:
+      - lifecharge-net
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    environment:
+      - NODE_ENV=production
+      - PORT=5000
+      - MONGODB_URI=mongodb://mongo:27017/lifecharge
+      - CLIENT_ORIGIN=http://localhost:5173
+      - JWT_SECRET=lifecharge-production-secret
+      - ML_SERVICE_URL=http://ml-service:8000
+    ports:
+      - '5000:5000'
+    depends_on:
+      - mongo
+      - ml-service
+    networks:
+      - lifecharge-net
+
+  ml-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.ml
+    environment:
+      - FLASK_ENV=production
+      - HOST=0.0.0.0
+      - PORT=8000
+    ports:
+      - '8000:8000'
+    networks:
+      - lifecharge-net
+
+  mongo:
+    image: mongo:6.0
+    restart: unless-stopped
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - lifecharge-net
+
+networks:
+  lifecharge-net:
+    driver: bridge
+
+volumes:
+  mongo-data:

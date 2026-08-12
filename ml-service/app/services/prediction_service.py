@@ -15,18 +15,28 @@ class PredictionError(ValueError):
 
 
 def _validate_features(payload: dict[str, Any]) -> dict[str, float]:
-    missing = [feature for feature in FEATURE_COLUMNS if feature not in payload]
-
-    if missing:
-        raise PredictionError(f"Missing required features: {', '.join(missing)}")
-
     features = {}
 
+    defaults = {
+        "is_two_wheeler": 0.0,
+        "is_three_wheeler": 0.0,
+        "is_four_wheeler": 1.0,
+        "is_bus": 0.0,
+        "is_chemistry_lfp": 1.0,
+        "is_chemistry_nmc": 0.0,
+        "is_chemistry_lead_acid": 0.0,
+    }
+
     for feature in FEATURE_COLUMNS:
-        try:
-            features[feature] = float(payload[feature])
-        except (TypeError, ValueError) as error:
-            raise PredictionError(f"{feature} must be a numeric value") from error
+        if feature in payload:
+            try:
+                features[feature] = float(payload[feature])
+            except (TypeError, ValueError) as error:
+                raise PredictionError(f"{feature} must be a numeric value") from error
+        elif feature in defaults:
+            features[feature] = defaults[feature]
+        else:
+            raise PredictionError(f"Missing required feature: {feature}")
 
     return features
 
