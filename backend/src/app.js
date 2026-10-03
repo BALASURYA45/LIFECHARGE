@@ -34,20 +34,31 @@ app.use(
     crossOriginOpenerPolicy: { policy: 'same-origin-allow-popups' },
   }),
 );
-app.use(
-  cors({
-    origin(origin, callback) {
-      if (!origin || env.clientOrigins.includes(origin)) {
-        callback(null, true);
-        return;
-      }
 
-      callback(new Error(`CORS blocked origin: ${origin}`));
-    },
-    credentials: true,
-  }),
-);
-app.options('*', cors({ origin: env.clientOrigins, credentials: true }));
+const isAllowedOrigin = (origin) => {
+  if (!origin) return true;
+  if (env.clientOrigins.includes(origin)) return true;
+  if (origin.endsWith('.onrender.com')) return true;
+  if (origin.includes('localhost') || origin.includes('127.0.0.1')) return true;
+  return false;
+};
+
+const corsOptions = {
+  origin(origin, callback) {
+    if (isAllowedOrigin(origin)) {
+      callback(null, true);
+    } else {
+      callback(null, false);
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
+
 app.use(express.json({ limit: '2mb' }));
 app.use(express.urlencoded({ extended: true }));
 
@@ -77,9 +88,7 @@ app.use('/api', insightsRoutes);
 app.use('/api/v2g', v2gRoutes);
 app.use('/api/v1', v1Routes);
 
-
 app.use(notFoundHandler);
-
 app.use(errorHandler);
 
 export default app;
