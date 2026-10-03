@@ -30,10 +30,6 @@ import BatteryPack3DView from '../telematics/BatteryPack3DView.jsx';
 import useTelematicsStream from '../../hooks/useTelematicsStream.js';
 
 export default function FleetOverviewView({ fleetData }) {
-  if (!fleetData) return null;
-
-  const { summary = {}, vehicles = [] } = fleetData;
-
   // Real-Time WebSocket Telemetry Stream Hook
   const {
     isConnected: isWsConnected,
@@ -45,8 +41,12 @@ export default function FleetOverviewView({ fleetData }) {
   } = useTelematicsStream();
 
   // Selected vehicle for 3D inspection & telemetry focus
-  const [selectedVin, setSelectedVin] = useState(vehicles[0]?.vin || '');
+  const [selectedVin, setSelectedVin] = useState(fleetData?.vehicles?.[0]?.vin || '');
   const [activeFilter, setActiveFilter] = useState('ALL'); // ALL | HIGH_RISK | LONG_HAUL | CITY
+
+  if (!fleetData) return null;
+
+  const { summary = {}, vehicles = [] } = fleetData;
 
   // Find currently selected vehicle
   const selectedVehicle =
