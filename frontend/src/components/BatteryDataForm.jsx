@@ -61,7 +61,7 @@ export default function BatteryDataForm({ defaultValues, isLoading, onSubmit }) 
             />
 
             {errors[field.name] ? (
-              <p className="text-xs font-semibold text-red-500 dark:text-red-400">{errors[field.name].message}</p>
+              <p className="text-xs font-semibold text-emerald-500 dark:text-emerald-400">{errors[field.name].message}</p>
             ) : null}
           </div>
         ))}

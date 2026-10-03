@@ -55,6 +55,16 @@ ENGINEERED_FEATURES = [
     "soh_rul_ratio_proxy",
     "temp_squared",
     "fastcharge_temp_interaction",
+    "arrhenius_thermal_factor",
+    "thermal_stress_score",
+    "cyclic_stress_score",
+    "internal_resistance_est",
+    "ica_peak_position_v",
+    "ica_peak_height",
+    "ica_peak_shift_v",
+    "dva_peak_position_q",
+    "dva_peak_height",
+    "degradation_stress_multiplier",
 ]
 
 
@@ -63,7 +73,7 @@ class TrainingError(ValueError):
 
 
 def _add_engineered_features(df: pd.DataFrame) -> pd.DataFrame:
-    """Add domain-specific interaction features to improve model accuracy."""
+    """Add domain-specific electro-thermal and dQ/dV degradation features to improve model accuracy."""
     df = df.copy()
 
     # Interaction: battery age * charging cycles (captures cumulative wear)
@@ -86,6 +96,38 @@ def _add_engineered_features(df: pd.DataFrame) -> pd.DataFrame:
 
     # Interaction: fast charging * temperature (combined thermal stress)
     df["fastcharge_temp_interaction"] = df["fastChargingUsage"] * df["averageTemperature"]
+
+    # Electro-Thermal Physics Features
+    temp_c = df["averageTemperature"].astype(float)
+    fast_pct = df["fastChargingUsage"].astype(float)
+    cycles = df["chargingCycles"].astype(float)
+    cap = df["batteryCapacity"].astype(float)
+    voltage = df["voltage"].astype(float)
+    current = df["current"].astype(float)
+
+    # 1. Arrhenius Thermal Factor
+    temp_k = temp_c + 273.15
+    arrhenius_raw = np.exp((0.35 / 8.617e-5) * (1.0 / 298.15 - 1.0 / temp_k))
+    df["arrhenius_thermal_factor"] = np.clip(arrhenius_raw, 0.1, 10.0)
+
+    # 2. Electro-Thermal Stress Index
+    df["thermal_stress_score"] = np.clip(np.abs(temp_c - 25.0) * 2.2 + fast_pct * 0.4, 0.0, 100.0)
+
+    # 3. Cyclic Stress Index
+    c_rate = current / (cap + 1e-3)
+    df["cyclic_stress_score"] = np.clip((c_rate ** 1.5) * (cycles / 100.0), 0.0, 100.0)
+
+    # 4. Internal Resistance Estimate (V/I proxy)
+    df["internal_resistance_est"] = voltage / (current + 1e-3)
+
+    # 5. Synthesized dQ/dV Peak Height & Shift Metrics
+    cycle_ratio = cycles / 1000.0
+    df["ica_peak_position_v"] = np.maximum(3.0, 3.75 - 0.04 * cycle_ratio)
+    df["ica_peak_height"] = np.maximum(0.1, 4.5 - 1.1 * cycle_ratio - 0.01 * (temp_c - 25.0))
+    df["ica_peak_shift_v"] = -0.04 * cycle_ratio
+    df["dva_peak_position_q"] = np.maximum(0.5, 1.9 - 0.25 * cycle_ratio)
+    df["dva_peak_height"] = np.maximum(0.1, 3.2 - 0.8 * cycle_ratio)
+    df["degradation_stress_multiplier"] = df["arrhenius_thermal_factor"] * (1.0 + 0.01 * fast_pct)
 
     return df
 
@@ -290,7 +332,7 @@ def _tune_and_evaluate(
 ) -> tuple[dict[str, Any], dict[str, float]]:
     """Tune hyperparameters with RandomizedSearchCV and evaluate the best model for a single target."""
     best_model_name = ""
-    best_pipeline: Pipeline | None = None
+    best_pipeline: Any = None
     best_metrics: dict[str, float] = {"mae": float("inf")}
     all_results: list[dict[str, Any]] = []
 
@@ -301,6 +343,7 @@ def _tune_and_evaluate(
         pipeline = _build_tree_pipeline(regressor)
         params = param_distributions.get(model_name, {})
 
+        current_pipeline: Any = None
         if params:
             search = RandomizedSearchCV(
                 pipeline,
@@ -313,15 +356,18 @@ def _tune_and_evaluate(
                 refit=True,
             )
             search.fit(x_train, y_train)
-            best_pipeline = search.best_estimator_
+            current_pipeline = search.best_estimator_
             best_params = search.best_params_
         else:
             pipeline.fit(x_train, y_train)
-            best_pipeline = pipeline
+            current_pipeline = pipeline
             best_params = {}
 
         # Evaluate on test set
-        predictions = best_pipeline.predict(x_test)
+        if current_pipeline is None or not hasattr(current_pipeline, "predict"):
+            raise AttributeError(f"Estimator '{model_name}' has no attribute 'predict'")
+
+        predictions = current_pipeline.predict(x_test)
         metrics = {
             "mae": round(float(mean_absolute_error(y_test, predictions)), 4),
             "rmse": round(float(np.sqrt(mean_squared_error(y_test, predictions))), 4),
@@ -388,6 +434,7 @@ def train_models(dataset_path: str | None = None, artifact_dir: str | None = Non
     model_results = []
     trained_models: dict[str, Pipeline] = {}
     best_metrics_per_target: dict[str, dict[str, float]] = {}
+    best_model_names: dict[str, str] = {}
 
     # Train separate models for each target (SOH and RUL)
     for target in TARGET_COLUMNS:
@@ -403,26 +450,18 @@ def train_models(dataset_path: str | None = None, artifact_dir: str | None = Non
         )
 
         model_name = result["modelName"]
-        trained_models[model_name + "_" + target] = result["pipeline"]
+        trained_models[f"{model_name}_{target}"] = result["pipeline"]
         model_results.extend(result["allResults"])
         best_metrics_per_target[target] = metrics
+        best_model_names[target] = model_name
 
         print(f"  [{target}] Best model: {model_name}, MAE: {metrics['mae']}, R2: {metrics['r2']}")
 
-    # Select the overall best model name for each target
-    best_soh_model = trained_models.get("Random Forest_SOH") or list(trained_models.values())[0]
-    best_rul_model = trained_models.get("Random Forest_RUL") or list(trained_models.values())[1]
+    best_soh_model_name = best_model_names.get("SOH", "Random Forest")
+    best_rul_model_name = best_model_names.get("RUL", "Random Forest")
 
-    # Find actual best models by checking results
-    for target in TARGET_COLUMNS:
-        target_results = [r for r in model_results if r["target"] == target]
-        if target_results:
-            best_result = sorted(target_results, key=lambda r: r["metrics"]["mae"])[0]
-            model_name = best_result["modelName"]
-            if target == "SOH":
-                best_soh_model = trained_models[model_name + "_SOH"]
-            else:
-                best_rul_model = trained_models[model_name + "_RUL"]
+    best_soh_model = trained_models.get(f"{best_soh_model_name}_SOH") or list(trained_models.values())[0]
+    best_rul_model = trained_models.get(f"{best_rul_model_name}_RUL") or list(trained_models.values())[1]
 
     metadata = {
         "trainingId": str(uuid4()),
@@ -432,8 +471,8 @@ def train_models(dataset_path: str | None = None, artifact_dir: str | None = Non
         "featureColumns": all_features,
         "targetColumns": TARGET_COLUMNS,
         "bestModelNames": {
-            "SOH": best_result["modelName"] if target_results else "Random Forest",
-            "RUL": best_result["modelName"] if target_results else "Random Forest",
+            "SOH": best_soh_model_name,
+            "RUL": best_rul_model_name,
         },
         "bestMetrics": best_metrics_per_target,
         "modelResults": model_results,

@@ -7,10 +7,8 @@ import { predictionInputSchema, predictionQuerySchema } from '../validators/pred
 
 const router = Router();
 
-router.use(protect);
-
-router.post('/predict', validateRequest(predictionInputSchema), asyncHandler(predict));
-router.get('/predictions', validateRequest(predictionQuerySchema, 'query'), asyncHandler(predictionHistory));
-router.get('/predictions/:id', asyncHandler(predictionById));
+router.post('/predict', protect, validateRequest(predictionInputSchema), asyncHandler(predict));
+router.get('/predictions', protect, validateRequest(predictionQuerySchema, 'query'), asyncHandler(predictionHistory));
+router.get('/predictions/:id', protect, asyncHandler(predictionById));
 
 export default router;

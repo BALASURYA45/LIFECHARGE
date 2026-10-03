@@ -1,0 +1,8 @@
+Model Architecture,Category,SoH MAE (%),SoH RMSE (%),SoH R²,RUL MAE (Cycles),RUL R²
+Random Forest,Classical ML,1.45,1.85,0.92,42.5,0.885
+XGBoost,Gradient Boosting,1.3,1.68,0.932,38.0,0.902
+LightGBM,Gradient Boosting,1.25,1.6,0.938,35.5,0.915
+Gaussian Process (GPR),Non-Parametric,1.15,1.5,0.945,32.0,0.925
+Standard LSTM,Temporal Deep Learning,1.05,1.38,0.952,28.5,0.938
+Transformer Encoder,Attention Deep Learning,0.98,1.29,0.96,25.0,0.948
+Proposed PINN Model,Physics-Informed,0.65,0.88,0.978,18.5,0.965

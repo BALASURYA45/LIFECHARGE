@@ -7,11 +7,12 @@ import {
   updateProfile,
 } from '../services/authService.js';
 import { AuthContext } from './authContext.js';
+import { getStoredToken } from '../utils/jwtUtils.js';
 
 const TOKEN_KEY = 'lifecharge_token';
 
 export function AuthProvider({ children }) {
-  const [token, setToken] = useState(() => localStorage.getItem(TOKEN_KEY));
+  const [token, setToken] = useState(() => getStoredToken());
   const [user, setUser] = useState(null);
   const [isInitializing, setIsInitializing] = useState(Boolean(token));
 
@@ -19,7 +20,10 @@ export function AuthProvider({ children }) {
     let isMounted = true;
 
     async function loadProfile() {
-      if (!token) {
+      const validToken = getStoredToken();
+      if (!validToken) {
+        setToken(null);
+        setUser(null);
         setIsInitializing(false);
         return;
       }

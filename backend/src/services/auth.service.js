@@ -100,43 +100,96 @@ export async function loginUserWithGoogle({ credential, accessToken }) {
     throw new AppError('Google credential is missing', 400);
   }
 
-  try {
-    let email = '';
-    let name = 'Google User';
+  let email = '';
+  let name = 'Google User';
 
-    if (credential) {
-      const response = await axios.get('https://oauth2.googleapis.com/tokeninfo', {
-        params: { id_token: credential },
-      });
-      email = response.data?.email?.toLowerCase();
-      name = response.data?.name || response.data?.given_name || email?.split('@')[0] || 'Google User';
-    } else if (accessToken) {
-      const response = await axios.get('https://www.googleapis.com/oauth2/v3/userinfo', {
-        headers: { Authorization: `Bearer ${accessToken}` },
-      });
-      email = response.data?.email?.toLowerCase();
-      name = response.data?.name || response.data?.given_name || email?.split('@')[0] || 'Google User';
+  // 1. Attempt to decode as JWT ID Token (Google One Tap / ID Token)
+  try {
+    const decoded = jwt.decode(googleToken);
+    if (decoded && decoded.email) {
+      email = decoded.email.toLowerCase();
+      name = decoded.name || decoded.given_name || email.split('@')[0] || 'Google User';
+    }
+  } catch {
+    // Ignore decode errors and proceed to OAuth verification endpoints
+  }
+
+  // 2. If email wasn't retrieved from JWT decode, query Google APIs
+  if (!email) {
+    let lastError = null;
+
+    // A. If an explicit JWT ID Token credential was passed (3 parts)
+    if (credential && typeof credential === 'string' && credential.split('.').length === 3) {
+      try {
+        const response = await axios.get('https://oauth2.googleapis.com/tokeninfo', {
+          params: { id_token: credential },
+        });
+        if (response.data?.email) {
+          email = response.data.email.toLowerCase();
+          name = response.data?.name || response.data?.given_name || email.split('@')[0] || 'Google User';
+        }
+      } catch (err) {
+        lastError = err;
+      }
+    }
+
+    // B. If email is still empty, verify as an OAuth2 Access Token via UserInfo / TokenInfo
+    const tokenToTry = accessToken || credential || googleToken;
+    if (!email && tokenToTry) {
+      // Try Google UserInfo endpoint (standard for OAuth2 access tokens)
+      try {
+        const response = await axios.get('https://www.googleapis.com/oauth2/v3/userinfo', {
+          headers: { Authorization: `Bearer ${tokenToTry}` },
+        });
+        if (response.data?.email) {
+          email = response.data.email.toLowerCase();
+          name = response.data?.name || response.data?.given_name || email.split('@')[0] || 'Google User';
+        }
+      } catch (err) {
+        lastError = err;
+      }
+
+      // Try Google tokeninfo with access_token parameter if userinfo failed
+      if (!email) {
+        try {
+          const response = await axios.get('https://oauth2.googleapis.com/tokeninfo', {
+            params: { access_token: tokenToTry },
+          });
+          if (response.data?.email) {
+            email = response.data.email.toLowerCase();
+            name = response.data?.name || response.data?.given_name || email.split('@')[0] || 'Google User';
+          }
+        } catch (err) {
+          lastError = err;
+        }
+      }
     }
 
     if (!email) {
-      throw new AppError('Google authentication failed: Email not found', 401);
+      const message =
+        lastError?.response?.data?.error_description ||
+        lastError?.response?.data?.error ||
+        lastError?.message ||
+        'Google authentication failed';
+      throw new AppError(`Google sign-in verification failed: ${message}`, 401);
     }
-
-    let user = await findUserByEmail(email);
-
-    if (!user) {
-      user = await createUserRecord({
-        name,
-        email,
-        password: crypto.randomBytes(16).toString('hex') + 'A1!',
-      });
-    }
-
-    return authPayload(user);
-  } catch (error) {
-    const message = error?.response?.data?.error_description || error?.message || 'Google authentication failed';
-    throw new AppError(message, 401);
   }
+
+  if (!email) {
+    throw new AppError('Google authentication failed: Email not found in Google account response', 401);
+  }
+
+  let user = await findUserByEmail(email);
+
+  if (!user) {
+    user = await createUserRecord({
+      name,
+      email,
+      password: crypto.randomBytes(16).toString('hex') + 'A1!',
+    });
+  }
+
+  return authPayload(user);
 }
 
 export async function requestPasswordReset({ email }) {

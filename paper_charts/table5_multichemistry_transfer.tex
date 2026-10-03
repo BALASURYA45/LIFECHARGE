@@ -1,0 +1,16 @@
+\begin{table}[htbp]
+\centering
+\caption{Evaluating model transferability across NMC, LFP, and NCA battery cell chemistries.}
+\label{tab:multichemistry_transfer}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Model Architecture} & \textbf{NMC Baseline MAE (%)} & \textbf{LFP Zero-Shot MAE (%)} & \textbf{NCA Fine-Tuned MAE (%)} & \textbf{Transfer Performance Drop} \\
+\midrule
+Random Forest & 1.45 & 3.8 & 2.35 & +162% \\
+XGBoost & 1.3 & 3.4 & 2.1 & +161% \\
+Standard LSTM & 1.05 & 2.8 & 1.55 & +166% \\
+Transformer Encoder & 0.98 & 2.45 & 1.3 & +150% \\
+\rowcolor{gray!15}\textbf{Proposed PINN Model} & \textbf{0.65} & \textbf{1.12} & \textbf{0.74} & \textbf{+72% (Best Generalization)} \\
+\bottomrule
+\end{tabular}
+\end{table}

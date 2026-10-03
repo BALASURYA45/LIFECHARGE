@@ -40,13 +40,13 @@ export default function ForgotPasswordPage() {
           error={errors.email}
           {...register('email', { required: 'Email is required' })}
         />
-        {message ? <p className="text-sm text-emerald-600 bg-emerald-50 rounded-lg px-3 py-2">{message}</p> : null}
-        {serverError ? <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">{serverError}</p> : null}
+        {message ? <p className="text-sm text-emerald-600 bg-emerald-50 dark:bg-emerald-950/50 dark:text-emerald-300 rounded-lg px-3 py-2">{message}</p> : null}
+        {serverError ? <p className="text-sm text-emerald-600 bg-emerald-50 dark:bg-emerald-950/50 dark:text-emerald-300 rounded-lg px-3 py-2">{serverError}</p> : null}
         <SubmitButton isLoading={isSubmitting}>{t('auth.forgotPassword.submit')}</SubmitButton>
       </form>
       <p className="mt-6 text-center text-sm">
-        <span className="text-slate-600">{t('auth.forgotPassword.remembered')}</span>{' '}
-        <Link className="text-slate-900 font-bold hover:underline underline-offset-4" to="/login">
+        <span className="text-slate-600 dark:text-slate-400">{t('auth.forgotPassword.remembered')}</span>{' '}
+        <Link className="text-slate-900 font-bold hover:text-emerald-500 dark:text-white dark:hover:text-emerald-400 hover:underline underline-offset-4" to="/login">
           {t('auth.forgotPassword.backToLogin')}
         </Link>
       </p>

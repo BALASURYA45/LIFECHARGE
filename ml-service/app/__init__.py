@@ -1,5 +1,13 @@
-from flask import Flask
-from flask_cors import CORS
+import sys
+from pathlib import Path
+
+# Ensure ml-service root directory is in sys.path
+_service_root = str(Path(__file__).resolve().parent.parent)
+if _service_root not in sys.path:
+    sys.path.insert(0, _service_root)
+
+from flask import Flask  # type: ignore
+from flask_cors import CORS  # type: ignore
 
 from app.api.health_routes import health_blueprint
 from app.api.ml_routes import ml_blueprint

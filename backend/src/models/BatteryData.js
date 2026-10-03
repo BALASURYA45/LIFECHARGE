@@ -76,7 +76,7 @@ const batteryDataSchema = new mongoose.Schema(
     },
     source: {
       type: String,
-      enum: ['manual', 'csv'],
+      enum: ['manual', 'csv', 'telematics'],
       default: 'manual',
       index: true,
     },

@@ -50,7 +50,7 @@ export default function ResetPasswordPage() {
             },
           })}
         />
-        {serverError ? <p className="text-sm text-danger-light">{serverError}</p> : null}
+        {serverError ? <p className="text-sm text-emerald-400">{serverError}</p> : null}
         <SubmitButton isLoading={isSubmitting}>{t('auth.resetPassword.submit')}</SubmitButton>
       </form>
     </AuthCard>

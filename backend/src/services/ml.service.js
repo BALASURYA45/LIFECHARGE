@@ -57,3 +57,58 @@ export async function explainBatteryPrediction(payload) {
     handleMlError(error);
   }
 }
+
+export async function getPhysicsParameters() {
+  try {
+    const { data } = await mlClient.get('/physics/parameters');
+    return data;
+  } catch (error) {
+    handleMlError(error);
+  }
+}
+
+export async function evaluateCrossChemistryTransfer(payload) {
+  try {
+    const { data } = await mlClient.post('/transfer/evaluate', payload);
+    return data;
+  } catch (error) {
+    handleMlError(error);
+  }
+}
+
+export async function performUkfStateUpdate(payload) {
+  try {
+    const { data } = await mlClient.post('/digital-twin/ukf-update', payload);
+    return data;
+  } catch (error) {
+    handleMlError(error);
+  }
+}
+
+export async function extractHealthIndicators(payload) {
+  try {
+    const { data } = await mlClient.post('/features/extract', payload);
+    return data;
+  } catch (error) {
+    handleMlError(error);
+  }
+}
+
+export async function computeConformalUncertainty(payload) {
+  try {
+    const { data } = await mlClient.post('/uncertainty', payload);
+    return data;
+  } catch (error) {
+    handleMlError(error);
+  }
+}
+
+export async function runAblationStudy(payload) {
+  try {
+    const { data } = await mlClient.post('/experiments/ablation', payload);
+    return data;
+  } catch (error) {
+    handleMlError(error);
+  }
+}
+

@@ -55,16 +55,27 @@ def find_cycle_data_dir(metadata_path: Path) -> Path:
 def summarize_cycle_file(path: Path) -> dict[str, float]:
     cycle = pd.read_csv(path)
 
-    voltage = pd.to_numeric(cycle.get("Voltage_measured"), errors="coerce")
-    current = pd.to_numeric(cycle.get("Current_measured"), errors="coerce")
-    temperature = pd.to_numeric(cycle.get("Temperature_measured"), errors="coerce")
-    time = pd.to_numeric(cycle.get("Time"), errors="coerce")
+    v_series = pd.Series(pd.to_numeric(cycle.get("Voltage_measured", pd.Series(dtype=float)), errors="coerce"))
+    i_series = pd.Series(pd.to_numeric(cycle.get("Current_measured", pd.Series(dtype=float)), errors="coerce"))
+    t_series = pd.Series(pd.to_numeric(cycle.get("Temperature_measured", pd.Series(dtype=float)), errors="coerce"))
+    time_series = pd.Series(pd.to_numeric(cycle.get("Time", pd.Series(dtype=float)), errors="coerce"))
+
+    v_mean = float(v_series.mean()) if not v_series.empty else float("nan")
+    i_mean = float(i_series.abs().mean()) if not i_series.empty else float("nan")
+    t_mean = float(t_series.mean()) if not t_series.empty else float("nan")
+
+    if not time_series.empty and bool(time_series.notna().any()):
+        time_min = float(time_series.min())
+        time_max = float(time_series.max())
+        duration = float((time_max - time_min) / 3600.0)
+    else:
+        duration = float("nan")
 
     return {
-        "voltage": float(voltage.mean()),
-        "current": float(current.abs().mean()),
-        "averageTemperature": float(temperature.mean()),
-        "chargingDuration": float((time.max() - time.min()) / 3600) if time.notna().any() else np.nan,
+        "voltage": v_mean,
+        "current": i_mean,
+        "averageTemperature": t_mean,
+        "chargingDuration": duration,
     }
 
 
@@ -85,41 +96,48 @@ def build_training_dataset(dataset_root: Path) -> pd.DataFrame:
 
     rows = []
 
-    for battery_id, group in discharge.groupby("battery_id", sort=True):
-        group = group.reset_index(drop=True)
-        initial_capacity = group["Capacity"].dropna().iloc[0]
-        max_cycle = max(len(group) - 1, 1)
+    for _, group in discharge.groupby("battery_id", sort=True):
+        group_df = pd.DataFrame(group).reset_index(drop=True)
+        cap_series = pd.Series(group_df["Capacity"]).dropna()
+        if cap_series.empty:
+            continue
+        initial_capacity = float(cap_series.iloc[0])
+        max_cycle = max(len(group_df) - 1, 1)
 
-        for cycle_index, row in group.iterrows():
-            cycle_path = cycle_data_dir / str(row["filename"])
+        for cycle_index, row in group_df.iterrows():
+            filename_val = str(row.get("filename", ""))
+            cycle_path = cycle_data_dir / filename_val
 
             if not cycle_path.exists():
                 continue
 
             stats = summarize_cycle_file(cycle_path)
-            capacity = float(row["Capacity"])
-            soh = np.clip((capacity / initial_capacity) * 100, 0, 100)
+            capacity = float(row.get("Capacity", 0.0))
+            soh = float(np.clip((capacity / initial_capacity) * 100.0, 0.0, 100.0))
             current = stats["current"]
             duration = stats["chargingDuration"]
             voltage = stats["voltage"]
+            ambient_temp = float(row.get("ambient_temperature", 25.0))
+
+            c_idx = float(cycle_index)  # type: ignore
 
             rows.append(
                 {
-                    "batteryAge": cycle_index,
-                    "chargingCycles": cycle_index,
-                    "chargingFrequency": cycle_index / max_cycle,
-                    "fastChargingUsage": min((current / 2.0) * 100, 100) if np.isfinite(current) else np.nan,
+                    "batteryAge": c_idx,
+                    "chargingCycles": c_idx,
+                    "chargingFrequency": c_idx / float(max_cycle),
+                    "fastChargingUsage": float(min((current / 2.0) * 100.0, 100.0)) if np.isfinite(current) else float("nan"),
                     "averageTemperature": stats["averageTemperature"]
                     if np.isfinite(stats["averageTemperature"])
-                    else row["ambient_temperature"],
+                    else ambient_temp,
                     "chargingDuration": duration,
-                    "dailyDistance": max(capacity * voltage * 8, 0) if np.isfinite(voltage) else np.nan,
+                    "dailyDistance": float(max(capacity * voltage * 8.0, 0.0)) if np.isfinite(voltage) else float("nan"),
                     "socHistory": soh,
                     "batteryCapacity": capacity,
                     "voltage": voltage,
                     "current": current,
                     "SOH": soh,
-                    "RUL": max_cycle - cycle_index,
+                    "RUL": float(max_cycle) - c_idx,
                 }
             )
 

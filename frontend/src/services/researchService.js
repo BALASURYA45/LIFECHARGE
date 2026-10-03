@@ -30,6 +30,27 @@ export const researchService = {
     const response = await apiClient.get('/models/compare');
     return response.data;
   },
+
+  async getPhysicsParameters() {
+    const response = await apiClient.get('/ml/physics/parameters');
+    return response.data;
+  },
+
+  async evaluateCrossChemistryTransfer(payload) {
+    const response = await apiClient.post('/ml/transfer/evaluate', payload);
+    return response.data;
+  },
+
+  async runAblationStudy(payload) {
+    const response = await apiClient.post('/ml/experiments/ablation', payload);
+    return response.data;
+  },
+
+  async updateUkfDigitalTwin(payload) {
+    const response = await apiClient.post('/ml/digital-twin/ukf-update', payload);
+    return response.data;
+  },
 };
 
 export default researchService;
+

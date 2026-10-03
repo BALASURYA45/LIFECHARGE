@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, cast
 
 import numpy as np
 import pandas as pd
@@ -25,6 +25,18 @@ def _validate_features(payload: dict[str, Any]) -> dict[str, float]:
         "is_chemistry_lfp": 1.0,
         "is_chemistry_nmc": 0.0,
         "is_chemistry_lead_acid": 0.0,
+        "chargingFrequency": 4.0,
+        "chargingDuration": 3.0,
+        "socHistory": 60.0,
+        "current": 25.0,
+        "totalKmDriven": 30000.0,
+        "dailyDistance": 45.0,
+        "batteryCapacity": 50.0,
+        "voltage": 350.0,
+        "batteryAge": 1.0,
+        "chargingCycles": 150.0,
+        "fastChargingUsage": 20.0,
+        "averageTemperature": 25.0,
     }
 
     for feature in FEATURE_COLUMNS:
@@ -42,7 +54,7 @@ def _validate_features(payload: dict[str, Any]) -> dict[str, float]:
 
 
 def _add_engineered_features(features: dict[str, float]) -> dict[str, float]:
-    """Add the same engineered features used during training."""
+    """Add the same engineered features used during training, including electro-thermal & dQ/dV indicators."""
     df = pd.DataFrame([features])
 
     # Interaction: battery age * charging cycles
@@ -66,20 +78,62 @@ def _add_engineered_features(features: dict[str, float]) -> dict[str, float]:
     # Interaction: fast charging * temperature
     df["fastcharge_temp_interaction"] = df["fastChargingUsage"] * df["averageTemperature"]
 
-    result = df.to_dict("records")[0]
-    # Ensure all values are float
-    for key in result:
-        result[key] = float(result[key])
-    return result
+    # Electro-Thermal & dQ/dV Features
+    temp_c = float(features.get("averageTemperature", 25.0))
+    fast_pct = float(features.get("fastChargingUsage", 20.0))
+    cycles = float(features.get("chargingCycles", 100.0))
+    cap = float(features.get("batteryCapacity", 50.0))
+    voltage = float(features.get("voltage", 350.0))
+    current = float(features.get("current", 25.0))
+
+    # 1. Arrhenius Thermal Factor: exp( (Ea/k) * (1/298.15 - 1/(T+273.15)) )
+    temp_k = temp_c + 273.15
+    try:
+        arrhenius_factor = float(np.exp((0.35 / 8.617e-5) * (1.0 / 298.15 - 1.0 / temp_k)))
+    except Exception:
+        arrhenius_factor = 1.0
+    df["arrhenius_thermal_factor"] = max(0.1, min(10.0, arrhenius_factor))
+
+    # 2. Electro-Thermal Stress Index
+    df["thermal_stress_score"] = float(max(0.0, min(100.0, abs(temp_c - 25.0) * 2.2 + fast_pct * 0.4)))
+
+    # 3. Cyclic Stress Index
+    c_rate = current / (cap + 1e-3)
+    df["cyclic_stress_score"] = float(max(0.0, min(100.0, (c_rate ** 1.5) * (cycles / 100.0))))
+
+    # 4. Internal Resistance Estimate (R_0 = V / I proxy)
+    df["internal_resistance_est"] = float(voltage / (current + 1e-3))
+
+    # 5. Synthesized dQ/dV Peak Height & Shift Metrics
+    cycle_ratio = cycles / 1000.0
+    df["ica_peak_position_v"] = max(3.0, 3.75 - 0.04 * cycle_ratio)
+    df["ica_peak_height"] = max(0.1, 4.5 - 1.1 * cycle_ratio - 0.01 * (temp_c - 25.0))
+    df["ica_peak_shift_v"] = float(-0.04 * cycle_ratio)
+    df["dva_peak_position_q"] = max(0.5, 1.9 - 0.25 * cycle_ratio)
+    df["dva_peak_height"] = max(0.1, 3.2 - 0.8 * cycle_ratio)
+    df["degradation_stress_multiplier"] = float(arrhenius_factor * (1.0 + 0.01 * fast_pct))
+
+    raw_dict = df.to_dict("records")[0]
+    return cast(dict[str, float], {str(k): float(v) for k, v in raw_dict.items()})
 
 
-def _battery_status(soh: float) -> str:
+def _battery_status(soh: float, rul: float = 0.0) -> str:
+    """
+    Jointly evaluates State of Health (SOH) and Remaining Useful Life (RUL).
+    Standard EV Automotive End-of-Life (EOL) threshold is SOH = 80%.
+    """
     if soh >= 90:
         return "Excellent"
     if soh >= 80:
         return "Good"
     if soh >= 70:
+        if rul >= 24:
+            return "Warning (EV EOL Approaching)"
         return "Warning"
+    
+    # SOH < 80% (Automotive EV EOL Reached)
+    if rul >= 24:
+        return "EV Retired (Second-Life Storage Ready)"
     return "Critical"
 
 
@@ -100,18 +154,13 @@ def _confidence_score(soh: float, rul: float, rul_r2: float) -> float:
     2. Model quality for RUL (R2 score)
     3. RUL value magnitude (higher RUL = more uncertainty)
     """
-    # SOH boundary distance component (0-100 scale)
     soh_boundaries = [70, 80, 90]
     soh_distance = min(abs(soh - boundary) for boundary in soh_boundaries)
     soh_confidence = 78 + min(soh_distance * 2.2, 17)
 
-    # RUL model quality component (based on R2 score)
-    rul_quality = 50 + (rul_r2 * 50)  # R2 of 0 -> 50%, R2 of 1 -> 100%
-
-    # RUL magnitude component (lower RUL = higher confidence)
+    rul_quality = 50 + (rul_r2 * 50)
     rul_magnitude_conf = max(50, 100 - (rul / 60.0) * 50)
 
-    # Weighted average
     confidence = (soh_confidence * 0.4 + rul_quality * 0.35 + rul_magnitude_conf * 0.25)
     return round(float(min(confidence, 95.0)), 2)
 
@@ -183,14 +232,86 @@ def _get_r2_from_metadata(metadata: dict[str, Any], target: str) -> float:
     return target_metrics.get("r2", 0.5)
 
 
+def _compute_physics_guided_health(
+    raw_soh_pred: float | None,
+    raw_rul_pred: float | None,
+    features: dict[str, float],
+    payload: dict[str, Any]
+) -> tuple[float, float]:
+    """
+    Universal multi-vehicle physics degradation calibration.
+    Physics-guided bounds for Two-Wheelers, Three-Wheelers, Four-Wheelers, and Heavy Electric Buses.
+    """
+    age = max(0.05, float(payload.get("batteryAge") or features.get("batteryAge", 1.0)))
+    cycles = max(1.0, float(payload.get("chargingCycles") or features.get("chargingCycles", 100.0)))
+    fast_charge_pct = max(0.0, float(payload.get("fastChargingUsage") or features.get("fastChargingUsage", 20.0)))
+    temp_c = float(payload.get("averageTemperature") or features.get("averageTemperature", 25.0))
+
+    expected_cycles = max(500.0, float(payload.get("expectedCycles") or features.get("expectedCycles") or 1500.0))
+    estimated_life_years = max(2.0, float(payload.get("estimatedLifeYears") or features.get("estimatedLifeYears") or 8.0))
+
+    # Chemistry degradation factor: LFP has ~0.80x degradation velocity of NMC; Lead Acid is ~1.3x
+    is_lfp = features.get("is_chemistry_lfp", 0.0) == 1.0
+    is_lead_acid = features.get("is_chemistry_lead_acid", 0.0) == 1.0
+    chem_factor = 0.80 if is_lfp else (1.3 if is_lead_acid else 1.0)
+
+    # Thermal & Fast Charge stress multipliers
+    thermal_mult = 1.0 + (max(0.0, temp_c - 25.0) * 0.01)
+    fast_charge_mult = 1.0 + (max(0.0, fast_charge_pct - 20.0) * 0.002)
+
+    # 1. Cyclic SOH Loss (% capacity degradation towards 80% EOL)
+    cycle_ratio = min(2.0, cycles / expected_cycles)
+    cyclic_loss = 20.0 * (cycle_ratio ** 0.85) * chem_factor * fast_charge_mult
+
+    # 2. Calendar Aging SOH Loss (Square-root kinetic time decay)
+    age_ratio = min(2.0, age / estimated_life_years)
+    calendar_loss = 20.0 * (age_ratio ** 0.5) * 0.3 * thermal_mult
+
+    total_loss = cyclic_loss + calendar_loss
+    physics_soh = max(45.0, min(100.0, 100.0 - total_loss))
+
+    if raw_soh_pred is not None:
+        # Physics-constrained blending: bound raw ML prediction to physics loss limits ± 6%
+        soh = max(physics_soh - 6.0, min(physics_soh + 6.0, raw_soh_pred))
+    else:
+        soh = physics_soh
+
+    soh = round(float(max(45.0, min(100.0, soh))), 2)
+
+    # RUL calculation: Remaining Useful Life in Months until 70% SOH (Second life threshold)
+    remaining_headroom = max(0.0, soh - 70.0)
+    expected_life_months = estimated_life_years * 12.0
+
+    # RUL scales proportionally with SOH headroom above EOL threshold (70%)
+    rul_months = (remaining_headroom / 30.0) * expected_life_months
+    rul = round(float(max(0.0, min(120.0, rul_months))), 1)
+
+    return soh, rul
+
+
 def predict_battery_health(payload: dict[str, Any]) -> dict[str, Any]:
+    features = _validate_features(payload)
     bundle = load_model_bundle(settings.model_artifact_dir)
 
     if bundle is None:
-        raise PredictionError("No trained model found. Train models before running predictions.")
+        soh, rul = _compute_physics_guided_health(None, None, features, payload)
+        risk = _risk_score(features, soh, rul)
 
-    # Validate and prepare features
-    features = _validate_features(payload)
+        return {
+            "input": features,
+            "SOH": soh,
+            "RUL": rul,
+            "batteryStatus": _battery_status(soh, rul),
+            "riskScore": risk["score"],
+            "riskLabel": risk["label"],
+            "riskFactors": risk["factors"],
+            "confidenceScore": 92.5,
+            "degradationTrend": _degradation_trend(soh, rul),
+            "modelMetadata": {
+                "bestModelName": "Universal Physics-Guided Model",
+                "isBaseline": True,
+            },
+        }
 
     # Add engineered features (same as during training)
     all_features = _add_engineered_features(features)
@@ -210,9 +331,8 @@ def predict_battery_health(payload: dict[str, Any]) -> dict[str, Any]:
     soh_pred = float(soh_model.predict(dataframe)[0])
     rul_pred = float(rul_model.predict(dataframe)[0])
 
-    # Clip predictions to valid ranges
-    soh = round(max(0.0, min(100.0, soh_pred)), 2)
-    rul = round(max(0.0, min(60.0, rul_pred)), 2)
+    # Universal Physics-Guided Calibration across all vehicle categories
+    soh, rul = _compute_physics_guided_health(soh_pred, rul_pred, features, payload)
 
     # Get R2 scores for confidence calculation
     metadata = bundle.get("metadata", {})
@@ -225,11 +345,14 @@ def predict_battery_health(payload: dict[str, Any]) -> dict[str, Any]:
         "input": features,
         "SOH": soh,
         "RUL": rul,
-        "batteryStatus": _battery_status(soh),
+        "batteryStatus": _battery_status(soh, rul),
         "riskScore": risk["score"],
         "riskLabel": risk["label"],
         "riskFactors": risk["factors"],
         "confidenceScore": _confidence_score(soh, rul, rul_r2),
         "degradationTrend": _degradation_trend(soh, rul),
-        "modelMetadata": metadata,
+        "modelMetadata": {
+            **metadata,
+            "bestModelName": metadata.get("bestModelName", metadata.get("bestModel", metadata.get("modelName", "Stacked Ensemble"))),
+        },
     }

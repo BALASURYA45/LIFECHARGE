@@ -3,6 +3,7 @@ import { CalendarClock, ChevronRight, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getNotificationStatus } from "../services/notificationService.js";
+import { getStoredToken } from "../utils/jwtUtils.js";
 
 export default function DailyReminderBanner() {
   const { t } = useTranslation();
@@ -12,6 +13,7 @@ export default function DailyReminderBanner() {
   useEffect(() => {
     let isMounted = true;
     const loadStatus = async () => {
+      if (!getStoredToken()) return;
       try {
         const data = await getNotificationStatus();
         if (isMounted) {

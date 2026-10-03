@@ -25,7 +25,7 @@ export function ToastProvider({ children }) {
             key={toast.id}
             className={`lc-focus w-full max-w-md rounded border px-4 py-3 text-sm shadow-lg transition-all ${
               toast.type === 'error'
-                ? 'border-red-700 bg-red-950 text-red-100'
+                ? 'border-emerald-700 bg-emerald-950 text-emerald-100'
                 : toast.type === 'success'
                   ? 'border-emerald-700 bg-emerald-950 text-emerald-100'
                   : toast.type === 'warning'

@@ -7,17 +7,16 @@ import {
   getExperimentHistory,
   getModelComparison,
 } from '../controllers/research.controller.js';
-import { protect } from '../middleware/auth.middleware.js';
+import { protect, optionalProtect } from '../middleware/auth.middleware.js';
 
 const router = Router();
 
-router.use(protect);
+router.post('/prediction/early-life', optionalProtect, runEarlyLifePrediction);
+router.post('/anomaly/detect', optionalProtect, detectAnomalies);
+router.post('/uncertainty/predict', optionalProtect, predictUncertainty);
+router.get('/models/compare', optionalProtect, getModelComparison);
 
-router.post('/prediction/early-life', runEarlyLifePrediction);
-router.post('/anomaly/detect', detectAnomalies);
-router.post('/uncertainty/predict', predictUncertainty);
-router.post('/experiments/run', runExperiment);
-router.get('/experiments/history', getExperimentHistory);
-router.get('/models/compare', getModelComparison);
+router.post('/experiments/run', protect, runExperiment);
+router.get('/experiments/history', protect, getExperimentHistory);
 
 export default router;

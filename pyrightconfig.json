@@ -1,0 +1,15 @@
+{
+  "venvPath": ".",
+  "venv": ".venv",
+  "pythonPath": ".venv/Scripts/python.exe",
+  "include": [
+    "ml-service"
+  ],
+  "extraPaths": [
+    "ml-service",
+    "ml-service/app"
+  ],
+  "pythonVersion": "3.11"
+}
+
+

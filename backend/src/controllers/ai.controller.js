@@ -7,16 +7,23 @@ export async function chatWithLifyAI(request, response) {
     return response.status(400).json({ success: false, message: 'Message text is required.' });
   }
 
-  const result = await askLifyAI({
-    message: message.trim(),
-    history: Array.isArray(history) ? history : [],
-    predictionContext: predictionContext ?? null,
-    profileContext: profileContext ?? null,
-  });
+  try {
+    const result = await askLifyAI({
+      message: message.trim(),
+      history: Array.isArray(history) ? history : [],
+      predictionContext: predictionContext ?? null,
+      profileContext: profileContext ?? null,
+    });
 
-  return response.status(200).json({
-    success: true,
-    reply: result.reply,
-    model: result.model,
-  });
+    return response.status(200).json({
+      success: true,
+      reply: result.reply,
+      model: result.model,
+    });
+  } catch (err) {
+    return response.status(500).json({
+      success: false,
+      message: err.message || 'Failed to generate AI response.',
+    });
+  }
 }

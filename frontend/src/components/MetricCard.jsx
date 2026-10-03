@@ -1,11 +1,11 @@
 export default function MetricCard({ label, value, tone = 'slate', detail, icon: Icon }) {
   const tones = {
-    cyan: 'border-cyan-200 bg-cyan-50/80 text-cyan-900',
-    emerald: 'border-emerald-200 bg-emerald-50/80 text-emerald-900',
-    amber: 'border-amber-200 bg-amber-50/80 text-amber-900',
-    red: 'border-red-200 bg-red-50/80 text-red-900',
-    slate: 'border-slate-200 bg-white text-slate-900',
-    violet: 'border-violet-200 bg-violet-50/80 text-violet-900',
+    cyan: 'border-emerald-500/30 bg-emerald-950/20 text-emerald-100 dark:border-emerald-500/30 dark:bg-emerald-950/30 dark:text-emerald-100',
+    emerald: 'border-emerald-500/30 bg-emerald-950/20 text-emerald-100 dark:border-emerald-500/30 dark:bg-emerald-950/30 dark:text-emerald-100',
+    amber: 'border-amber-200 bg-amber-50/80 text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-200',
+    red: 'border-emerald-500/30 bg-emerald-950/30 text-emerald-200 dark:border-emerald-500/40 dark:bg-emerald-950/40 dark:text-emerald-200',
+    slate: 'border-slate-200 bg-white text-slate-900 dark:border-slate-800 dark:bg-slate-900 dark:text-white',
+    violet: 'border-violet-200 bg-violet-50/80 text-violet-900 dark:border-violet-900/50 dark:bg-violet-950/30 dark:text-violet-200',
   };
 
   return (

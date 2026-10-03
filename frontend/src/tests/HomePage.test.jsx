@@ -12,7 +12,7 @@ describe('HomePage', () => {
     );
 
     expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
-    const showroomLinks = screen.getAllByRole('link', { name: /3D Showroom/i });
-    expect(showroomLinks.length).toBeGreaterThanOrEqual(1);
+    const dashboardLinks = screen.getAllByRole('link', { name: /Dashboard/i });
+    expect(dashboardLinks.length).toBeGreaterThanOrEqual(1);
   });
 });

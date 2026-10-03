@@ -62,5 +62,5 @@ export const batteryUpdateSchema = batteryFeatureSchema.fork(
 export const batteryQuerySchema = Joi.object({
   page: Joi.number().integer().min(1).default(1),
   limit: Joi.number().integer().min(1).max(100).default(20),
-  source: Joi.string().valid('manual', 'csv').optional(),
+  source: Joi.string().valid('manual', 'csv', 'telematics').optional(),
 });

@@ -10,6 +10,7 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getNotificationStatus } from "../services/notificationService.js";
+import { getStoredToken } from "../utils/jwtUtils.js";
 
 export default function NotificationBell() {
   const { t } = useTranslation();
@@ -26,6 +27,7 @@ export default function NotificationBell() {
   const popoverRef = useRef(null);
 
   const fetchStatus = async () => {
+    if (!getStoredToken()) return;
     try {
       setIsLoading(true);
       const data = await getNotificationStatus();
@@ -103,27 +105,27 @@ export default function NotificationBell() {
   };
 
   return (
-    <div className="relative" ref={popoverRef}>
+    <div className="relative shrink-0" ref={popoverRef}>
       <button
-        className="lc-focus relative flex size-10 items-center justify-center rounded-lg border border-slate-950/20 text-slate-950 transition-all duration-200 hover:bg-slate-950/10 disabled:cursor-not-allowed disabled:opacity-70 dark:border-white/20 dark:text-white dark:hover:bg-white/10"
+        className="lc-focus relative flex size-8 sm:size-9 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white/80 dark:border-slate-800 dark:bg-slate-900/80 text-slate-700 dark:text-slate-200 transition-all duration-200 hover:border-emerald-500/40 hover:text-emerald-600 dark:hover:text-emerald-400 disabled:cursor-not-allowed disabled:opacity-70 shadow-sm"
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         aria-label={t("notifications.title", "Notifications")}
         aria-busy={isLoading}
         disabled={isLoading}
       >
-        <Bell size={18} aria-hidden="true" />
+        <Bell size={17} aria-hidden="true" className="text-slate-700 dark:text-slate-200 hover:text-emerald-600 dark:hover:text-emerald-400 transition" />
         {isLoading ? (
-          <span className="absolute -bottom-1 -right-1 flex size-3.5 items-center justify-center rounded-full border-2 border-white bg-cyan-500 shadow-sm dark:border-slate-900" />
+          <span className="absolute -bottom-1 -right-1 flex size-3.5 items-center justify-center rounded-full border-2 border-slate-900 bg-emerald-500 shadow-sm" />
         ) : pendingCount > 0 ? (
-          <span className="absolute -right-1 -top-1 flex size-4 items-center justify-center rounded-full bg-amber-500 text-[10px] font-bold text-white shadow-sm animate-pulse">
+          <span className="absolute -right-1 -top-1 flex size-4 items-center justify-center rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 text-[10px] font-black text-white shadow-md shadow-emerald-950/40 animate-pulse">
             {pendingCount}
           </span>
         ) : null}
       </button>
 
       {isOpen ? (
-        <div className="absolute right-0 mt-2 w-80 sm:w-96 rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl dark:border-slate-800 dark:bg-slate-900 z-50 animate-in fade-in duration-150">
+        <div className="absolute -right-10 sm:right-0 mt-2 w-[calc(100vw-2.5rem)] max-w-xs sm:max-w-sm sm:w-96 rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl dark:border-slate-800 dark:bg-slate-900 z-50 animate-in fade-in duration-150">
           <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-slate-800">
             <div className="flex items-center gap-2">
               <Bell className="text-amber-500" size={18} />
@@ -198,7 +200,7 @@ export default function NotificationBell() {
             <Link
               to="/profile"
               onClick={() => setIsOpen(false)}
-              className="font-bold text-cyan-600 hover:underline dark:text-cyan-400"
+              className="font-bold text-emerald-500 hover:underline dark:text-emerald-400"
             >
               {t("notifications.settings", "Settings")}
             </Link>

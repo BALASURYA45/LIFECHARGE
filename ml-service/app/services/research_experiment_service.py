@@ -9,23 +9,31 @@ import time
 from typing import Any
 from uuid import uuid4
 
+import warnings
+warnings.filterwarnings("ignore")
+
 import numpy as np
 import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from sklearn.model_selection import train_test_split
 
-try:
-    import xgboost as xgb
-    HAS_XGB = True
-except ImportError:
-    HAS_XGB = False
 
-try:
-    import lightgbm as lgb
-    HAS_LGB = True
-except ImportError:
-    HAS_LGB = False
+def _get_xgb_regressor(random_seed: int):
+    try:
+        import xgboost as xgb
+        return xgb.XGBRegressor(n_estimators=100, learning_rate=0.05, random_state=random_seed)
+    except Exception:
+        return None
+
+def _get_lgb_regressor(random_seed: int):
+    try:
+        import lightgbm as lgb
+        return lgb.LGBMRegressor(n_estimators=100, learning_rate=0.05, random_state=random_seed, verbose=-1)
+    except Exception:
+        return None
+
+
 
 from app.models.multitask_model import MultiTaskBatteryModel
 
@@ -66,19 +74,24 @@ def run_research_experiment(config: dict[str, Any]) -> dict[str, Any]:
         {"name": "Random Forest", "model_soh": RandomForestRegressor(n_estimators=100, random_state=random_seed), "model_rul": RandomForestRegressor(n_estimators=100, random_state=random_seed)},
     ]
 
-    if HAS_XGB:
+    xgb_soh = _get_xgb_regressor(random_seed)
+    xgb_rul = _get_xgb_regressor(random_seed)
+    if xgb_soh is not None and xgb_rul is not None:
         models_to_evaluate.append({
             "name": "XGBoost",
-            "model_soh": xgb.XGBRegressor(n_estimators=100, learning_rate=0.08, random_state=random_seed),
-            "model_rul": xgb.XGBRegressor(n_estimators=100, learning_rate=0.08, random_state=random_seed),
+            "model_soh": xgb_soh,
+            "model_rul": xgb_rul,
         })
 
-    if HAS_LGB:
+    lgb_soh = _get_lgb_regressor(random_seed)
+    lgb_rul = _get_lgb_regressor(random_seed)
+    if lgb_soh is not None and lgb_rul is not None:
         models_to_evaluate.append({
             "name": "LightGBM",
-            "model_soh": lgb.LGBMRegressor(n_estimators=100, learning_rate=0.08, random_state=random_seed, verbose=-1),
-            "model_rul": lgb.LGBMRegressor(n_estimators=100, learning_rate=0.08, random_state=random_seed, verbose=-1),
+            "model_soh": lgb_soh,
+            "model_rul": lgb_rul,
         })
+
 
     comparison_results = []
 

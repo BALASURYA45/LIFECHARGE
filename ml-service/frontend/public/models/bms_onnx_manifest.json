@@ -1,0 +1,17 @@
+{
+  "framework": "LITHYX Physics-Informed Battery Prognostics",
+  "onnx_float32_file": "lithyx_pinn_float32.onnx",
+  "onnx_int8_file": "lithyx_pinn_int8.onnx",
+  "input_tensor_shape": [
+    1,
+    30,
+    15
+  ],
+  "output_tensor_names": [
+    "predicted_soh",
+    "predicted_rul"
+  ],
+  "precision": "INT8 Dynamic Quantization",
+  "embedded_bms_target": "ARM Cortex-M4/M7, ESP32, STM32, TI C2000",
+  "supported_opset": 14
+}

@@ -27,7 +27,7 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ['user', 'admin'],
+      enum: ['user', 'admin', 'fleet_manager', 'technician', 'driver'],
       default: 'user',
     },
     dailyReminderEnabled: {

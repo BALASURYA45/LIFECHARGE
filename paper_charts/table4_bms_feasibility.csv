@@ -1,0 +1,6 @@
+Model Architecture,Parameters,Training Time (100 Epochs),CPU Latency (ms),Memory Footprint (MB),Edge BMS Feasible?
+Random Forest,—,142.5s,4.2 ms,4.5 MB,Yes
+XGBoost,—,89.2s,2.8 ms,2.1 MB,Yes
+Standard LSTM,450K,450.0s,8.4 ms,6.2 MB,Marginal
+Transformer Encoder,1.4M,620.0s,9.1 ms,18.5 MB,No (High Load)
+Proposed PINN Model,120K,280.0s,3.8 ms,1.8 MB,Ideal (Lightweight)

@@ -1,0 +1,6 @@
+Model Architecture,NMC Baseline MAE (%),LFP Zero-Shot MAE (%),NCA Fine-Tuned MAE (%),Transfer Performance Drop
+Random Forest,1.45,3.8,2.35,+162%
+XGBoost,1.3,3.4,2.1,+161%
+Standard LSTM,1.05,2.8,1.55,+166%
+Transformer Encoder,0.98,2.45,1.3,+150%
+Proposed PINN Model,0.65,1.12,0.74,+72% (Best Generalization)

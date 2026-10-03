@@ -5,10 +5,8 @@ import { asyncHandler } from '../utils/asyncHandler.js';
 
 const router = Router();
 
-router.use(protect);
-
-router.get('/reports', asyncHandler(reports));
-router.get('/report/csv', asyncHandler(reportCsv));
-router.get('/report/pdf', asyncHandler(reportPdf));
+router.get('/reports', protect, asyncHandler(reports));
+router.get('/report/csv', protect, asyncHandler(reportCsv));
+router.get('/report/pdf', protect, asyncHandler(reportPdf));
 
 export default router;

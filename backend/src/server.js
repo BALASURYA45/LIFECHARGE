@@ -2,13 +2,19 @@ import app from './app.js';
 import { env } from './config/env.js';
 import { connectDatabase } from './config/database.js';
 import { logger } from './utils/logger.js';
+import { telematicsWS } from './services/telematicsWs.js';
 
 async function startServer() {
-  await connectDatabase();
+  // Attempt DB connection (handles retries internally if MongoDB is initializing)
+  connectDatabase().catch((err) => {
+    logger.error('Initial database connection attempt failed:', err.message);
+  });
 
   const server = app.listen(env.port, () => {
     logger.info(`Backend API running on port ${env.port}`);
   });
+
+  telematicsWS.init(server);
 
   server.on('error', (error) => {
     if (error.code === 'EADDRINUSE') {
@@ -29,3 +35,4 @@ startServer().catch((error) => {
   logger.error('Failed to start backend API', error);
   process.exit(1);
 });
+

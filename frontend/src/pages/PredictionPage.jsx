@@ -204,7 +204,7 @@ export default function PredictionPage() {
       </div>
 
       {message ? <p className="rounded-xl border border-accent/40 bg-accent/10 p-4 text-sm text-accent-light">{message}</p> : null}
-      {error ? <p className="rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-200">{error}</p> : null}
+      {error ? <p className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-sm text-emerald-200">{error}</p> : null}
 
       <div className="grid gap-6 lg:grid-cols-[1fr_0.9fr]">
         <section className="lc-card-static rounded-xl bg-white p-4 sm:p-6">

@@ -8,7 +8,7 @@ export default {
         xs: '400px',
       },
       fontFamily: {
-        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        sans: ['"Plus Jakarta Sans"', 'Outfit', 'Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
       },
       colors: {
         surface: {
@@ -26,8 +26,8 @@ export default {
           light: '#fcd34d',
         },
         danger: {
-          DEFAULT: '#ef4444',
-          light: '#fca5a5',
+          DEFAULT: '#10b981',
+          light: '#a7f3d0',
         },
         primary: {
           DEFAULT: '#6366f1',

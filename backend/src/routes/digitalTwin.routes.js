@@ -10,13 +10,12 @@ import { protect } from '../middleware/auth.middleware.js';
 
 const router = Router();
 
-router.use(protect);
+router.post('/digital-twin/create', protect, createDigitalTwinHandler);
+router.post('/digital-twin/update', protect, updateDigitalTwinHandler);
+router.get('/digital-twin/user/all', protect, getAllDigitalTwinsHandler);
+router.get('/digital-twin/:batteryId', protect, getDigitalTwinHandler);
 
-router.post('/digital-twin/create', createDigitalTwinHandler);
-router.post('/digital-twin/update', updateDigitalTwinHandler);
-router.get('/digital-twin/user/all', getAllDigitalTwinsHandler);
-router.get('/digital-twin/:batteryId', getDigitalTwinHandler);
-
-router.post('/decision/recommend', recommendDecisionHandler);
+router.post('/decision/recommend', protect, recommendDecisionHandler);
 
 export default router;
+

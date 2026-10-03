@@ -9,10 +9,8 @@ import { asyncHandler } from '../utils/asyncHandler.js';
 
 const router = Router();
 
-router.use(protect);
-
-router.get('/recommendations', asyncHandler(latestRecommendations));
-router.get('/recommendations/:predictionId', asyncHandler(recommendationByPrediction));
-router.post('/recommendations/:predictionId', asyncHandler(createRecommendations));
+router.get('/recommendations', protect, asyncHandler(latestRecommendations));
+router.get('/recommendations/:predictionId', protect, asyncHandler(recommendationByPrediction));
+router.post('/recommendations/:predictionId', protect, asyncHandler(createRecommendations));
 
 export default router;

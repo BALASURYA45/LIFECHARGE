@@ -1,4 +1,4 @@
-import { BatteryCharging, Bot, ChevronDown, MessageCircle, Send, X } from 'lucide-react';
+import { Activity, BatteryCharging, Bot, ChevronDown, MessageCircle, Send, X } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { sendChatMessage } from '../services/aiService.js';
@@ -543,57 +543,61 @@ export default function LifyChatbot() {
   return (
     <div className="fixed bottom-4 right-4 z-50 sm:bottom-6 sm:right-6">
       {isOpen ? (
-        <section className="flex h-[min(620px,calc(100vh-96px))] w-[calc(100vw-32px)] max-w-sm flex-col overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 shadow-2xl shadow-slate-900/20">
-          <header className="flex items-start gap-3 border-b border-slate-200 dark:border-slate-800 bg-slate-900 dark:bg-slate-950 p-4 text-white">
-            <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-cyan-300 text-slate-950">
-              <Bot size={22} aria-hidden="true" />
-            </span>
-            <div className="min-w-0 flex-1">
-              <h2 className="font-black leading-tight">Lify</h2>
-              <p className="mt-1 truncate text-xs text-slate-300">{contextLabel}</p>
+        <section className="flex h-[min(620px,calc(100vh-96px))] w-[calc(100vw-32px)] max-w-sm flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 shadow-2xl shadow-slate-950/40 animate-in fade-in slide-in-from-bottom-4 duration-200">
+          <header className="flex items-center gap-3 border-b border-emerald-500/20 bg-[#070D14] p-4 text-white">
+            <div className="relative flex size-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 text-white shadow-md shadow-emerald-950/40 border border-emerald-400/30">
+              <Activity size={22} className="text-white animate-pulse" aria-hidden="true" />
+              <span className="absolute -top-0.5 -right-0.5 size-2.5 rounded-full bg-emerald-400 ring-2 ring-[#070D14] animate-ping" />
             </div>
-            <button className="lc-focus rounded-lg p-1 text-slate-300 hover:bg-white/10 hover:text-white" type="button" onClick={() => setIsOpen(false)} aria-label={t('chatbot.closeButton')}>
-              <X size={20} aria-hidden="true" />
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-2">
+                <h2 className="font-black text-base text-white leading-tight">Lify AI</h2>
+                <span className="rounded-md bg-emerald-500/20 px-1.5 py-0.5 text-[9px] font-extrabold text-emerald-400 border border-emerald-500/30">PROGNOSTICS</span>
+              </div>
+              <p className="mt-0.5 truncate text-[11px] font-semibold text-slate-300">{contextLabel}</p>
+            </div>
+            <button className="lc-focus rounded-xl p-1.5 text-slate-400 hover:bg-white/10 hover:text-white transition" type="button" onClick={() => setIsOpen(false)} aria-label={t('chatbot.closeButton')}>
+              <X size={18} aria-hidden="true" />
             </button>
           </header>
 
-          <div className="flex-1 space-y-3 overflow-y-auto bg-slate-50 dark:bg-slate-950 p-4">
+          <div className="flex-1 space-y-3.5 overflow-y-auto bg-slate-50 dark:bg-[#0B131F] p-4">
             {messages.map((message, index) => (
               <div key={`${message.role}-${index}`} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                <div className={`max-w-[88%] whitespace-pre-line rounded-xl px-3 py-2 text-sm leading-6 ${message.role === 'user' ? 'bg-cyan-600 text-white font-medium shadow-sm' : 'border border-slate-200 bg-white text-slate-800 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100 shadow-sm'}`}>
+                <div className={`max-w-[88%] whitespace-pre-line rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed ${message.role === 'user' ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-medium shadow-md shadow-emerald-950/30 rounded-tr-none' : 'border border-slate-200 bg-white text-slate-800 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100 shadow-sm rounded-tl-none'}`}>
                   {message.content}
                 </div>
               </div>
             ))}
             {isTyping ? (
               <div className="flex justify-start">
-                <div className="flex items-center gap-1 rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 px-3 py-3">
-                  <span className="size-2 animate-bounce rounded-full bg-cyan-400 [animation-delay:-0.2s]" />
-                  <span className="size-2 animate-bounce rounded-full bg-cyan-400 [animation-delay:-0.1s]" />
-                  <span className="size-2 animate-bounce rounded-full bg-cyan-400" />
+                <div className="flex items-center gap-1.5 rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 px-4 py-3 shadow-sm rounded-tl-none">
+                  <span className="size-2 animate-bounce rounded-full bg-emerald-500 [animation-delay:-0.2s]" />
+                  <span className="size-2 animate-bounce rounded-full bg-emerald-500 [animation-delay:-0.1s]" />
+                  <span className="size-2 animate-bounce rounded-full bg-emerald-500" />
                 </div>
               </div>
             ) : null}
             <div ref={endRef} />
           </div>
 
-          <div className="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-3">
-            <div className="mb-2 flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+          <div className="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-3.5 space-y-3">
+            <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
               {t('chatbot.quickPrompts', { returnObjects: true }).map((prompt) => (
-                <button key={prompt} className="lc-focus shrink-0 rounded-lg border border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-800/80 px-3 py-2 text-xs font-bold text-slate-700 dark:text-slate-200 hover:border-cyan-500 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors" type="button" onClick={() => sendMessage(prompt)}>
+                <button key={prompt} className="lc-focus shrink-0 rounded-xl border border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-800/80 px-3 py-1.5 text-xs font-bold text-slate-700 dark:text-slate-200 hover:border-emerald-500/50 hover:bg-emerald-500/10 hover:text-emerald-600 dark:hover:text-emerald-400 transition-all duration-200" type="button" onClick={() => sendMessage(prompt)}>
                   {prompt}
                 </button>
               ))}
             </div>
             <form className="flex items-center gap-2" onSubmit={(event) => { event.preventDefault(); sendMessage(); }}>
               <input
-                className="lc-focus min-h-11 flex-1 rounded-lg border border-slate-200 bg-slate-50 dark:bg-slate-800 dark:border-slate-700 px-3 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-cyan-500"
+                className="lc-focus min-h-11 flex-1 rounded-xl border border-slate-200 bg-slate-50 dark:bg-slate-800 dark:border-slate-700 px-3.5 text-sm font-medium text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20 outline-none"
                 value={input}
                 onChange={(event) => setInput(event.target.value)}
                 disabled={isTyping}
                 placeholder={t('chatbot.placeholder')}
               />
-              <button className="lc-focus grid size-11 place-items-center rounded-lg bg-cyan-500 text-white hover:bg-cyan-400 disabled:cursor-not-allowed disabled:opacity-60 shadow-md shadow-cyan-500/20" type="submit" disabled={isTyping} aria-label="Send message">
+              <button className="lc-focus flex size-11 items-center justify-center rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white hover:from-emerald-500 hover:to-teal-500 disabled:cursor-not-allowed disabled:opacity-60 shadow-md shadow-emerald-950/30 transition-all duration-200 shrink-0" type="submit" disabled={isTyping} aria-label="Send message">
                 <Send size={18} aria-hidden="true" />
               </button>
             </form>
@@ -601,17 +605,17 @@ export default function LifyChatbot() {
         </section>
       ) : (
         <button
-          className="lc-focus flex items-center gap-2 rounded-full bg-slate-900 px-4 py-3 font-bold text-white shadow-2xl shadow-slate-900/25 hover:bg-slate-800"
+          className="lc-focus flex items-center gap-2.5 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-3 font-bold text-white shadow-2xl shadow-emerald-950/50 hover:from-emerald-500 hover:to-teal-500 border border-emerald-400/30 transition-all duration-300 hover:scale-105 group"
           type="button"
           onClick={() => setIsOpen(true)}
           aria-label={t('chatbot.openButton')}
         >
-          <span className="grid size-9 place-items-center rounded-full bg-cyan-300 text-slate-950">
+          <span className="grid size-9 place-items-center rounded-full bg-white/20 text-white group-hover:rotate-12 transition duration-300">
             <BatteryCharging size={19} aria-hidden="true" />
           </span>
-          <span className="hidden sm:inline">{t('chatbot.openButton')}</span>
+          <span className="hidden sm:inline text-xs tracking-wider uppercase font-black">{t('chatbot.openButton')}</span>
           <MessageCircle className="sm:hidden" size={18} aria-hidden="true" />
-          <ChevronDown className="hidden rotate-180 sm:block" size={16} aria-hidden="true" />
+          <ChevronDown className="hidden rotate-180 sm:block" size={15} aria-hidden="true" />
         </button>
       )}
     </div>

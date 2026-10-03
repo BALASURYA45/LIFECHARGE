@@ -1,0 +1,6 @@
+Model Architecture,Activation Energy Ea (eV),Monotonicity Violations (%),OOD Extrapolation MAE (%),Physical Guarantee
+Random Forest,N/A,18.5%,4.2,None
+XGBoost,N/A,14.2%,3.65,None
+Standard LSTM,Unconstrained,11.8%,3.1,None
+Transformer Encoder,Unconstrained,8.5%,2.75,None
+Proposed PINN Model,0.35 eV (Physically Constrained),0.0% (Strict Monotonic),0.92,Guaranteed by PINN Loss

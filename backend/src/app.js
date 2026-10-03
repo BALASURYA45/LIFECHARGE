@@ -17,6 +17,13 @@ import notificationRoutes from './routes/notification.routes.js';
 import aiRoutes from './routes/ai.routes.js';
 import researchRoutes from './routes/research.routes.js';
 import digitalTwinRoutes from './routes/digitalTwin.routes.js';
+import lithyxRoutes from './routes/lithyx.routes.js';
+import docsRoutes from './routes/docs.routes.js';
+import chargingOptimizationRoutes from './routes/chargingOptimization.routes.js';
+import telematicsRoutes from './routes/telematics.routes.js';
+import insightsRoutes from './routes/insights.routes.js';
+import v2gRoutes from './routes/v2g.routes.js';
+import v1Routes from './routes/v1.routes.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { notFoundHandler } from './middleware/notFoundHandler.js';
 
@@ -62,8 +69,17 @@ app.use('/api', whatIfRoutes);
 app.use('/api', notificationRoutes);
 app.use('/api', researchRoutes);
 app.use('/api', digitalTwinRoutes);
+app.use('/api', lithyxRoutes);
+app.use('/api', docsRoutes);
+app.use('/api', chargingOptimizationRoutes);
+app.use('/api/telematics', telematicsRoutes);
+app.use('/api', insightsRoutes);
+app.use('/api/v2g', v2gRoutes);
+app.use('/api/v1', v1Routes);
+
 
 app.use(notFoundHandler);
+
 app.use(errorHandler);
 
 export default app;

@@ -61,7 +61,7 @@ export default function GoogleAuthButton({ label = 'Continue with Google', onSuc
 
       await onSuccess(response.access_token);
     } catch (error) {
-      const fallbackMessage = error?.message || 'Google sign-in failed. Please try again.';
+      const fallbackMessage = error?.response?.data?.message || error?.message || 'Google sign-in failed. Please try again.';
       setMessage(fallbackMessage);
     } finally {
       setIsLoading(false);

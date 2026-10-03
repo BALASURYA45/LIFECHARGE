@@ -9,6 +9,7 @@ import LoginPage from '../pages/LoginPage.jsx';
 import MachineLearningPage from '../pages/MachineLearningPage.jsx';
 import PredictionPage from '../pages/PredictionPage.jsx';
 import ProfilePage from '../pages/ProfilePage.jsx';
+import SettingsPage from '../pages/SettingsPage.jsx';
 import RegisterPage from '../pages/RegisterPage.jsx';
 import ReportsPage from '../pages/ReportsPage.jsx';
 import ResetPasswordPage from '../pages/ResetPasswordPage.jsx';
@@ -22,6 +23,16 @@ import ModelComparisonPage from '../pages/ModelComparisonPage.jsx';
 import ResearchExperimentsPage from '../pages/ResearchExperimentsPage.jsx';
 import WhatIfPage from '../pages/WhatIfPage.jsx';
 import DigitalTwinPage from '../pages/DigitalTwinPage.jsx';
+import V2GOptimizerPage from '../pages/V2GOptimizerPage.jsx';
+
+// LITHYX New Pages
+import HealthIndicatorsPage from '../pages/HealthIndicatorsPage.jsx';
+import LithyxPredictionPage from '../pages/LithyxPredictionPage.jsx';
+import CrossChemistryPage from '../pages/CrossChemistryPage.jsx';
+import UncertaintyPage from '../pages/UncertaintyPage.jsx';
+import ExplainabilityPage from '../pages/ExplainabilityPage.jsx';
+import AblationStudyPage from '../pages/AblationStudyPage.jsx';
+import DatasetManagerPage from '../pages/DatasetManagerPage.jsx';
 
 const VehicleShowcasePage = lazy(() => import('../pages/VehicleShowcasePage.jsx'));
 
@@ -29,17 +40,21 @@ function RouteErrorPage() {
   const error = useRouteError();
   console.error('Route error caught:', error);
 
+  const is404 = error?.status === 404;
+
   return (
     <div className="mx-auto max-w-xl text-center py-16 px-4">
-      <div className="inline-flex size-16 items-center justify-center rounded-2xl bg-cyan-500/10 text-cyan-600 dark:bg-cyan-500/20 dark:text-cyan-400 mb-4">
+      <div className="inline-flex size-16 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-500 dark:text-emerald-400 mb-4 border border-emerald-500/20">
         <BatteryCharging size={32} />
       </div>
-      <h1 className="text-2xl font-black text-slate-900 dark:text-white">Page Not Found</h1>
+      <h1 className="text-2xl font-black text-slate-900 dark:text-white">
+        {is404 ? 'Page Not Found' : 'Application Error'}
+      </h1>
       <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
-        The requested page or battery profile route could not be found.
+        {error?.message || error?.statusText || 'An unexpected error occurred while loading this page.'}
       </p>
-      <Link to="/dashboard" className="mt-6 inline-flex items-center gap-2 rounded-xl bg-cyan-600 px-5 py-3 font-bold text-white shadow-md hover:bg-cyan-500 transition dark:bg-cyan-500 dark:text-slate-950 dark:hover:bg-cyan-400">
-        Return to Dashboard
+      <Link to="/dashboard" className="mt-6 inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-5 py-3 font-bold text-white shadow-lg shadow-emerald-950/40 hover:from-emerald-500 hover:to-teal-500 transition">
+        Return to LITHYX Dashboard
       </Link>
     </div>
   );
@@ -80,6 +95,22 @@ export const router = createBrowserRouter([
         ),
       },
       {
+        path: 'health-indicators',
+        element: (
+          <ProtectedRoute>
+            <HealthIndicatorsPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'lithyx-prediction',
+        element: (
+          <ProtectedRoute>
+            <LithyxPredictionPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
         path: 'digital-twin',
         element: (
           <ProtectedRoute>
@@ -88,10 +119,58 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: 'early-life',
+        path: 'digitaltwin',
         element: (
           <ProtectedRoute>
-            <EarlyLifePage />
+            <DigitalTwinPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'twin',
+        element: (
+          <ProtectedRoute>
+            <DigitalTwinPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'v2g-optimizer',
+        element: (
+          <ProtectedRoute>
+            <V2GOptimizerPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'cross-chemistry',
+        element: (
+          <ProtectedRoute>
+            <CrossChemistryPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'uncertainty',
+        element: (
+          <ProtectedRoute>
+            <UncertaintyPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'explainability',
+        element: (
+          <ProtectedRoute>
+            <ExplainabilityPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'what-if',
+        element: (
+          <ProtectedRoute>
+            <WhatIfPage />
           </ProtectedRoute>
         ),
       },
@@ -104,6 +183,14 @@ export const router = createBrowserRouter([
         ),
       },
       {
+        path: 'ablation-study',
+        element: (
+          <ProtectedRoute>
+            <AblationStudyPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
         path: 'research-experiments',
         element: (
           <ProtectedRoute>
@@ -112,10 +199,18 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: 'what-if',
+        path: 'dataset-manager',
         element: (
           <ProtectedRoute>
-            <WhatIfPage />
+            <DatasetManagerPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'early-life',
+        element: (
+          <ProtectedRoute>
+            <EarlyLifePage />
           </ProtectedRoute>
         ),
       },
@@ -204,10 +299,17 @@ export const router = createBrowserRouter([
         ),
       },
       {
+        path: 'settings',
+        element: (
+          <ProtectedRoute>
+            <SettingsPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
         path: '*',
         element: <RouteErrorPage />,
       },
     ],
   },
 ]);
-

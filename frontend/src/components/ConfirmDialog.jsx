@@ -46,7 +46,7 @@ export function ConfirmProvider({ children }) {
               </button>
               <button
                 type="button"
-                className="lc-focus rounded bg-red-500 px-4 py-2.5 font-semibold text-slate-950 hover:bg-red-400"
+                className="lc-focus rounded bg-emerald-500 px-4 py-2.5 font-semibold text-slate-950 hover:bg-emerald-400"
                 onClick={handleConfirm}
               >
                 Confirm

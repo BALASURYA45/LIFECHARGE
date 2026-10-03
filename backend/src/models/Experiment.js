@@ -18,6 +18,32 @@ const experimentSchema = new mongoose.Schema(
       required: true,
       default: 'NASA Battery Aging Dataset',
     },
+    sourceChemistry: {
+      type: String,
+      default: 'LFP',
+    },
+    targetChemistry: {
+      type: String,
+      default: 'NMC',
+    },
+    model: {
+      type: String,
+      default: 'LITHYX Hybrid Physics-AI',
+    },
+    fewShotK: {
+      type: Number,
+      default: 5,
+    },
+    confidenceLevel: {
+      type: Number,
+      default: 0.95,
+    },
+    metrics: {
+      sohRMSE: Number,
+      rulMAE: Number,
+      picp: String,
+      mpiw: Number,
+    },
     trainTestRatio: {
       type: String,
       default: '80 / 20',

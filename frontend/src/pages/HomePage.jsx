@@ -1,176 +1,247 @@
-import { ArrowRight, BarChart3, Bike, Bus, CalendarClock, Car, ClipboardCheck, Dices, LayoutGrid, ShieldCheck, Truck, Wrench } from 'lucide-react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import {
+  ArrowRight,
+  Activity,
+  Box,
+  BrainCircuit,
+  Cpu,
+  Database,
+  FileSpreadsheet,
+  Gauge,
+  Layers,
+  Network,
+  ShieldCheck,
+  Sliders,
+  Sparkles,
+  Zap,
+} from 'lucide-react';
 import batteryImage from '../../../Images/EV battery.png';
-
-const actions = [
-  {
-    to: '/routine',
-    title: 'Routine-based analysis',
-    description: 'Fill your daily, weekly, or monthly routine and let LifeCharge turn it into battery health insights.',
-    icon: CalendarClock,
-    tone: 'accent',
-  },
-  {
-    to: '/dashboard',
-    title: 'Live battery dashboard',
-    description: 'Review trends, status summaries, and your most recent battery-health reports in one place.',
-    icon: BarChart3,
-    tone: 'accent',
-  },
-  {
-    to: '/prediction',
-    title: 'Legacy manual analyzer',
-    description: 'Use the original detailed check when you want full control over the input values.',
-    icon: ClipboardCheck,
-    tone: 'accent',
-  },
-];
-
-function BatteryVisual() {
-  return (
-    <div className="mx-auto w-full max-w-md overflow-hidden rounded-[32px] border border-white/10 bg-slate-950/85 shadow-[0_40px_90px_-40px_rgba(6,182,212,0.35)]">
-      <img src={batteryImage} alt="Battery pack illustration" className="h-full w-full object-cover" />
-    </div>
-  );
-}
+import logoImage from '../assets/lithyx-logo.png';
 
 export default function HomePage() {
   const { t } = useTranslation();
+
   return (
-    <section className="relative overflow-hidden space-y-10 px-4 py-8 sm:px-6 lg:px-8">
-      <div className="absolute inset-x-0 top-0 h-80 bg-[radial-gradient(circle_at_top_left,rgba(6,182,212,0.14),transparent_28%),radial-gradient(circle_at_top_right,rgba(6,182,212,0.1),transparent_30%)] pointer-events-none" />
-      <div className="relative grid items-center gap-10 lg:grid-cols-[1.05fr_0.95fr]">
-        <div className="space-y-6">
-          <div className="inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-4 py-2 text-sm font-semibold text-cyan-600 dark:text-cyan-400 shadow-sm">
-            <ShieldCheck size={16} aria-hidden="true" />
-            {t('home.hero.badge')}
+    <div className="relative min-h-screen bg-[#F0FBF7] dark:bg-[#070D14] text-slate-900 dark:text-slate-100 p-4 sm:p-6 lg:p-8 space-y-12 rounded-3xl transition-colors duration-300">
+      
+      {/* Hero Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center pt-2">
+        {/* Left Hero Content */}
+        <div className="lg:col-span-7 space-y-6">
+          {/* Research Badge */}
+          <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400 shadow-sm tracking-wide">
+            <ShieldCheck size={16} className="text-emerald-600 dark:text-emerald-400" />
+            {t('home.heroBadge', 'LITHYX RESEARCH PLATFORM • HYBRID PHYSICS & EXPLAINABLE AI')}
           </div>
-          <div>
-            <h1 className="max-w-4xl text-4xl font-black leading-[1.05] tracking-[-0.04em] text-slate-900 dark:text-white md:text-6xl">
-              {t('home.hero.heading')}
-            </h1>
-            <p className="mt-5 max-w-2xl text-base leading-7 text-slate-600 dark:text-slate-300 md:text-lg" style={{ fontFamily: '"Poppins", Inter, sans-serif' }}>
-              {t('home.hero.description')}
-            </p>
+
+          {/* Main Title */}
+          <h1 className="text-4xl sm:text-5xl lg:text-[60px] font-[900] leading-[1.08] tracking-[-0.03em] text-slate-950 dark:text-white font-sans">
+            <span className="text-emerald-600 dark:text-emerald-500">LITHYX</span> {t('home.heroTitle', 'Battery Life Prognostics Platform')}
+          </h1>
+
+          {/* Subtitle */}
+          <p className="max-w-2xl text-base sm:text-lg text-slate-700 dark:text-slate-300 leading-relaxed font-semibold">
+            {t('home.heroSubtitle1', 'Lithium-ion Health Inference thru Transfer, Hybrid Physics and Explainability.')}
+          </p>
+
+          <p className="max-w-2xl text-sm sm:text-base text-slate-600 dark:text-slate-400 leading-relaxed font-medium">
+            {t('home.heroSubtitle2', 'Physics-informed, uncertainty-aware and cross-chemistry battery life prognostics for next-generation energy storage research.')}
+          </p>
+
+          {/* Action CTA Buttons */}
+          <div className="flex flex-wrap items-center gap-3 pt-2">
+            <Link
+              to="/dashboard"
+              className="inline-flex items-center gap-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-emerald-950/40 transition hover:-translate-y-0.5"
+            >
+              <Gauge size={18} />
+              {t('home.openDashboard', 'Open Research Dashboard')}
+              <ArrowRight size={16} />
+            </Link>
+
+            <Link
+              to="/lithyx-prediction"
+              className="inline-flex items-center gap-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-6 py-3.5 text-sm font-bold text-slate-800 dark:text-slate-200 shadow-sm hover:border-emerald-500 hover:text-emerald-600 dark:hover:text-emerald-400 transition"
+            >
+              <Cpu size={18} />
+              {t('home.coreEngine', 'LITHYX Core Engine')}
+            </Link>
           </div>
-          <div className="flex flex-wrap gap-3">
-            <Link
-              className="lc-focus inline-flex items-center gap-2 rounded-2xl bg-cyan-600 px-5 py-3.5 font-bold text-white shadow-lg shadow-cyan-600/20 transition-all duration-200 hover:-translate-y-0.5 hover:bg-cyan-500 dark:bg-cyan-500 dark:text-slate-950 dark:hover:bg-cyan-400"
-              to="/routine"
-            >
-              <CalendarClock size={20} aria-hidden="true" />
-              Start routine analysis
+
+          {/* Quick Module Links */}
+          <div className="flex flex-wrap gap-4 pt-2 text-xs font-bold text-emerald-600 dark:text-emerald-400">
+            <Link to="/health-indicators" className="hover:underline flex items-center gap-1">
+              <Activity size={14} /> {t('home.dqdvAnalysis', 'dQ/dV Peak Analysis')}
             </Link>
-            <Link
-              className="lc-focus inline-flex items-center gap-2 rounded-2xl border border-slate-300 bg-white px-5 py-3.5 font-bold text-slate-800 shadow-sm transition-all duration-200 hover:border-cyan-500 hover:text-cyan-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-cyan-400 dark:hover:text-white"
-              to="/prediction"
-            >
-              <ClipboardCheck size={20} aria-hidden="true" />
-              Open legacy analyzer
+            <Link to="/cross-chemistry" className="hover:underline flex items-center gap-1">
+              <Network size={14} /> {t('home.crossChemTransfer', 'Cross-Chemistry Transfer')}
             </Link>
-            <Link
-              className="lc-focus inline-flex items-center gap-2 rounded-2xl border border-slate-300 bg-white px-5 py-3.5 font-bold text-slate-800 shadow-sm transition-all duration-200 hover:border-cyan-500 hover:text-cyan-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-cyan-400 dark:hover:text-white"
-              to="/showroom"
-            >
-              <LayoutGrid size={20} aria-hidden="true" />
-              3D Showroom
+            <Link to="/digital-twin" className="hover:underline flex items-center gap-1">
+              <Box size={14} /> {t('home.ukfDigitalTwin', 'UKF Digital Twin')}
             </Link>
-          </div>
-          <div className="grid gap-3 sm:grid-cols-3">
-            {[
-              ['AI-powered insights', 'Real-time battery wisdom'],
-              ['Secure by design', 'Encrypted device data'],
-              ['Premium alerts', 'Smart maintenance cues'],
-            ].map(([title, subtitle]) => (
-              <div key={title} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-                <p className="text-sm font-bold text-cyan-600 dark:text-cyan-400">{title}</p>
-                <p className="mt-1 text-xs leading-5 text-slate-600 dark:text-slate-300">{subtitle}</p>
-              </div>
-            ))}
           </div>
         </div>
-        <BatteryVisual />
-      </div>
 
-      <div className="grid gap-4 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:grid-cols-3">
-        {[
-          ['Daily routine', 'Great for regular commuting and predictable home charging.'],
-          ['Weekly routine', 'Perfect when the week changes with work, school, or weekend travel.'],
-          ['Monthly routine', 'Useful for seasonal travel or occasional EV use.'],
-        ].map(([title, description]) => (
-          <div key={title} className="rounded-2xl border border-slate-200 bg-slate-50 p-5 dark:border-slate-700 dark:bg-slate-800">
-            <p className="text-base font-extrabold text-slate-900 dark:text-white">{title}</p>
-            <p className="mt-2.5 text-sm leading-6 text-slate-600 dark:text-slate-300">{description}</p>
-          </div>
-        ))}
-      </div>
-
-      <Link
-        to="/showroom"
-        className="group block overflow-hidden rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm transition-all duration-300 hover:border-cyan-500 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:hover:border-cyan-400"
-      >
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-center">
-          <div className="hidden lg:grid h-16 w-16 place-items-center rounded-2xl bg-cyan-500/10 dark:bg-cyan-500/20">
-            <Bike size={32} className="text-cyan-600 dark:text-cyan-400" />
-          </div>
-          <div className="flex-1">
-            <div className="flex flex-wrap items-center gap-2">
-              <h2 className="text-xl font-black text-slate-900 dark:text-white">EV Fleet Showroom</h2>
-              <span className="rounded-full bg-cyan-600 px-3 py-0.5 text-xs font-bold text-white dark:bg-cyan-500 dark:text-slate-950">3D</span>
+        {/* Right Hero Visual Card */}
+        <div className="lg:col-span-5">
+          <div className="relative overflow-hidden rounded-[28px] border border-slate-800 bg-[#0B131F] p-5 sm:p-6 text-white shadow-2xl space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-xl font-black text-white tracking-wider">{t('home.cardTitle', 'LITHYX ARCHITECTURE')}</h2>
+                <p className="text-[11px] font-medium text-emerald-400">{t('home.cardSubtitle', 'Hybrid Physics-AI Degradation Engine')}</p>
+              </div>
+              <span className="rounded-lg bg-emerald-500/20 px-2.5 py-1 text-[10px] font-bold text-emerald-300 border border-emerald-500/30">
+                {t('home.cardVersion', 'v2.5 Research')}
+              </span>
             </div>
-            <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">
-              Browse our complete EV database in an interactive 3D showroom. Click any vehicle to instantly check its battery health.
-            </p>
-            <div className="mt-3 flex flex-wrap gap-3 text-xs text-slate-500 dark:text-slate-400">
-              <span className="inline-flex items-center gap-1"><Bike size={14} /> {t('home.actions.checkBattery.title')} EVs</span>
-              <span className="inline-flex items-center gap-1"><Truck size={14} /> 3-Wheelers</span>
-              <span className="inline-flex items-center gap-1"><Car size={14} /> Cars & SUVs</span>
-              <span className="inline-flex items-center gap-1"><Bus size={14} /> Buses</span>
+
+            <div className="relative overflow-hidden rounded-2xl border border-emerald-500/30 bg-slate-950 p-2 shadow-2xl flex items-center justify-center">
+              <img
+                src={logoImage}
+                alt="LITHYX Official Logo"
+                className="w-full h-52 sm:h-60 object-contain rounded-xl transition duration-300 hover:scale-105"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 pt-1 text-center">
+              <div className="rounded-xl border border-slate-800 bg-slate-900/80 p-3">
+                <p className="text-[10px] font-semibold text-slate-400">{t('home.targetSoh', 'Target SOH R²')}</p>
+                <p className="text-lg font-black text-emerald-400">{t('home.targetSohValue', '> 0.96')}</p>
+              </div>
+              <div className="rounded-xl border border-slate-800 bg-slate-900/80 p-3">
+                <p className="text-[10px] font-semibold text-slate-400">{t('home.rulAlpha', 'RUL Alpha Coverage')}</p>
+                <p className="text-lg font-black text-emerald-400">{t('home.rulAlphaValue', '95% Conformal')}</p>
+              </div>
             </div>
           </div>
-          <ArrowRight className="text-cyan-600 dark:text-cyan-400 transition-all duration-300 group-hover:translate-x-1 shrink-0" size={24} aria-hidden="true" />
         </div>
-      </Link>
-
-      <div className="grid gap-4 lg:grid-cols-3">
-        {actions.map(({ to, title, description, icon: Icon }) => {
-          return (
-            <Link
-              key={title}
-              className="lc-focus group rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-cyan-500 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-cyan-400"
-              to={to}
-            >
-              <div className="mb-5 grid h-12 w-12 place-items-center rounded-2xl border border-cyan-500/20 bg-cyan-50 text-cyan-600 dark:border-slate-700 dark:bg-slate-800 dark:text-cyan-400">
-                <Icon size={22} aria-hidden="true" />
-              </div>
-              <div className="flex items-center justify-between gap-4">
-                <h2 className="text-lg font-black tracking-[-0.01em] text-slate-900 dark:text-white">{title}</h2>
-                <ArrowRight className="text-slate-400 transition-all duration-200 group-hover:translate-x-1 group-hover:text-cyan-500" size={20} aria-hidden="true" />
-              </div>
-              <p className="mt-2.5 text-sm leading-6 text-slate-600 dark:text-slate-300">{description}</p>
-            </Link>
-          );
-        })}
       </div>
 
-      <section className="lc-card-static rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-        <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
-          <div>
-            <h2 className="text-lg font-black text-slate-900 dark:text-white">{t('home.maintenanceSection.heading')}</h2>
-            <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600 dark:text-slate-300">
-              {t('home.maintenanceSection.description')}
-            </p>
-          </div>
-          <Link
-            className="lc-focus inline-flex w-fit items-center gap-2 rounded-2xl bg-cyan-600 px-4 py-3 font-bold text-white shadow-sm transition-all duration-200 hover:bg-cyan-500 dark:bg-cyan-500 dark:text-slate-950 dark:hover:bg-cyan-400"
-            to="/battery"
-          >
-            <Wrench size={18} aria-hidden="true" />
-            {t('home.maintenanceSection.addProfile')}
-          </Link>
+      {/* Visual Workflow Section */}
+      <div className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0B131F] p-6 sm:p-8 space-y-6 shadow-md">
+        <div className="text-center space-y-2 max-w-3xl mx-auto">
+          <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
+            LITHYX Prognostics Workflow
+          </h2>
+          <p className="text-sm text-slate-600 dark:text-slate-300 font-medium">
+            End-to-end data pipeline from partial charging curves to uncertainty-bounded digital twin state updates.
+          </p>
         </div>
-      </section>
-    </section>
+
+        {/* Pipeline Steps Flow */}
+        <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-8 gap-3 pt-4">
+          {[
+            { step: '01', title: 'Partial Charging Data', sub: 'CSV / Telemetry', icon: FileSpreadsheet, color: 'text-amber-500' },
+            { step: '02', title: 'Health Indicators', sub: 'dQ/dV & dV/dQ', icon: Activity, color: 'text-teal-400' },
+            { step: '03', title: 'LITHYX Core', sub: 'Physics + Residual', icon: Cpu, color: 'text-cyan-400' },
+            { step: '04', title: 'Deep Temporal', sub: 'LSTM / TCN / Trans.', icon: Layers, color: 'text-indigo-400' },
+            { step: '05', title: 'Cross-Chemistry', sub: 'MMD / CORAL Adapt.', icon: Network, color: 'text-purple-400' },
+            { step: '06', title: 'Uncertainty', sub: 'Split Conformal', icon: Sparkles, color: 'text-emerald-400' },
+            { step: '07', title: 'Digital Twin + UKF', sub: 'State Assimilation', icon: Box, color: 'text-blue-400' },
+            { step: '08', title: 'SOH / RUL Insights', sub: 'SHAP & Reports', icon: Gauge, color: 'text-emerald-400' },
+          ].map((item, idx) => {
+            const IconComponent = item.icon;
+            return (
+              <div key={idx} className="relative flex flex-col items-center text-center p-3 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 shadow-sm hover:border-teal-500/50 transition group">
+                <span className="text-[10px] font-black text-slate-400 group-hover:text-teal-400 mb-1">{item.step}</span>
+                <div className={`p-2.5 rounded-xl bg-white dark:bg-slate-800 shadow-sm mb-2 ${item.color}`}>
+                  <IconComponent size={20} />
+                </div>
+                <p className="text-xs font-bold text-slate-900 dark:text-slate-100 leading-tight">{item.title}</p>
+                <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium mt-0.5">{item.sub}</p>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Core Research Modules Grid */}
+      <div className="space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h2 className="text-2xl font-black text-slate-900 dark:text-white">Core Research Modules</h2>
+            <p className="text-xs text-slate-600 dark:text-slate-400 font-medium">Click any module to inspect methodology and live computations.</p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[
+            {
+              title: 'Physics-Informed Learning',
+              desc: 'Integrates Arrhenius thermal activation, square-root cycle kinetics, and C-rate stress into loss functions for physical consistency.',
+              link: '/lithyx-prediction',
+              icon: BrainCircuit,
+              badge: 'Physics Loss',
+            },
+            {
+              title: 'Cross-Chemistry Transfer',
+              desc: 'Domain adaptation via MMD and CORAL across LFP, NMC, NCA, and LCO chemistries for zero-shot and few-shot adaptation.',
+              link: '/cross-chemistry',
+              icon: Network,
+              badge: 'MMD / CORAL',
+            },
+            {
+              title: 'Split Conformal Uncertainty',
+              desc: 'Generates distribution-free, coverage-guaranteed prediction intervals (PICP, MPIW) for SOH and RUL.',
+              link: '/uncertainty',
+              icon: Sparkles,
+              badge: '95% Bounds',
+            },
+            {
+              title: 'Digital Twin & UKF Assimilation',
+              desc: 'Maintains per-battery digital state using Unscented Kalman Filtering for real-time observation assimilation.',
+              link: '/digital-twin',
+              icon: Box,
+              badge: 'UKF State',
+            },
+            {
+              title: 'Partial Charging HI Extraction',
+              desc: 'Extracts degradation-sensitive Incremental Capacity (dQ/dV), Differential Voltage (dV/dQ), and CC-CV transition metrics.',
+              link: '/health-indicators',
+              icon: Activity,
+              badge: 'dQ/dV & dV/dQ',
+            },
+            {
+              title: 'SHAP & Parameter Explainability',
+              desc: 'Quantifies feature contributions and interprets physical degradation parameters (Ea, k_deg, stress coefficients).',
+              link: '/explainability',
+              icon: Sliders,
+              badge: 'XAI Engine',
+            },
+          ].map((card, idx) => {
+            const IconComp = card.icon;
+            return (
+              <Link
+                key={idx}
+                to={card.link}
+                className="group relative rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0B131F] p-6 shadow-sm hover:border-teal-500/60 hover:shadow-md transition duration-300 flex flex-col justify-between"
+              >
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="p-3 rounded-xl bg-teal-500/10 text-teal-600 dark:text-teal-400 group-hover:bg-teal-500 group-hover:text-white transition">
+                      <IconComp size={22} />
+                    </div>
+                    <span className="rounded-full bg-slate-100 dark:bg-slate-800 px-3 py-1 text-[10px] font-bold text-slate-600 dark:text-slate-300">
+                      {card.badge}
+                    </span>
+                  </div>
+                  <h3 className="text-lg font-bold text-slate-900 dark:text-white group-hover:text-teal-600 dark:group-hover:text-teal-400 transition">
+                    {card.title}
+                  </h3>
+                  <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                    {card.desc}
+                  </p>
+                </div>
+                <div className="pt-4 flex items-center text-xs font-bold text-teal-600 dark:text-teal-400 group-hover:translate-x-1 transition">
+                  Explore Module <ArrowRight size={14} className="ml-1" />
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      </div>
+    </div>
   );
 }

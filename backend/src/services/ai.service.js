@@ -59,7 +59,7 @@ CRITICAL RULES FOR USER INQUIRIES:
     }));
 
   const payload = {
-    model: 'llama-3.3-70b-versatile',
+    model: 'groq/compound',
     messages: [systemMessage, ...formattedHistory, { role: 'user', content: message }],
     temperature: 0.7,
     max_tokens: 1024,
@@ -81,28 +81,26 @@ CRITICAL RULES FOR USER INQUIRIES:
 
     return {
       reply,
-      model: response.data.model || 'llama-3.3-70b-versatile',
+      model: response.data.model || 'groq/compound',
       usage: response.data.usage,
     };
   } catch (error) {
     // Fallback model if main model hits rate limit or error
-    if (error?.response?.data?.error?.code === 'rate_limit_exceeded') {
-      try {
-        payload.model = 'llama3-8b-8192';
-        const fallbackResponse = await axios.post(GROQ_API_URL, payload, {
-          headers: {
-            Authorization: `Bearer ${apiKey}`,
-            'Content-Type': 'application/json',
-          },
-          timeout: 10000,
-        });
-        const reply = fallbackResponse.data?.choices?.[0]?.message?.content;
-        if (reply) {
-          return { reply, model: 'llama3-8b-8192' };
-        }
-      } catch {
-        // Fallback failed
+    try {
+      payload.model = 'openai/gpt-oss-20b';
+      const fallbackResponse = await axios.post(GROQ_API_URL, payload, {
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        timeout: 10000,
+      });
+      const reply = fallbackResponse.data?.choices?.[0]?.message?.content;
+      if (reply) {
+        return { reply, model: 'openai/gpt-oss-20b' };
       }
+    } catch {
+      // Fallback failed
     }
     throw error;
   }

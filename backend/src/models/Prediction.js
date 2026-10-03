@@ -49,7 +49,6 @@ const predictionSchema = new mongoose.Schema(
     },
     batteryStatus: {
       type: String,
-      enum: ['Excellent', 'Good', 'Warning', 'Critical'],
       required: true,
     },
     riskScore: {
@@ -222,6 +221,56 @@ const predictionSchema = new mongoose.Schema(
         datasetName: String,
         featureVersion: String,
         predictionTimestamp: Date,
+      },
+    },
+    // LITHYX Research Extensions
+    lithyx: {
+      healthIndicators: {
+        icPeaks: [
+          {
+            positionV: Number,
+            height: Number,
+            widthV: Number,
+          },
+        ],
+        dvFeatures: [
+          {
+            positionAh: Number,
+            inflectionV: Number,
+          },
+        ],
+        ccDurationMinutes: Number,
+        cvDurationMinutes: Number,
+        cRate: Number,
+        dod: Number,
+        temperatureC: Number,
+      },
+      physicsPrediction: {
+        soh: Number,
+        rul: Number,
+        residualSoh: Number,
+        parameters: {
+          activationEnergyEa: Number,
+          degradationCoeffK: Number,
+          crateStressCoeff: Number,
+          dodStressCoeff: Number,
+          resistanceGrowthK: Number,
+        },
+      },
+      conformalBounds: {
+        sohLower: Number,
+        sohUpper: Number,
+        rulLower: Number,
+        rulUpper: Number,
+        picp: Number,
+        mpiw: Number,
+        confidenceLevel: Number,
+      },
+      crossChemistry: {
+        sourceChemistry: String,
+        targetChemistry: String,
+        fewShotK: Number,
+        domainAlignmentMetric: String,
       },
     },
   },

@@ -59,29 +59,38 @@ CRITICAL RULES FOR USER INQUIRIES:
     content: msg.content,
   }));
 
-  const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      model: 'llama-3.3-70b-versatile',
-      messages: [
-        { role: 'system', content: systemPrompt },
-        ...formattedHistory,
-        { role: 'user', content: message },
-      ],
-      temperature: 0.7,
-      max_tokens: 1000,
-    }),
-  });
+  const fetchGroq = async (modelName) => {
+    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: modelName,
+        messages: [
+          { role: 'system', content: systemPrompt },
+          ...formattedHistory,
+          { role: 'user', content: message },
+        ],
+        temperature: 0.7,
+        max_tokens: 1000,
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data?.error?.message || `Groq API returned error status ${res.status}`);
+    }
+    const reply = data?.choices?.[0]?.message?.content;
+    if (!reply) {
+      throw new Error('Groq returned empty response.');
+    }
+    return reply;
+  };
 
-  const data = await response.json();
-  const reply = data?.choices?.[0]?.message?.content;
-  if (!reply) {
-    throw new Error('Groq returned empty response.');
+  try {
+    return await fetchGroq('groq/compound');
+  } catch (err) {
+    return await fetchGroq('openai/gpt-oss-20b');
   }
-
-  return reply;
 }

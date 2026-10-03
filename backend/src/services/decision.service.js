@@ -55,11 +55,17 @@ export function evaluateScenariosAndRecommend(scenariosPayload) {
   const evaluated = scenarios.map((s) => {
     const score = Math.round(s.soh * 0.4 + (s.rul / 10) * 0.4 - s.thermalStress * 0.2);
     const rulGain = s.rul - baseRul;
+    const projectedRangeKm = Math.round(420 * (s.soh / 100));
+    const estimatedPackValueUsd = Math.round(12000 * (s.soh / 100));
+
     return {
       ...s,
       objectiveScore: score,
       rulGain: rulGain > 0 ? `+${rulGain} cycles` : `${rulGain} cycles`,
       estimatedLifespanYears: (s.rul / 180).toFixed(1),
+      projectedRangeKm,
+      estimatedPackValueUsd,
+      annualSavingsPotentialUsd: Math.round(Math.max(0, (s.rul - baseRul) * 2.8)),
     };
   });
 
@@ -73,12 +79,15 @@ export function evaluateScenariosAndRecommend(scenariosPayload) {
     recommendedScenarioId: bestScenario.id,
     recommendedScenarioLabel: bestScenario.label,
     expectedRulGain: `+${netGainCycles} useful cycles (~${(netGainCycles / 180).toFixed(1)} years extension)`,
+    potentialFinancialSavings: `$${bestScenario.annualSavingsPotentialUsd} total asset value preserved`,
     decisionRationale: (
       `The Decision Engine identified '${bestScenario.label}' as the optimal operating strategy. ` +
       `Limiting DC fast charging to ${bestScenario.fastCharging}% and maintaining average temperature below ${bestScenario.temperature}°C ` +
-      `reduces thermal stress by ${68 - bestScenario.thermalStress}% and extends remaining useful life from ${baseRul} to ${bestScenario.rul} cycles.`
+      `reduces thermal stress by ${68 - bestScenario.thermalStress}% and extends remaining useful life from ${baseRul} to ${bestScenario.rul} cycles, ` +
+      `preserving ~$${bestScenario.annualSavingsPotentialUsd} in battery asset value.`
     ),
     evaluations: evaluated,
     generatedAt: new Date(),
   };
 }
+

@@ -10,8 +10,16 @@ export async function loginUser(payload) {
   return data;
 }
 
-export async function loginWithGoogle(accessToken) {
-  const { data } = await apiClient.post('/auth/google', { accessToken });
+export async function loginWithGoogle(credentialOrToken) {
+  let payload;
+  if (typeof credentialOrToken === 'object' && credentialOrToken !== null) {
+    payload = credentialOrToken;
+  } else if (typeof credentialOrToken === 'string' && credentialOrToken.split('.').length === 3) {
+    payload = { credential: credentialOrToken };
+  } else {
+    payload = { accessToken: credentialOrToken };
+  }
+  const { data } = await apiClient.post('/auth/google', payload);
   return data;
 }
 

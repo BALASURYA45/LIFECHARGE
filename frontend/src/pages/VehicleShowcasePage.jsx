@@ -256,6 +256,7 @@ export default function VehicleShowcasePage() {
   const { category } = useParams();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedChemFilter, setSelectedChemFilter] = useState('ALL');
 
   const selectedCategory = category || '';
   const categoryObject = selectedCategory
@@ -276,11 +277,14 @@ export default function VehicleShowcasePage() {
   const filteredVehicles = categoryObject
     ? categoryVehicles.filter((v) => {
         const query = searchQuery.toLowerCase();
-        return (
+        const matchesQuery = (
           query === '' ||
           v.make.toLowerCase().includes(query) ||
           v.model.toLowerCase().includes(query)
         );
+        const bType = (v.spec.batteryType || '').toUpperCase();
+        const matchesChem = selectedChemFilter === 'ALL' || bType.includes(selectedChemFilter);
+        return matchesQuery && matchesChem;
       })
     : [];
 
@@ -341,6 +345,25 @@ export default function VehicleShowcasePage() {
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full rounded-2xl border border-slate-700 bg-slate-950/90 pl-12 pr-4 py-4 text-white placeholder-slate-500 focus:border-accent focus:outline-none transition focus:ring-2 focus:ring-accent/20"
             />
+          </div>
+
+          {/* Cell Chemistry Filter Buttons Bar */}
+          <div className="flex flex-wrap items-center gap-2.5 p-3 rounded-2xl bg-slate-950/80 border border-slate-800">
+            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider px-2">Battery Chemistry:</span>
+            {['ALL', 'LFP', 'NMC', 'LEAD ACID'].map((chem) => (
+              <button
+                key={chem}
+                type="button"
+                onClick={() => setSelectedChemFilter(chem)}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${
+                  selectedChemFilter === chem
+                    ? 'bg-cyan-500 text-slate-950 shadow-md font-black'
+                    : 'bg-slate-900 text-slate-300 border border-slate-700 hover:bg-slate-800'
+                }`}
+              >
+                {chem === 'ALL' ? 'All Chemistries' : chem}
+              </button>
+            ))}
           </div>
 
           {filteredVehicles.length === 0 ? (

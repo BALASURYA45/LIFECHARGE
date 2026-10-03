@@ -10,6 +10,7 @@ from __future__ import annotations
 from typing import Any
 
 import numpy as np
+from numpy.typing import NDArray
 import pandas as pd
 
 from app.config.settings import settings
@@ -97,11 +98,11 @@ def _compute_direction_from_importance(feature: str, value: float, predicted_soh
     return "positive"
 
 
-def _fallback_importances(bundle: dict[str, Any], feature_columns: list[str]) -> np.ndarray:
+def _fallback_importances(bundle: dict[str, Any], feature_columns: list[str]) -> NDArray[Any]:
     model_wrapper = bundle.get("soh_model", bundle.get("model"))
     model = model_wrapper.named_steps.get("model") if hasattr(model_wrapper, "named_steps") else model_wrapper
     estimators = getattr(model, "estimators_", [])
-    importances: list[np.ndarray] = []
+    importances: list[NDArray[Any]] = []
 
     for estimator in estimators:
         estimator_importance = getattr(estimator, "feature_importances_", None)
@@ -120,7 +121,7 @@ def _fallback_importances(bundle: dict[str, Any], feature_columns: list[str]) ->
     return averaged / total
 
 
-def _shap_importances(bundle: dict[str, Any], transformed_input: np.ndarray) -> np.ndarray | None:
+def _shap_importances(bundle: dict[str, Any], transformed_input: np.ndarray) -> NDArray[Any] | None:
     try:
         import shap
 

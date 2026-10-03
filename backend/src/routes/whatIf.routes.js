@@ -7,8 +7,6 @@ import { whatIfSimulationSchema } from '../validators/whatIf.validators.js';
 
 const router = Router();
 
-router.use(protect);
-
-router.post('/what-if/simulate', validateRequest(whatIfSimulationSchema), asyncHandler(simulateWhatIf));
+router.post('/what-if/simulate', protect, validateRequest(whatIfSimulationSchema), asyncHandler(simulateWhatIf));
 
 export default router;

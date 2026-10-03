@@ -9,7 +9,7 @@ const FormField = forwardRef(function FormField({ label, error, ...inputProps },
         className="mt-2 w-full rounded border border-slate-700 bg-slate-950 px-3 py-3 text-slate-100 outline-none transition focus:border-teal-400"
         {...inputProps}
       />
-      {error ? <span className="mt-1 block text-sm text-red-300">{error.message}</span> : null}
+      {error ? <span className="mt-1 block text-sm text-emerald-300">{error.message}</span> : null}
     </label>
   );
 });
