@@ -1,7 +1,7 @@
 /*
  * LITHYX Embedded BMS Microcontroller Auto-Generated Header
  * Architecture: ARM Cortex-M4/M7, ESP32, STM32, TI C2000 BMS
- * Generated: 2026-10-03 18:40:06
+ * Generated: 2026-10-03 19:23:41
  */
 
 #ifndef BMS_LITHYX_ONNX_H

@@ -42,7 +42,20 @@ ml-service/app/reports/generated/
 backend/uploads/
 backend/reports/
 
+# Database & Local Runtime Data
+.data/
+data/
+backend/data/
+mongodb_data/
+*.wt
+*.lock
+WiredTiger*
+
 # Temporary and scratch files
 .gitdiff_tmp.txt
 scratch/
+codex-temp/
+.mypy_cache/
+.pytest_cache/
+
 
