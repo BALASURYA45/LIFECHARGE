@@ -40,11 +40,10 @@ services:
           name: lifecharge-ml-service
           property: host
 
-  # 3. Frontend React App (Vite SPA)
+  # 3. Frontend React App (Vite SPA) - Global CDN Static Site
   - type: web
     name: lifecharge-frontend
     env: static
-    region: singapore
     rootDir: frontend
     buildCommand: npm install && npm run build
     staticPublishPath: dist

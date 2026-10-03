@@ -5,7 +5,7 @@ This repository includes a multi-service architecture ready for 1-click deployme
 ---
 
 ## 🛠️ Architecture Summary
-- **Frontend**: React + Vite SPA (Static Site)
+- **Frontend**: React + Vite SPA (Global Static Site)
 - **Backend**: Node.js Express API + WebSockets (`ws://`)
 - **ML Service**: Python 3.11 Flask + PyTorch PINN + ONNX Runtime (`gunicorn`)
 - **Database**: MongoDB Atlas (`mongodb+srv://...`)
