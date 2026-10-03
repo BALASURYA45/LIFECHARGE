@@ -9,7 +9,8 @@ export default function GoogleAuthButton({ label = 'Continue with Google', onSuc
     const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
     if (!clientId) {
-      setMessage('Google sign-in is not configured yet. Add VITE_GOOGLE_CLIENT_ID to enable this option.');
+      // Allow button to be clickable so user gets clear instructions on click rather than persistent banner
+      setIsReady(true);
       return;
     }
 
@@ -69,13 +70,20 @@ export default function GoogleAuthButton({ label = 'Continue with Google', onSuc
   }
 
   function handleClick() {
+    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+
+    if (!clientId) {
+      setMessage('Google Sign-In requires a VITE_GOOGLE_CLIENT_ID. Standard Email/Password login works out of the box.');
+      return;
+    }
+
     if (!window.google?.accounts?.oauth2) {
-      setMessage('Google sign-in is unavailable right now.');
+      setMessage('Google sign-in service is currently loading. Please try again in a moment.');
       return;
     }
 
     window.google.accounts.oauth2.initTokenClient({
-      client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+      client_id: clientId,
       scope: 'openid email profile',
       callback: handleTokenResponse,
     }).requestAccessToken();
@@ -109,7 +117,7 @@ export default function GoogleAuthButton({ label = 'Continue with Google', onSuc
         </svg>
         {isLoading ? 'Connecting...' : label}
       </button>
-      {message ? <p className="mt-2 text-sm text-amber-600">{message}</p> : null}
+      {message ? <p className="mt-2 text-xs text-amber-600 font-medium text-center">{message}</p> : null}
     </div>
   );
 }
