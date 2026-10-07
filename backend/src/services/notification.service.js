@@ -3,7 +3,6 @@ import { env } from "../config/env.js";
 import { User } from "../models/User.js";
 import { BatteryData } from "../models/BatteryData.js";
 import { Prediction } from "../models/Prediction.js";
-import { AppError } from "../utils/AppError.js";
 
 function canUseDatabase() {
   return Boolean(env.mongoUri) && mongoose.connection.readyState === 1;

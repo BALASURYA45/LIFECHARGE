@@ -8,8 +8,6 @@ import {
   runAblationStudy,
 } from '../services/ml.service.js';
 import { Dataset } from '../models/Dataset.js';
-import { Prediction } from '../models/Prediction.js';
-import { DigitalTwinState } from '../models/DigitalTwinState.js';
 
 export async function extractHealthIndicatorsController(req, res, next) {
   try {

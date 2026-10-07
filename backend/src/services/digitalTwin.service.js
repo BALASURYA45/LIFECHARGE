@@ -1,5 +1,4 @@
 import { DigitalTwinState } from '../models/DigitalTwinState.js';
-import { AppError } from '../utils/AppError.js';
 
 export async function createOrUpdateDigitalTwin(userId, batteryData) {
   const batteryId = batteryData.batteryId || `BT_${String(batteryData._id || Date.now()).slice(-6)}`;
