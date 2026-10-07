@@ -36,7 +36,7 @@ async function createUserRecord({ name, email, password }) {
   const normalizedEmail = getNormalizedEmail(email);
 
   if (!canUseDatabase()) {
-    const hashedPassword = await bcrypt.hash(password, 12);
+    const hashedPassword = await bcrypt.hash(password, 10);
     const user = {
       _id: crypto.randomUUID(),
       name,

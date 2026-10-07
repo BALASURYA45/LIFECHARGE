@@ -117,7 +117,12 @@ export default function GoogleAuthButton({ label = 'Continue with Google', onSuc
         </svg>
         {isLoading ? 'Connecting...' : label}
       </button>
-      {message ? <p className="mt-2 text-xs text-amber-600 font-medium text-center">{message}</p> : null}
+      {message ? (
+        <div className="mt-3 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800 dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-300">
+          <p className="font-semibold mb-1">Google Sign-In Configuration Required</p>
+          <p>{message}</p>
+        </div>
+      ) : null}
     </div>
   );
 }

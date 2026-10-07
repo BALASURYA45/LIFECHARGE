@@ -1,9 +1,18 @@
 import axios from 'axios';
 import { getStoredToken } from '../utils/jwtUtils.js';
 
+function getBaseUrl() {
+  const rawUrl = import.meta.env.VITE_API_BASE_URL;
+  if (!rawUrl) {
+    return 'http://localhost:5000/api';
+  }
+  const cleanUrl = rawUrl.replace(/\/+$/, '');
+  return cleanUrl.endsWith('/api') ? cleanUrl : `${cleanUrl}/api`;
+}
+
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:5000/api',
-  timeout: 15000,
+  baseURL: getBaseUrl(),
+  timeout: 60000,
   headers: {
     'Content-Type': 'application/json',
   },
