@@ -24,7 +24,7 @@ export default function RegisterPage() {
 
     try {
       await registerAuth(values);
-      navigate('/dashboard', { replace: true });
+      navigate('/', { replace: true });
     } catch (error) {
       setServerError(getErrorMessage(error));
     }
@@ -34,7 +34,7 @@ export default function RegisterPage() {
     setServerError('');
     try {
       await loginGoogle(credential);
-      navigate('/dashboard', { replace: true });
+      navigate('/', { replace: true });
     } catch (error) {
       setServerError(getErrorMessage(error));
     }
