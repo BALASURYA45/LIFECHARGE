@@ -25,7 +25,7 @@ export default function LoginPage() {
 
     try {
       await login(values);
-      navigate(location.state?.from?.pathname ?? '/', { replace: true });
+      navigate(location.state?.from?.pathname ?? '/dashboard', { replace: true });
     } catch (error) {
       setServerError(getErrorMessage(error));
     }
@@ -35,7 +35,7 @@ export default function LoginPage() {
     setServerError('');
     try {
       await loginGoogle(credential);
-      navigate(location.state?.from?.pathname ?? '/', { replace: true });
+      navigate(location.state?.from?.pathname ?? '/dashboard', { replace: true });
     } catch (error) {
       setServerError(getErrorMessage(error));
     }
